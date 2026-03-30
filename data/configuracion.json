@@ -2,9 +2,9 @@
   "nombre_negocio": "Farmacia Ejemplo",
   "configuracion_bot": {
     "bloquear_fuera_de_horario": true,
-    "palabra_escape": "horarios"
+    "palabra_escape": "horarios",
+    "motor_envio": "wppconnect"
   },  
-  "mensaje_bienvenida": "👋 Bienvenido a {nombre_negocio}. ¿En qué te puedo ayudar hoy?",
 
   "roles": {
     "root": ["+541168387770"],
