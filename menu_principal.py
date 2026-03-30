@@ -7,34 +7,63 @@ class MenuPrincipal:
 
     def __init__(self, numero):
         self.numero = numero
-        self.sw = SendWPP(numero)
         self.config = ConfigLoader()
+        self.sw = SendWPP(numero)
+        self.autorizado = False  # ← La "llave" de sesión
 
     def mostrar_menu(self):
-        # Obtenemos el mensaje directamente desde el JSON modularizado
-        mensaje = self.config.get_mensaje("mensajes", "menu_principal")
+        """
+        Determina dinámicamente si muestra el menú o el bloqueo.
+        Se ejecuta al inicio y cada vez que se vuelve de un submenú.
+        """
+        # 1. Pedimos al loader el diagnóstico actual
+        mensaje, acceso_liberado = self.config.obtener_menu_inicial(self.numero)
+        
+        # 2. Enviamos lo que corresponda (Menú o Bloqueo)
         self.sw.enviar(mensaje)
+        
+        # 3. Retornamos el estado para que el 'iniciar' sepa si debe frenar
+        return acceso_liberado
 
     def iniciar(self):
         print("🤖 Menu Principal iniciado")
-        self.mostrar_menu()
+        
+        # El primer intento de mostrar_menu nos dice si estamos bloqueados
+        if not self.mostrar_menu():
+            self.gestionar_bloqueo()
+        else:
+            self.loop_principal()
 
+    def gestionar_bloqueo(self):
+        """Módulo portero: solo sale de aquí si escribe 'horarios'."""
+        comando = input("\n[Bloqueo] >> ").strip().lower()
+        if comando == "horarios":
+            # Vamos al submenú y al volver, re-evaluamos TODO
+            from submenu_horarios import SubMenuHorarios
+            SubMenuHorarios(self.numero).submenu_horarios()
+            
+            # ¡IMPORTANTE! Al salir del submenú, llamamos de nuevo a iniciar()
+            # para que vuelva a chequear el horario y lo bloquee otra vez.
+            self.iniciar() 
+        else:
+            print("Sesión cerrada por bloqueo de horario.")
+
+    def loop_principal(self):
         while True:
             comando = input("\n>> ").strip().lower()
+            if comando == "salir": break
+            
+            # Ejecución de opciones...
+            self.procesar_comando(comando)
 
-            if comando == "salir":
-                print("Bot detenido.")
-                break
-
-            elif comando == "1":
-                mh = SubMenuHorarios(self.numero)
-                mh.submenu_horarios()
-                self.mostrar_menu()      # ← Ajuste: vuelve a mostrar el menú principal
-
-            elif comando == "2":
-                self.sw.enviar("Esta opción estará disponible pronto.")
-                self.mostrar_menu()
-
-            else:
-                self.sw.enviar("❌ Opción no válida.")
-                self.mostrar_menu()
+    def procesar_comando(self, comando):
+        """Modularizamos las acciones para no repetir self.mostrar_menu()"""
+        if comando == "1":
+            SubMenuHorarios(self.numero).submenu_horarios()
+            
+        elif comando == "2":
+            self.sw.enviar("Próximamente...")
+        else:
+            self.sw.enviar("❌ Opción no válida.")
+        
+        self.mostrar_menu()

@@ -33,6 +33,20 @@ class ConfigLoader:
         roles_autorizados = permisos.get(propiedad_json, [])
         return rol in roles_autorizados
 
+    # 
+    def obtener_menu_inicial(self, numero):
+        rol = self.obtener_rol(numero)
+        if rol != "usuario":
+            return self.get_mensaje("mensajes", "menu_principal_staff"), True
+
+        # Si el JSON dice que bloquee y está cerrado:
+        if self.data.get("configuracion_bot", {}).get("bloquear_fuera_de_horario") and "🚫" in self.estado_actual():
+            msg = f"{self.estado_actual()}\n\nEscribí *'horarios'* para ver opciones."
+            return msg, False
+            
+        return self.get_mensaje("mensajes", "menu_principal"), True
+
+    # Funciones específicas para el módulo de horarios (extraen, ordenan y formatean la info del JSON)
     def horarios_fijos(self):
             """Extrae los horarios del JSON y arma la leyenda para el usuario."""
             horarios = self.data.get("horarios_fijos", {})
@@ -161,3 +175,41 @@ class ConfigLoader:
                 lineas.append(bloque)
 
             return "\n".join(lineas)    
+    
+    def estado_actual(self):
+            """Determina si el negocio está abierto o cerrado JUSTO AHORA."""
+            ahora = datetime.now()
+            hoy = ahora.date()
+            hora_actual = ahora.time()
+            dia_semana = ahora.strftime('%A').lower() # ej: 'sunday'
+            
+            # Diccionario para traducir el día al formato de tu JSON
+            traduccion = {
+                "monday": "lunes", "tuesday": "martes", "wednesday": "miercoles",
+                "thursday": "jueves", "friday": "viernes", "saturday": "sabado", "sunday": "domingo"
+            }
+            dia_json = traduccion[dia_semana]
+
+            # 1. Prioridad 1: ¿Estamos en un cierre eventual hoy?
+            for c in self.data.get("cierres_eventuales", []):
+                f_desde = datetime.strptime(c["desde"], "%Y-%m-%d").date()
+                f_hasta = datetime.strptime(c["hasta"], "%Y-%m-%d").date()
+                if f_desde <= hoy <= f_hasta:
+                    return f"🚫 *Cerrado*: {c.get('motivo', 'Cierre eventual')}."
+
+            # 2. Prioridad 2: ¿Hoy es día de guardia? (Si es guardia, asumimos abierto 24hs o según lógica)
+            if hoy.strftime("%Y-%m-%d") in self.data.get("dias_de_guardia", []):
+                return "✅ *Abierto*: Hoy estamos de Guardia."
+
+            # 3. Prioridad 3: Horarios fijos
+            config = self.data.get("horarios_fijos", {}).get(dia_json, {})
+            if config.get("abierto"):
+                ap = datetime.strptime(config["apertura"], "%H:%M").time()
+                ci = datetime.strptime(config["cierre"], "%H:%M").time()
+                if ap <= hora_actual <= ci:
+                    return f"✅ *Abierto*: Atendemos hasta las {config['cierre']} hs."
+                else:
+                    return f"🚫 *Cerrado*: Abrimos a las {config['apertura']} hs."
+            
+            return "🚫 *Cerrado*: Hoy no abrimos al público."    
+    

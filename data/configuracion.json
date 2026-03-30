@@ -1,5 +1,9 @@
 {
   "nombre_negocio": "Farmacia Ejemplo",
+  "configuracion_bot": {
+    "bloquear_fuera_de_horario": true,
+    "palabra_escape": "horarios"
+  },  
   "mensaje_bienvenida": "👋 Bienvenido a {nombre_negocio}. ¿En qué te puedo ayudar hoy?",
 
   "roles": {
@@ -22,7 +26,7 @@
     "jueves":   { "abierto": true,  "apertura": "09:00", "cierre": "20:00" },
     "viernes":  { "abierto": true,  "apertura": "09:00", "cierre": "20:00" },
     "sabado":   { "abierto": true,  "apertura": "09:00", "cierre": "15:00" },
-    "domingo":  { "abierto": false, "apertura": null,    "cierre": null    }
+    "domingo":  { "abierto": false, "apertura": "09:00", "cierre": "23:59" }
   },
 
   "dias_de_guardia": [

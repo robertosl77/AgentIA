@@ -9,7 +9,7 @@ class SendWPP:
     def enviar(self, texto):
         """Envía un mensaje por WhatsApp"""
         try:
-            pywhatkit.sendwhatmsg_instantly(self.numero, texto, wait_time=18, tab_close=True)
+            # pywhatkit.sendwhatmsg_instantly(self.numero, texto, wait_time=18, tab_close=True)
             print(texto)
             print(f"✅ Enviado correctamente")
             return True

@@ -28,3 +28,23 @@ Time: 22:44
 Phone Number: +541168387770
 Message: 🏥 *Próximos Días de Guardia:*🔹 06/04/2026 (Lunes)🔹 12/04/2026 (Domingo)🔹 13/04/2026 (Lunes)
 --------------------
+Date: 29/3/2026
+Time: 22:51
+Phone Number: +541168387770
+Message: 👋 ¡Hola! Bienvenido a Farmacia Ejemplo¿Qué deseas hacer?0. ⚙️ Configuración de Staff1. Consultar Horarios2. Otra opción (próximamente)
+--------------------
+Date: 29/3/2026
+Time: 22:54
+Phone Number: +541168387770-
+Message: 🚫 *Cerrado*: Hoy no abrimos al público.Escribí *'horarios'* para ver el calendario completo.
+--------------------
+Date: 29/3/2026
+Time: 22:54
+Phone Number: +541168387770-
+Message: 👋 ¡Hola! Bienvenido a Farmacia Ejemplo¿Qué deseas hacer?1. Consultar Horarios2. Otra opción (próximamente)
+--------------------
+Date: 29/3/2026
+Time: 22:56
+Phone Number: +541168387770-
+Message: 🚫 *Cerrado*: Hoy no abrimos al público.Escribí *'horarios'* para ver el calendario completo.
+--------------------
