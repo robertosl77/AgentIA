@@ -1,5 +1,6 @@
 from send_wpp import SendWPP
 from submenu_horarios import SubMenuHorarios
+from config_loader import ConfigLoader
 
 class MenuPrincipal:
     """Menú Principal del Bot"""
@@ -7,21 +8,16 @@ class MenuPrincipal:
     def __init__(self, numero):
         self.numero = numero
         self.sw = SendWPP(numero)
+        self.config = ConfigLoader()
 
     def mostrar_menu(self):
-        mensaje = """👋 ¡Hola!
-
-Menú Principal:
-
-1. Consultar Horarios
-2. Otra opción (próximamente)
-
-Escribí el número de la opción:"""
+        # Obtenemos el mensaje directamente desde el JSON modularizado
+        mensaje = self.config.get_mensaje("mensajes", "menu_principal")
         self.sw.enviar(mensaje)
 
     def iniciar(self):
         print("🤖 Menu Principal iniciado")
-        self.mostrar_menu()          # Muestra el menú al iniciar
+        self.mostrar_menu()
 
         while True:
             comando = input("\n>> ").strip().lower()

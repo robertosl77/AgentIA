@@ -1,4 +1,5 @@
 from send_wpp import SendWPP
+from config_loader import ConfigLoader
 
 class SubMenuHorarios:
     """Submenú de Horarios"""
@@ -6,15 +7,10 @@ class SubMenuHorarios:
     def __init__(self, numero):
         self.numero = numero
         self.sw = SendWPP(numero)
+        self.config = ConfigLoader()
 
     def mostrar_menu(self):
-        mensaje = """🕒 Módulo de Horarios
-
-1. Consultar horario de atención
-2. Ver próximos días de guardia
-3. Ver cierres eventuales
-
-Escribí el número o 'salir' para volver al menú principal:"""
+        mensaje = self.config.get_mensaje("mensajes", "submenu_horarios")
         self.sw.enviar(mensaje)
 
     def submenu_horarios(self):
@@ -29,14 +25,18 @@ Escribí el número o 'salir' para volver al menú principal:"""
                 break
 
             elif comando == "1":
-                self.sw.enviar("🕒 Horario de atención normal:\nLunes a Viernes: 9:00 - 20:00\nSábados: 9:00 - 14:00")
+                # El config_loader hace todo el trabajo de formateo
+                leyenda = self.config.horarios_fijos()
+                self.sw.enviar(leyenda)                
 
             elif comando == "2":
-                self.sw.enviar("🛡️ Próximos días de guardia:\n• Jueves 2 de abril - 24hs\n• Domingo 5 de abril - 24hs")
+                leyenda = self.config.dias_de_guardia()
+                self.sw.enviar(leyenda)     
 
             elif comando == "3":
-                self.sw.enviar("⚠️ No hay cierres eventuales programados por ahora.")
+                leyenda = self.config.cierres_eventuales()
+                self.sw.enviar(leyenda)
 
             else:
                 self.sw.enviar("❌ Opción no válida.\n")
-                self.mostrar_menu()   # Vuelve a mostrar el menú
+                self.mostrar_menu()
