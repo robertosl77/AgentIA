@@ -1,0 +1,48 @@
+Resumen claro y ordenado:
+1. Método de trabajo
+
+Respuestas cortas y al punto.
+Preguntar antes de asumir o tirar código/información innecesaria.
+Etapas claras: Brainstorm → Análisis → Desarrollo → Pruebas.
+No saltamos etapas sin tu OK.
+Todo gratuito.
+
+2. Objetivo del chat
+Que vos aprendas a crear agentes IA / bots de WhatsApp de forma práctica, paso a paso, usando casos reales (farmacia y tienda de accesorios).
+3. Caso de uso elegido
+Consulta de horarios (sirve tanto para farmacia como para tienda de accesorios).
+Incluye: horarios fijos de atención + días de guardia + cierres eventuales.
+4. Requerimientos funcionales principales
+
+Menú por WhatsApp (hola → opciones).
+Consulta de horario (fijos, guardia, eventuales).
+Aviso automático de cierres eventuales al entrar.
+Datos guardados en JSON.
+Todo funciona por WhatsApp (sin web ni app).
+
+5. Roles definidos
+
+Root / Desarrollador: Tu teléfono personal (+54 11 6838 7770). Acceso total (incluye gestión de permisos y roles).
+Administrador: Puede editar horarios, guardias y cierres.
+Supervisor: Solo puede agregar/editar fechas de guardia (permiso limitado).
+Consulta: Cualquier número que no esté registrado → solo ve menú de cliente.
+
+6. Flujos / Historias de usuario
+Como Cliente (rol Consulta):
+
+Escribe “hola” → recibe menú principal.
+Elige “Consulta de horario” → ve submenú: Horario de atención, Próximos días de guardia, Cierres eventuales.
+
+Como Administrador:
+
+Escribe “hola” → recibe menú principal + opción “Configuración”.
+En Configuración puede: editar horario fijo, agregar/editar guardia, manejar cierres eventuales.
+
+Como Supervisor:
+
+Escribe “hola” → menú principal + “Configuración” limitada (solo agregar/editar guardias).
+
+Como Root/Desarrollador:
+
+Escribe “hola” → menú principal + “Configuración sistema”.
+Puede gestionar roles, permisos, agregar/quitar números, y todo lo demás.
