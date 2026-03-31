@@ -9,6 +9,7 @@ let clientWPP;
 // Inicialización del cliente de WhatsApp
 wppconnect.create({
     session: 'session-saas',
+    // headless: true, // Opcional: Ejecuta sin abrir el navegador
     catchQR: (base64Qrimg, asciiQR) => {
         console.log('Escanea el código QR en la terminal:');
         console.log(asciiQR);
