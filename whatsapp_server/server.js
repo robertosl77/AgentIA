@@ -5,6 +5,7 @@ const app = express();
 app.use(express.json());
 
 let clientWPP;
+let qrCode = null; // Guardamos el QR hasta que el cliente escanee
 
 // Inicialización del cliente de WhatsApp
 wppconnect.create({
@@ -13,10 +14,12 @@ wppconnect.create({
     catchQR: (base64Qrimg, asciiQR) => {
         console.log('Escanea el código QR en la terminal:');
         console.log(asciiQR);
+        qrCode = base64Qrimg; // Lo guardamos para el endpoint /qr
     }
 })
 .then((client) => {
     clientWPP = client;
+    qrCode = null; // Ya vinculado, limpiamos el QR
     console.log('✅ WhatsApp conectado y listo.');
 
     // ESCUCHA DE MENSAJES ENTRANTES
@@ -37,6 +40,18 @@ wppconnect.create({
     });
 })
 .catch((error) => console.log('❌ Error al iniciar WPPConnect:', error));
+
+// ENDPOINT PARA VER EL QR (el cliente entra acá y escanea con el celu)
+// En localhost: http://localhost:3000/qr
+// En producción: https://tu-servidor.com/qr
+app.get('/qr', (req, res) => {
+    if (!qrCode) {
+        return res.send("✅ Ya vinculado o QR no disponible todavía.");
+    }
+    const img = qrCode.replace('data:image/png;base64,', '');
+    res.writeHead(200, { 'Content-Type': 'image/png' });
+    res.end(Buffer.from(img, 'base64'));
+});
 
 // ENDPOINT PARA ENVIAR (Lo que usa tu Python)
 // En whatsapp_server/server.js

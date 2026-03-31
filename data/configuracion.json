@@ -31,7 +31,7 @@
 
   "dias_de_guardia": [
     "2026-03-28",
-    "2026-04-13",
+    "2026-04-03",
     "2026-04-06",
     "2026-04-12"
   ],
@@ -43,7 +43,8 @@
   ],
 
   "mensajes": {
-    "menu_principal": "👋 ¡Hola! Bienvenido a {nombre_negocio}\n\n¿Qué deseas hacer?\n\n1. Consultar Horarios",
+    "mensaje_bienvenida": "👋 ¡Hola! Bienvenido a {nombre_negocio}.\n\nSoy tu asistente virtual.",
+    "menu_principal": "¿Qué deseas hacer?\n\n1. Consultar Horarios",
     "submenu_horarios": "🕒 Módulo de Horarios\n\n1. Consultar horario de atención\n2. Ver próximos días de guardia\n3. Ver cierres eventuales\n\nEscribí el número o 'salir' para volver:",
     "menu_principal_staff": "👋 ¡Hola! Bienvenido a {nombre_negocio}\n\n¿Qué deseas hacer?\n\n0. ⚙️ Configuración de Staff\n1. Consultar Horarios\n2. Otra opción (próximamente)",
     "menu_staff": "⚙️ PANEL DE CONTROL\n\n¿Qué desea configurar?\n\n1. Agregar Guardia\n2. Registrar Cierre Eventual\n3. Editar Horarios Fijos\n\nEscriba 'salir' para volver."
