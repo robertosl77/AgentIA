@@ -11,6 +11,48 @@ class MenuPrincipal:
         self.sw = SendWPP(numero)
         self.autorizado = False  # ← La "llave" de sesión
 
+    def administro_menu(self, comando, sesiones):
+        print("Numero: "+sesiones[self.numero].numero)
+
+        # Si no existe 'menu' en la sesión, es porque es la primera vez que se llama a este método.
+        menu = getattr(sesiones[self.numero], "menu", None)
+
+        # Si no hay menú, lo asignamos y mostramos el menú inicial. Si lo hay, verificamos si es un comando de menú o submenú.
+        if menu is None:
+            sesiones[self.numero].menu = comando
+            self.mostrar_menu()
+            return
+        elif menu in ["1", "horarios"]:
+            sesiones[self.numero].submenu = comando
+            comando = menu
+        else:
+            comando = comando.strip().lower()
+
+        # Guardamos la opción actual en la sesión para que los submenús puedan acceder a ella.
+        sesiones[self.numero].menu = comando
+            
+        # Si no está autorizado, solo puede acceder al bloque de horarios. Si intenta otra cosa, se le cierra la sesión.
+        if comando == "0":
+            self.sw.enviar("Próximamente...")
+                
+        elif comando == "1":
+            SubMenuHorarios(self.numero).mostrar_menu(sesiones)
+                
+        elif comando == "2":
+            self.sw.enviar("Próximamente...")
+
+        elif comando == "horarios":
+            SubMenuHorarios(self.numero).mostrar_menu(sesiones)
+
+        else:
+            self.sw.enviar("❌ Opción no válida.")
+
+        # Si el comando es 'salir', volvemos al menú principal reseteando las variables de sesión.
+        if getattr(sesiones[self.numero], "submenu", None) == "salir":
+            sesiones[self.numero].menu = None
+            sesiones[self.numero].submenu = None
+            self.mostrar_menu()
+            
     def mostrar_menu(self):
         """
         Determina dinámicamente si muestra el menú o el bloqueo.
@@ -25,43 +67,3 @@ class MenuPrincipal:
         # 3. Retornamos el estado para que el 'iniciar' sepa si debe frenar
         return acceso_liberado
 
-    def iniciar(self):
-        print("🤖 Menu Principal iniciado")
-        
-        # El primer intento de mostrar_menu nos dice si estamos bloqueados
-        if not self.mostrar_menu():
-            return
-        else:
-            return
-
-    def gestionar_bloqueo(self, comando):
-        """Módulo portero: solo sale de aquí si escribe 'horarios'."""
-        comando = comando.strip().lower()
-        if comando == "horarios":
-            from src.submenu_horarios import SubMenuHorarios
-            SubMenuHorarios(self.numero).mostrar_menu()
-        else:
-            self.sw.enviar("Sesión cerrada por bloqueo de horario.")
-
-    def loop_principal(self):
-        return
-
-    def procesar_comando(self, comando):
-        comando = comando.strip().lower()
-
-        if comando == "1":
-            SubMenuHorarios(self.numero).mostrar_menu()
-                
-        elif comando in ["1", "2", "3", "salir"]:
-            SubMenuHorarios(self.numero).submenu_horarios(comando)
-
-        elif comando == "2":
-            self.sw.enviar("Próximamente...")
-
-        elif comando == "horarios":
-            SubMenuHorarios(self.numero).mostrar_menu()
-
-        else:
-            self.sw.enviar("❌ Opción no válida.")
-            
-        self.mostrar_menu()
