@@ -1,17 +1,11 @@
-import pywhatkit
-import requests # Para la opción de API/WPPConnect
+import requests
 from src.config_loader import ConfigLoader
 
 class SendPyWhatKit:
-    """Implementación mediante simulación de navegador (pywhatkit)"""
+    """Implementación mediante simulación de navegador (pywhatkit) - DESHABILITADO"""
     def enviar(self, numero, texto):
-        try:
-            pywhatkit.sendwhatmsg_instantly(numero, texto, wait_time=15, tab_close=True)
-            print(f"✅ [PyWhatKit] Enviado a {numero}")
-            return True
-        except Exception as e:
-            print(f"❌ [PyWhatKit] Error: {e}")
-            return False
+        print("❌ [PyWhatKit] Motor no disponible en esta instalación.")
+        return False
 
 class SendWPPConnect:
     """Implementación mediante API Local (WPPConnect/Node.js)"""
