@@ -9,13 +9,22 @@ class SubMenuHorarios:
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
 
-    def mostrar_menu(self):
+    def mostrar_menu(self, sesiones):
+        submenu = getattr(sesiones[self.numero], "submenu", None)
+
+        if submenu is None:
+            sesiones[self.numero].submenu = -1
+            self.submenu_binevenida()
+            return
+        else:
+            self.submenu_horarios(submenu)
+
+    def submenu_binevenida(self):
         mensaje = self.config.get_mensaje("mensajes", "submenu_horarios")
         self.sw.enviar(mensaje)
 
     def submenu_horarios(self, comando):
         print("📅 Entrando al submódulo de Horarios...")
-        comando = comando.strip().lower()
 
         if comando == "salir":
             self.sw.enviar("Volviendo al menú principal...")
@@ -34,4 +43,4 @@ class SubMenuHorarios:
 
         else:
             self.sw.enviar("❌ Opción no válida.\n")
-            self.mostrar_menu()
+            self.submenu_binevenida()
