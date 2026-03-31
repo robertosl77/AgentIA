@@ -1,5 +1,5 @@
 {
-  "nombre_negocio": "Farmacia Ejemplo",
+  "nombre_negocio": "Proyecto ChatBot",
   "configuracion_bot": {
     "bloquear_fuera_de_horario": true,
     "palabra_escape": "horarios",
@@ -43,9 +43,9 @@
   ],
 
   "mensajes": {
-    "menu_principal": "👋 ¡Hola! Bienvenido a {nombre_negocio}\n\n¿Qué deseas hacer?\n\n1. Consultar Horarios\n2. Otra opción (próximamente)",
+    "menu_principal": "👋 ¡Hola! Bienvenido a {nombre_negocio}\n\n¿Qué deseas hacer?\n\n1. Consultar Horarios",
+    "submenu_horarios": "🕒 Módulo de Horarios\n\n1. Consultar horario de atención\n2. Ver próximos días de guardia\n3. Ver cierres eventuales\n\nEscribí el número o 'salir' para volver:",
     "menu_principal_staff": "👋 ¡Hola! Bienvenido a {nombre_negocio}\n\n¿Qué deseas hacer?\n\n0. ⚙️ Configuración de Staff\n1. Consultar Horarios\n2. Otra opción (próximamente)",
-    "menu_staff": "⚙️ PANEL DE CONTROL\n\n¿Qué desea configurar?\n\n1. Agregar Guardia\n2. Registrar Cierre Eventual\n3. Editar Horarios Fijos\n\nEscriba 'salir' para volver.",
-    "submenu_horarios": "🕒 Módulo de Horarios\n\n1. Consultar horario de atención\n2. Ver próximos días de guardia\n3. Ver cierres eventuales\n\nEscribí el número o 'salir' para volver:"
+    "menu_staff": "⚙️ PANEL DE CONTROL\n\n¿Qué desea configurar?\n\n1. Agregar Guardia\n2. Registrar Cierre Eventual\n3. Editar Horarios Fijos\n\nEscriba 'salir' para volver."
   }
 }
