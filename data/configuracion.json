@@ -37,13 +37,13 @@
   ],
 
   "cierres_eventuales": [
-    { "desde": "2026-04-20", "hasta": "2026-04-25", "motivo": "Vacaciones de semana santa" },
+    { "desde": "2026-03-30", "hasta": "2026-04-05", "motivo": "Vacaciones de semana santa" },
     { "desde": "2026-05-01", "hasta": "2026-05-01", "motivo": "Día del Trabajador" },
     { "desde": "2026-06-15", "hasta": "2026-06-20", "motivo": "Reformas en el local" }
   ],
 
   "mensajes": {
-    "mensaje_bienvenida": "👋 ¡Hola! Bienvenido a {nombre_negocio}.\n\nSoy tu asistente virtual.",
+    "mensaje_bienvenida": "👋 ¡Hola! Bienvenido a {nombre_negocio}.",
     "menu_principal": "¿Qué deseas hacer?\n\n1. Consultar Horarios",
     "submenu_horarios": "🕒 Módulo de Horarios\n\n1. Consultar horario de atención\n2. Ver próximos días de guardia\n3. Ver cierres eventuales\n\nEscribí el número o 'salir' para volver:",
     "menu_principal_staff": "👋 ¡Hola! Bienvenido a {nombre_negocio}\n\n¿Qué deseas hacer?\n\n0. ⚙️ Configuración de Staff\n1. Consultar Horarios\n2. Otra opción (próximamente)",
