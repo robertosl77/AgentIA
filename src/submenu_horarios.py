@@ -9,6 +9,8 @@ class SubMenuHorarios:
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
 
+    # Administración del submenú de horarios
+
     def mostrar_menu(self, sesiones):
         submenu = getattr(sesiones[self.numero], "submenu", None)
 
@@ -44,3 +46,4 @@ class SubMenuHorarios:
         else:
             self.sw.enviar("❌ Opción no válida.\n")
             self.submenu_binevenida()
+

@@ -19,7 +19,7 @@ class MenuPrincipal:
 
         # Si no hay menú, lo asignamos y mostramos el menú inicial. Si lo hay, verificamos si es un comando de menú o submenú.
         if menu is None:
-            sesiones[self.numero].menu = comando
+            sesiones[self.numero].menu = "principal"
             self.mostrar_menu()
             return
         elif menu in ["1", "horarios"]:
@@ -31,7 +31,6 @@ class MenuPrincipal:
         # Guardamos la opción actual en la sesión para que los submenús puedan acceder a ella.
         sesiones[self.numero].menu = comando
             
-        # Si no está autorizado, solo puede acceder al bloque de horarios. Si intenta otra cosa, se le cierra la sesión.
         if comando == "0":
             self.sw.enviar("Próximamente...")
                 
@@ -52,7 +51,7 @@ class MenuPrincipal:
             sesiones[self.numero].menu = None
             sesiones[self.numero].submenu = None
             self.mostrar_menu()
-            
+                        
     def mostrar_menu(self):
         """
         Determina dinámicamente si muestra el menú o el bloqueo.
