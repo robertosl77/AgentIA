@@ -19,14 +19,6 @@ class ConfigLoader:
         if not isinstance(texto, str): return str(texto)
         return texto.format(**self.data)
 
-    def obtener_rol(self, numero):
-        """Devuelve el nombre del rol (root, administradores, supervisores) o 'usuario'."""
-        roles_dict = self.data.get("roles", {})
-        for rol, lista_numeros in roles_dict.items():
-            if numero in lista_numeros:
-                return rol
-        return "usuario"
-
     def tiene_permiso(self, rol, propiedad_json):
         """Verifica en 'permisos_edicion' si el rol puede tocar esa propiedad."""
         permisos = self.data.get("permisos_edicion", {})

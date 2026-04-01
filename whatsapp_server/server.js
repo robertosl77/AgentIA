@@ -11,6 +11,7 @@ let qrCode = null; // Guardamos el QR hasta que el cliente escanee
 wppconnect.create({
     session: 'session-saas',
     // headless: true, // Opcional: Ejecuta sin abrir el navegador
+    folderNameToken: './tokens',
     catchQR: (base64Qrimg, asciiQR) => {
         console.log('Escanea el código QR en la terminal:');
         console.log(asciiQR);
@@ -26,12 +27,23 @@ wppconnect.create({
     client.onMessage(async (message) => {
         if (!message.isGroupMsg && message.type === 'chat' && message.from !== 'status@broadcast') {
 
+            // 👇 Agregá esto temporalmente para ver qué datos trae
+            console.log("📋 Datos del mensaje:", JSON.stringify({
+                from: message.from,
+                chatId: message.chatId,
+                sender: message.sender,
+                notifyName: message.notifyName,  // nombre guardado en el celu
+                body: message.body
+            }, null, 2));    
+
+            
             console.log(`📩 Reenviando a Python: ${message.body}`);
 
             try {
                 await axios.post('http://localhost:5000/webhook', {
                     from: message.chatId || message.from,  // 👈 CLAVE
-                    body: message.body
+                    body: message.body,
+                    pushname: message.notifyName || message.sender.pushname || 'Desconocido' // Nombre del contacto
                 });
             } catch (error) {
                 console.error('❌ Python no está escuchando en el puerto 5000');

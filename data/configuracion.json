@@ -6,12 +6,6 @@
     "motor_envio": "wppconnect"
   },  
 
-  "roles": {
-    "root": ["+541168387770"],
-    "administradores": ["+541100000001"],
-    "supervisores": ["+541100000002"]
-  },
-
   "permisos_edicion": {
     "horarios_fijos": ["root"],
     "dias_de_guardia": ["root", "administradores"],
@@ -37,7 +31,7 @@
   ],
 
   "cierres_eventuales": [
-    { "desde": "2026-03-30", "hasta": "2026-04-05", "motivo": "Vacaciones de semana santa" },
+    { "desde": "2026-04-30", "hasta": "2026-04-05", "motivo": "Vacaciones de semana santa" },
     { "desde": "2026-05-01", "hasta": "2026-05-01", "motivo": "Día del Trabajador" },
     { "desde": "2026-06-15", "hasta": "2026-06-20", "motivo": "Reformas en el local" }
   ],

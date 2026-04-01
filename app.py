@@ -13,13 +13,14 @@ def webhook():
     numero = data.get('from') # Ej: "541168387770@c.us"
     texto = data.get('body')
     texto = texto.strip().lower() if texto else ""
+    pushname = data.get('pushname', '')
 
     if numero not in sesiones:
         # IMPORTANTE: MenuPrincipal NO debe tener inputs en su __init__
         sesiones[numero] = MenuPrincipal(numero)
     
     # Procesamos el comando y enviamos respuesta
-    sesiones[numero].administro_menu(texto,sesiones)
+    sesiones[numero].administro_menu(texto,sesiones,pushname)
     
     return jsonify({"status": "ok"})
 
