@@ -1,6 +1,7 @@
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from datetime import datetime, timedelta
+from src.session_manager import SessionManager
 
 class SubMenuHorarios:
     """Submenú de Horarios"""
@@ -9,6 +10,7 @@ class SubMenuHorarios:
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
+        self.session_manager = SessionManager()
 
     # Administración del submenú de horarios
     def mostrar_submenu(self, sesiones):
@@ -333,6 +335,24 @@ class SubMenuHorarios:
         
         return "🚫 *Cerrado*: Hoy no abrimos al público."    
 
+    # Funcion para determinar si el usuario tiene acceso al menú principal o si debe ver el bloqueo por horario
+    def tiene_acceso(self):
+        """
+        Determina si el usuario tiene acceso al menú principal.
+        - Staff (rol != usuario): siempre True, sin importar el horario
+        - Usuario común: True si el local está abierto, False si está cerrado
+        """
+        # El staff siempre tiene acceso
+        rol = self.session_manager.get_rol(self.numero)
+        if rol != "usuario":
+            return True
 
+        # Usuarios comunes: verificamos horario solo si el bloqueo está activo
+        bloquea_por_horario = self.config.data.get("configuracion_bot", {}).get("bloquear_fuera_de_horario", False)
+        if not bloquea_por_horario:
+            return True
 
+        # Si el bloqueo está activo y el local está cerrado, denegamos acceso
+        estado_actual = self.estado_actual()
+        return "🚫" not in estado_actual
 

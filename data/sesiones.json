@@ -3,8 +3,8 @@
     "231400003358774@lid": {
       "rol": "usuario",
       "login": {
-        "timestamp": "2026-04-01T10:22:04.848986",
-        "expira": "2026-04-01T11:22:04.848986"
+        "timestamp": "2026-04-01T22:12:01.004857",
+        "expira": "2026-04-01T23:12:01.004857"
       },
       "menu": {
         "menu": null,
@@ -67,6 +67,34 @@
       },
       "cliente": {
         "pushname": "Ivan Sycz",
+        "telefono": "",
+        "nombre": "",
+        "apellido": "",
+        "email": "",
+        "dni": ""
+      },
+      "direccion": {
+        "direccion": "",
+        "altura": "",
+        "piso": "",
+        "depto": "",
+        "localidad": "",
+        "codigo_postal": "",
+        "provincia": ""
+      }
+    },
+    "5491168387770@c.us": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-01T21:08:28.641385",
+        "expira": "2026-04-01T22:08:28.641385"
+      },
+      "menu": {
+        "menu": null,
+        "submenu": null
+      },
+      "cliente": {
+        "pushname": "",
         "telefono": "",
         "nombre": "",
         "apellido": "",

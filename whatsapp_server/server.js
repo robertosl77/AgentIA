@@ -28,13 +28,13 @@ wppconnect.create({
         if (!message.isGroupMsg && message.type === 'chat' && message.from !== 'status@broadcast') {
 
             // 👇 Agregá esto temporalmente para ver qué datos trae
-            console.log("📋 Datos del mensaje:", JSON.stringify({
-                from: message.from,
-                chatId: message.chatId,
-                sender: message.sender,
-                notifyName: message.notifyName,  // nombre guardado en el celu
-                body: message.body
-            }, null, 2));    
+            // console.log("📋 Datos del mensaje:", JSON.stringify({
+            //     from: message.from,
+            //     chatId: message.chatId,
+            //     sender: message.sender,
+            //     notifyName: message.notifyName,  // nombre guardado en el celu
+            //     body: message.body
+            // }, null, 2));    
 
             
             console.log(`📩 Reenviando a Python: ${message.body}`);

@@ -20,7 +20,7 @@ def webhook():
         sesiones[numero] = MenuPrincipal(numero)
     
     # Procesamos el comando y enviamos respuesta
-    sesiones[numero].administro_menu(texto,sesiones,pushname)
+    sesiones[numero].administro_menu(sesiones,texto,pushname)
     
     return jsonify({"status": "ok"})
 
