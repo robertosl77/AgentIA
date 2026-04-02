@@ -17,80 +17,94 @@ class MenuPrincipal:
 
     def administro_menu(self, sesiones, comando, pushname):
         self.sesiones = sesiones
-
-        # 
         print(f"📱 Número: {self.numero} | 📝 Comando: {comando} | 👤 Pushname: {pushname}")
 
-        # Obtenemos el rol del usuario para filtrar opciones durante toda la sesión
-        rol = self.session_manager.get_rol(self.numero)
+        # Verificamos/creamos sesión en cada mensaje
+        es_nueva = self.session_manager.verificar_o_crear(self.numero)
+        if es_nueva:
+            self._resetear_estado_memoria(pushname)
 
-        # Si no existe 'menu' en la sesión, es porque es la primera vez que se llama a este método.
+        rol = self.session_manager.get_rol(self.numero)
         seleccion_anterior = getattr(self.sesiones[self.numero], "menu", None)
 
+        # Primera vez o sesión expirada
         if seleccion_anterior is None:
-            self.sesiones[self.numero].menu = "principal"
-
-            # Creamos/verificamos sesión y precargamos el pushname si es nuevo
-            es_nueva = self.session_manager.verificar_o_crear(self.numero)
-            if es_nueva and pushname:
-                # Guardamos el pushname como nombre provisional hasta que el cliente cargue sus datos
-                self.session_manager.editar_cliente(self.numero, "pushname", pushname)
-
-            # Bienvenida personalizada si el cliente ya tiene datos cargados
-            self.sw.enviar(self.mensaje_bienvenida())
-
-            # Mostramos mensaje de guardias próximas si corresponde
-            msg_guardia = self.horarios.mensaje_proximas_guardias()
-            if msg_guardia:
-                self.sw.enviar(msg_guardia)
-
-            # Mostramos mensaje de próximo evento de cierre si corresponde
-            msg_cierre = self.horarios.mensaje_proximo_evento()
-            if msg_cierre:
-                self.sw.enviar(msg_cierre)
-
-            # Finalmente, mostramos el menú principal o bloqueo por horario según corresponda.
-            self.mostrar_menu(rol)
+            self._bienvenida_y_menu(rol)
             return
 
-        # ── USUARIO BLOQUEADO POR HORARIO ────────────────────────────────────
-        # Si no tiene acceso, solo dejamos pasar comandos que activen submenús permitidos
+        # Usuario bloqueado por horario
         if not self.horarios.tiene_acceso() and seleccion_anterior == "principal":
-            menu_principal = self.config.get_menu_principal()
-            opcion = self.config.resolver_activacion(comando, menu_principal, rol)
-            
-            if opcion and opcion.get("submenu"):
-                # El comando activa un submenú válido, lo dejamos pasar
-                self.sesiones[self.numero].menu = opcion["id"]
-                self.sesiones[self.numero].submenu = None
-                submenu_data = self.config.get_submenu(opcion["submenu"])
-                if submenu_data:
-                    self.sw.enviar(self.config.armar_menu(submenu_data, rol))
-                return
-            
-            # Comando no válido: mostramos el bloqueo
-            estado_actual = self.horarios.estado_actual()
-            msg = f"{estado_actual}\n\nEscribí *'horarios'* para ver opciones."
-            self.sw.enviar(msg)
+            self._gestionar_bloqueo(comando, rol)
             return
 
-        # ── ESTÁ EN UN SUBMENÚ ────────────────────────────────────────────────
-        # Si la selección anterior era una opción del menú principal, el comando actual es para el submenú
-        menu_principal = self.config.get_menu_principal()
-        opcion_activa = None
-        for op in menu_principal.get("opciones", []):
-            if seleccion_anterior in op.get("activacion", []) or seleccion_anterior == op["id"]:
-                opcion_activa = op
-                break
-
+        # Está dentro de un submenú
+        opcion_activa = self._get_opcion_activa(seleccion_anterior)
         if opcion_activa and opcion_activa.get("submenu"):
-            # Estamos dentro de un submenú: procesamos el comando en ese contexto
             self.sesiones[self.numero].submenu = comando
             self._procesar_submenu(opcion_activa["submenu"], comando, rol)
             return
 
-        # ── MENÚ PRINCIPAL ────────────────────────────────────────────────────
-        # Resolvemos qué opción del menú principal activa este comando
+        # Menú principal
+        self._procesar_menu_principal(comando, rol)
+
+    # ── MÓDULOS DE ADMINISTRO_MENU ────────────────────────────────────────────
+
+    def _resetear_estado_memoria(self, pushname):
+        """Resetea el estado en memoria cuando la sesión es nueva o expiró."""
+        self.sesiones[self.numero].menu = None
+        self.sesiones[self.numero].submenu = None
+        # Precargamos el pushname si está disponible
+        if pushname:
+            self.session_manager.editar_cliente(self.numero, "pushname", pushname)
+
+    def _bienvenida_y_menu(self, rol):
+        """Muestra la bienvenida completa y el menú principal. Solo al primer contacto o sesión expirada."""
+        self.sesiones[self.numero].menu = "principal"
+
+        # Bienvenida personalizada según datos disponibles del cliente
+        self.sw.enviar(self.mensaje_bienvenida())
+
+        # Mensajes emergentes: guardia próxima y cierre eventual si corresponde
+        msg_guardia = self.horarios.mensaje_proximas_guardias()
+        if msg_guardia:
+            self.sw.enviar(msg_guardia)
+
+        msg_cierre = self.horarios.mensaje_proximo_evento()
+        if msg_cierre:
+            self.sw.enviar(msg_cierre)
+
+        # Menú principal o bloqueo por horario según corresponda
+        self.mostrar_menu(rol)
+
+    def _gestionar_bloqueo(self, comando, rol):
+        """Maneja el caso de usuario bloqueado por horario. Solo deja pasar submenús permitidos."""
+        menu_principal = self.config.get_menu_principal()
+        opcion = self.config.resolver_activacion(comando, menu_principal, rol)
+
+        if opcion and opcion.get("submenu"):
+            # El comando activa un submenú válido, lo dejamos pasar
+            self.sesiones[self.numero].menu = opcion["id"]
+            self.sesiones[self.numero].submenu = None
+            submenu_data = self.config.get_submenu(opcion["submenu"])
+            if submenu_data:
+                self.sw.enviar(self.config.armar_menu(submenu_data, rol))
+            return
+
+        # Comando no válido: mostramos el bloqueo
+        estado_actual = self.horarios.estado_actual()
+        self.sw.enviar(f"{estado_actual}\n\nEscribí *'horarios'* para ver opciones.")
+
+    def _get_opcion_activa(self, seleccion_anterior):
+        """Busca en el menú principal la opción que corresponde a la selección anterior."""
+        menu_principal = self.config.get_menu_principal()
+        for op in menu_principal.get("opciones", []):
+            if seleccion_anterior in op.get("activacion", []) or seleccion_anterior == op["id"]:
+                return op
+        return None
+
+    def _procesar_menu_principal(self, comando, rol):
+        """Resuelve el comando en el contexto del menú principal y muestra el submenú correspondiente."""
+        menu_principal = self.config.get_menu_principal()
         opcion = self.config.resolver_activacion(comando, menu_principal, rol)
 
         if opcion is None:
@@ -101,16 +115,14 @@ class MenuPrincipal:
         self.sesiones[self.numero].menu = opcion["id"]
         self.sesiones[self.numero].submenu = None
 
-        # Si la opción tiene submenú, lo mostramos
         if opcion.get("submenu"):
+            # Mostramos el submenú correspondiente
             submenu_data = self.config.get_submenu(opcion["submenu"])
             if submenu_data:
                 self.sw.enviar(self.config.armar_menu(submenu_data, rol))
         else:
             # Opción sin submenú: próximamente
             self.sw.enviar("🚧 Próximamente...")
-
-        self._resetea_si_salio(comando, rol)
 
     def _procesar_submenu(self, nombre_submenu, comando, rol):
         """
@@ -125,7 +137,7 @@ class MenuPrincipal:
             self.mostrar_menu(rol)
             return
 
-        # ← Validamos que el comando sea una activación válida para el rol
+        # Validamos que el comando sea una activación válida para el rol
         submenu_data = self.config.get_submenu(nombre_submenu)
         opcion = self.config.resolver_activacion(comando, submenu_data, rol)
         if opcion is None:
@@ -141,12 +153,15 @@ class MenuPrincipal:
 
         else:
             self.sw.enviar("❌ Submenú no reconocido.")
+
     def _resetea_si_salio(self, comando, rol):
         """Si el comando fue 'salir', volvemos al menú principal."""
         if getattr(self.sesiones[self.numero], "submenu", None) == "salir":
             self.sesiones[self.numero].menu = "principal"
             self.sesiones[self.numero].submenu = None
             self.mostrar_menu(rol)
+
+    # ── MENÚ Y BIENVENIDA ─────────────────────────────────────────────────────
 
     def mostrar_menu(self, rol):
         """

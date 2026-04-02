@@ -72,19 +72,22 @@
                       "id": "1",
                       "roles": ["root", "admin", "usuario"],
                       "activacion": ["1"],
-                      "texto": "1. Consultar horario de atención"
+                      "texto": "1. Consultar horario de atención",
+                      "handler": "submenu_horarios_fijos"
                   },
                   {
                       "id": "2",
                       "roles": ["root", "admin", "usuario"],
                       "activacion": ["2"],
-                      "texto": "2. Ver próximos días de guardia"
+                      "texto": "2. Ver próximos días de guardia",
+                      "handler": "submenu_dias_de_guardia"
                   },
                   {
                       "id": "3",
                       "roles": ["root", "admin", "usuario"],
                       "activacion": ["3"],
-                      "texto": "3. Ver cierres eventuales"
+                      "texto": "3. Ver cierres eventuales",
+                      "handler": "submenu_cierres_eventuales" 
                   },
                   {
                       "id": "salir",

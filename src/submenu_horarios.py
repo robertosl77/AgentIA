@@ -26,30 +26,32 @@ class SubMenuHorarios:
 
     # Funciones para generar las leyendas de cada sección del submenú de horarios
     def submenu_binevenida(self):
-        mensaje = self.config.get_mensaje("mensajes", "submenu_horarios")
-        self.sw.enviar(mensaje)
+        """Arma y envía el mensaje del submenú de horarios según el rol."""
+        rol = self.session_manager.get_rol(self.numero)
+        submenu_data = self.config.get_submenu("horarios")
+        self.sw.enviar(self.config.armar_menu(submenu_data, rol))
 
     def submenu_horarios(self, comando):
+        """Procesa el comando dentro del submenú de horarios."""
         print("📅 Entrando al submódulo de Horarios...")
 
-        if comando == "salir":
-            self.sw.enviar("Volviendo al menú principal...")
+        rol = self.session_manager.get_rol(self.numero)
+        submenu_data = self.config.get_submenu("horarios")
 
-        elif comando == "1":
-            leyenda = self.submenu_horarios_fijos()
-            self.sw.enviar(leyenda)                
+        # Validamos que el comando sea una activación válida para el rol
+        opcion = self.config.resolver_activacion(comando, submenu_data, rol)
+        if opcion is None:
+            self.sw.enviar("❌ Opción no válida.")
+            return
 
-        elif comando == "2":
-            leyenda = self.submenu_dias_de_guardia()
-            self.sw.enviar(leyenda)     
-
-        elif comando == "3":
-            leyenda = self.submenu_cierres_eventuales()
-            self.sw.enviar(leyenda)
-
-        else:
-            self.sw.enviar("❌ Opción no válida.\n")
-            self.submenu_binevenida()
+        # Obtenemos el nombre del método desde el JSON y lo ejecutamos dinámicamente
+        handler_nombre = opcion.get("handler")
+        if handler_nombre:
+            handler = getattr(self, handler_nombre, None)
+            if handler:
+                self.sw.enviar(handler())
+            else:
+                self.sw.enviar(f"❌ Handler '{handler_nombre}' no encontrado.")
 
     def submenu_horarios_fijos(self):
         """Extrae los horarios del JSON y arma la leyenda para el usuario."""
