@@ -50,13 +50,13 @@ class SessionManager:
                 "expira": expira.isoformat()
             },
             "cliente": {
-                "pushname": "",  # ← nombre de WhatsApp, se precarga automáticamente
-                "telefono": "",
-                "nombre": "",
-                "apellido": "",
-                "email": "",
-                "dni": ""
-            },
+                "pushname": {"valor": "", "obligatorio": False, "tipo": "texto"},    # ← nombre de WhatsApp, se precarga automáticamente
+                "nombre":   {"valor": "", "obligatorio": True,  "tipo": "texto"},
+                "apellido": {"valor": "", "obligatorio": True,  "tipo": "texto"},
+                "telefono": {"valor": "", "obligatorio": False, "tipo": "telefono"},
+                "email":    {"valor": "", "obligatorio": True, "tipo": "email"},
+                "dni":      {"valor": "", "obligatorio": True,  "tipo": "numero"}
+            },            
             "direccion": {
                 "direccion": "",
                 "altura": "",
@@ -116,11 +116,12 @@ class SessionManager:
         Usado para personalizar el mensaje de bienvenida.
         """
         cliente = self.data["sesiones"].get(numero, {}).get("cliente", {})
-        nombre = cliente.get("nombre", "").strip()
-        apellido = cliente.get("apellido", "").strip()
+        nombre = cliente.get("nombre", {}).get("valor", "").strip().title()
+        apellido = cliente.get("apellido", {}).get("valor", "").strip().upper()
         if nombre:
+            # .title() formatea cada palabra con la primera letra en mayúscula
             return f"{nombre} {apellido}".strip()
-        return None  # Sin datos: el saludo queda genérico
+        return None
 
     # ── GETTERS ───────────────────────────────────────────────────────────────
 
@@ -139,9 +140,15 @@ class SessionManager:
         pass
 
     def editar_cliente(self, numero, campo, valor):
-        """Edita un campo específico del cliente y persiste."""
+        """Edita el valor de un campo específico del cliente y persiste."""
         if numero in self.data["sesiones"]:
-            self.data["sesiones"][numero]["cliente"][campo] = valor
+            cliente = self.data["sesiones"][numero]["cliente"]
+            if isinstance(cliente.get(campo), dict):
+                # ← nueva estructura: modificamos solo el "valor"
+                self.data["sesiones"][numero]["cliente"][campo]["valor"] = valor
+            else:
+                # ← estructura legacy (otros usuarios en el JSON todavía sin migrar)
+                self.data["sesiones"][numero]["cliente"][campo] = valor
             self._guardar_archivo()
 
     def borrar_cliente(self, numero):

@@ -2,6 +2,7 @@ from src.send_wpp import SendWPP
 from src.submenu_horarios import SubMenuHorarios
 from src.config_loader import ConfigLoader
 from src.session_manager import SessionManager
+from src.submenu_registro import SubMenuRegistro
 
 class MenuPrincipal:
     """Menú Principal del Bot"""
@@ -11,6 +12,7 @@ class MenuPrincipal:
         self.sw = SendWPP(numero)
         self.horarios = SubMenuHorarios(numero)
         self.session_manager = SessionManager()
+        self.registro = SubMenuRegistro(numero)
         # 
         self.sesiones = None
         self.numero = numero
@@ -25,6 +27,26 @@ class MenuPrincipal:
             self._resetear_estado_memoria(pushname)
 
         rol = self.session_manager.get_rol(self.numero)
+
+        # ── PRIORIDAD MÁXIMA: si está en flujo de registro, todo va ahí ──────────
+        if self.registro.esta_en_registro(self.sesiones):
+            resultado = self.registro.procesar_registro(comando, self.sesiones)
+            
+            if not self.registro.esta_en_registro(self.sesiones):
+                if resultado == "ok":
+                    # ✅ Registro exitoso: volvemos al menú
+                    self.sw.enviar("✅ Datos registrados correctamente. Volviendo al menú...")
+                    self.mostrar_menu(rol)
+                else:
+                    # ❌ Registro cancelado: cerramos la sesión
+                    self.sw.enviar(
+                        "No pudimos completar el registro. Tu sesión fue cerrada. "
+                        "Cuando quieras podés volver a intentarlo. 👋"
+                    )
+                    self.sesiones[self.numero].menu = None
+                    self.sesiones[self.numero].submenu = None
+            return
+
         seleccion_anterior = getattr(self.sesiones[self.numero], "menu", None)
 
         # Primera vez o sesión expirada
@@ -72,6 +94,17 @@ class MenuPrincipal:
         msg_cierre = self.horarios.mensaje_proximo_evento()
         if msg_cierre:
             self.sw.enviar(msg_cierre)
+
+        # Verificamos si el cliente tiene datos obligatorios completos
+        if not self.registro.tiene_datos_completos():
+            # Avisamos cordialmente antes de derivar al registro
+            self.sw.enviar(
+                "📋 Para poder brindarte una mejor atención, necesitamos que completes "
+                "algunos datos antes de continuar.\n\n"
+                "Solo te tomará un momento. ¡Empecemos! 😊"
+            )
+            self.registro.iniciar_registro(self.sesiones)
+            return
 
         # Menú principal o bloqueo por horario según corresponda
         self.mostrar_menu(rol)
@@ -186,7 +219,10 @@ class MenuPrincipal:
         """
         nombre_negocio = self.config.data.get("nombre_negocio", "nuestro negocio")
         nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)
-        pushname = self.session_manager.get_cliente(self.numero).get("pushname", "")
+
+        # ← ahora pushname es un dict {"valor": ..., "obligatorio": ..., "tipo": ...}
+        pushname_data = self.session_manager.get_cliente(self.numero).get("pushname", {})
+        pushname = pushname_data.get("valor", "") if isinstance(pushname_data, dict) else pushname_data
 
         # Prioridad 1: nombre real cargado por el cliente
         if nombre_cliente:

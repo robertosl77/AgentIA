@@ -3,15 +3,40 @@
     "231400003358774@lid": {
       "rol": "usuario",
       "login": {
-        "timestamp": "2026-04-02T00:16:33.986731",
-        "expira": "2026-04-02T01:16:33.986731"
+        "timestamp": "2026-04-02T01:20:27.571879",
+        "expira": "2026-04-02T02:20:27.571879"
       },
       "cliente": {
-        "pushname": "Roberto SL",
-        "nombre": "",
-        "apellido": "",
-        "email": "",
-        "dni": ""
+        "pushname": {
+          "valor": "Roberto SL",
+          "obligatorio": false,
+          "tipo": "texto"
+        },
+        "nombre": {
+          "valor": "roberto",
+          "obligatorio": true,
+          "tipo": "texto"
+        },
+        "apellido": {
+          "valor": "sl",
+          "obligatorio": true,
+          "tipo": "texto"
+        },
+        "telefono": {
+          "valor": "-",
+          "obligatorio": false,
+          "tipo": "telefono"
+        },
+        "email": {
+          "valor": "robertosl77@gmail.com",
+          "obligatorio": true,
+          "tipo": "email"
+        },
+        "dni": {
+          "valor": "25784362",
+          "obligatorio": true,
+          "tipo": "numero"
+        }
       },
       "direccion": {
         "direccion": "",
