@@ -1,14 +1,10 @@
 {
   "sesiones": {
     "231400003358774@lid": {
-      "rol": "root",
+      "rol": "usuario",
       "login": {
         "timestamp": "2026-04-02T00:16:33.986731",
         "expira": "2026-04-02T01:16:33.986731"
-      },
-      "menu": {
-        "menu": null,
-        "submenu": null
       },
       "cliente": {
         "pushname": "Roberto SL",
@@ -32,10 +28,6 @@
       "login": {
         "timestamp": "2026-03-31T23:57:16.155051",
         "expira": "2026-04-01T00:57:16.155051"
-      },
-      "menu": {
-        "menu": null,
-        "submenu": null
       },
       "cliente": {
         "pushname": "Luciano Scigliotti",
@@ -61,10 +53,6 @@
         "timestamp": "2026-04-01T10:24:19.246960",
         "expira": "2026-04-01T11:24:19.246960"
       },
-      "menu": {
-        "menu": null,
-        "submenu": null
-      },
       "cliente": {
         "pushname": "Ivan Sycz",
         "telefono": "",
@@ -88,10 +76,6 @@
       "login": {
         "timestamp": "2026-04-01T23:09:43.365435",
         "expira": "2026-04-02T00:09:43.365435"
-      },
-      "menu": {
-        "menu": null,
-        "submenu": null
       },
       "cliente": {
         "pushname": "",

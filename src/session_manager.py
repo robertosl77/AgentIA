@@ -49,12 +49,6 @@ class SessionManager:
                 "timestamp": ahora.isoformat(),
                 "expira": expira.isoformat()
             },
-            "menu": {
-                # Estado del menú: se usa en memoria (MenuPrincipal),
-                # pero se persiste acá para poder recuperarse si el servidor se reinicia
-                "menu": None,
-                "submenu": None
-            },
             "cliente": {
                 "pushname": "",  # ← nombre de WhatsApp, se precarga automáticamente
                 "telefono": "",
