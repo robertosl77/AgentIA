@@ -7,19 +7,19 @@ class MenuPrincipal:
     """Menú Principal del Bot"""
 
     def __init__(self, numero):
-        self.numero = numero
         self.config = ConfigLoader()
         self.sw = SendWPP(numero)
         self.horarios = SubMenuHorarios(numero)
         self.session_manager = SessionManager()
         # 
         self.sesiones = None
+        self.numero = numero
 
-    def administro_menu(self, sesioness, comando, pushname=""):
-        self.sesiones = sesioness
+    def administro_menu(self, sesiones, comando, pushname):
+        self.sesiones = sesiones
 
         # 
-        print("Numero: "+self.sesiones[self.numero].numero)
+        print(f"📱 Número: {self.numero} | 📝 Comando: {comando} | 👤 Pushname: {pushname}")
 
         # Si no existe 'menu' en la sesión, es porque es la primera vez que se llama a este método.
         seleccion_anterior = getattr(self.sesiones[self.numero], "menu", None)
@@ -81,11 +81,7 @@ class MenuPrincipal:
         else:
             self.sw.enviar("❌ Opción no válida.")
 
-        # Si el comando es 'salir', volvemos al menú principal reseteando las variables de sesión.
-        if getattr(self.sesiones[self.numero], "submenu", None) == "salir":
-            self.sesiones[self.numero].menu = "principal"
-            self.sesiones[self.numero].submenu = None
-            self.mostrar_menu()
+        self.resetea_menu()
                         
     def mostrar_menu(self):
         """
@@ -107,6 +103,13 @@ class MenuPrincipal:
 
         # Si no hay bloqueo, mostramos el menú principal normal
         self.sw.enviar(self.config.get_mensaje("mensajes", "menu_principal"))
+
+    def resetea_menu(self):
+        # Si el comando es 'salir', volvemos al menú principal reseteando las variables de sesión.
+        if getattr(self.sesiones[self.numero], "submenu", None) == "salir":
+            self.sesiones[self.numero].menu = "principal"
+            self.sesiones[self.numero].submenu = None
+            self.mostrar_menu()        
 
     # Funciones específicas para el módulo de menú principal (extraen info del JSON y aplican la lógica de negocio)
     def mensaje_bienvenida(self):

@@ -16,7 +16,7 @@
   "horarios_fijos": {
     "lunes":    { "abierto": true,  "apertura": "09:00", "cierre": "20:00" },
     "martes":   { "abierto": true,  "apertura": "09:00", "cierre": "20:00" },
-    "miercoles":{ "abierto": true,  "apertura": "09:00", "cierre": "20:00" },
+    "miercoles":{ "abierto": true,  "apertura": "09:00", "cierre": "23:59" },
     "jueves":   { "abierto": true,  "apertura": "09:00", "cierre": "20:00" },
     "viernes":  { "abierto": true,  "apertura": "09:00", "cierre": "20:00" },
     "sabado":   { "abierto": true,  "apertura": "09:00", "cierre": "15:00" },
