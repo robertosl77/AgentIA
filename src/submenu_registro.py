@@ -2,6 +2,7 @@
 from src.config_loader import ConfigLoader
 from src.send_wpp import SendWPP
 from src.session_manager import SessionManager
+from datetime import datetime
 
 class SubMenuRegistro:
     """
@@ -42,8 +43,12 @@ class SubMenuRegistro:
         return valor.isdigit() and len(valor) >= 8
 
     def valida_fecha(self, valor):
-        """[INTERFAZ] Valida formato de fecha DD/MM/AAAA."""
-        pass
+        """Valida formato de fecha DD/MM/AAAA."""
+        try:
+            datetime.strptime(valor.strip(), "%d/%m/%Y")
+            return True
+        except ValueError:
+            return False
 
     def valida_fecha_hora(self, valor):
         """[INTERFAZ] Valida formato de fecha y hora DD/MM/AAAA HH:MM."""
