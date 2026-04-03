@@ -1,4 +1,5 @@
 # src/submenu_registro.py
+from src.config_loader import ConfigLoader
 from src.send_wpp import SendWPP
 from src.session_manager import SessionManager
 
@@ -14,28 +15,11 @@ class SubMenuRegistro:
         - Interfaces preparadas para edición y dirección
     """
 
-    # Mensajes de solicitud por campo
-    MENSAJES_CAMPO = {
-        "nombre":   "👤 Por favor ingresá tu *nombre*:",
-        "apellido": "👤 Por favor ingresá tu *apellido*:",
-        "email":    "📧 Por favor ingresá tu *email*:",
-        "dni":      "🪪 Por favor ingresá tu *DNI* (solo números):",
-        "telefono": "📱 Por favor ingresá tu *teléfono* (solo números):",
-    }
-
-    # Mensajes de reintento por campo (segunda oportunidad, más explícitos)
-    MENSAJES_REINTENTO = {
-        "nombre":   "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:",
-        "apellido": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:",
-        "email":    "⚠️ El email ingresado no es válido. El formato debe ser ejemplo@dominio.com:",
-        "dni":      "⚠️ El DNI ingresado no es válido. Por favor ingresá solo números:",
-        "telefono": "⚠️ El teléfono ingresado no es válido. Por favor ingresá solo números:",
-    }
-
     def __init__(self, numero):
         self.numero = numero
         self.sw = SendWPP(numero)
         self.session_manager = SessionManager()
+        self.config = ConfigLoader()
 
     # ── VALIDADORES POR TIPO DE DATO ──────────────────────────────────────────
 
@@ -82,67 +66,106 @@ class SubMenuRegistro:
         # Tipo desconocido: aceptamos cualquier valor no vacío
         return bool(valor.strip())
 
+    # ── CONFIGURACIÓN DE CAMPOS DESDE CONFIGURACION.JSON ─────────────────────────
+
+    def _get_config_campo_cliente(self, campo):
+        """Lee la configuración de un campo de cliente desde configuracion.json."""
+        return self.config.data.get("estructura_sesion", {}).get("cliente", {}).get(campo, {})
+
+    def _get_config_campo_direccion(self, campo):
+        """Lee la configuración de un campo de dirección desde configuracion.json."""
+        return self.config.data.get("estructura_sesion", {}).get("direccion", {}).get(campo, {})
+
     # ── DETECCIÓN DE CAMPOS INCOMPLETOS ───────────────────────────────────────
 
-    def tiene_datos_completos(self):
+    def tiene_datos_cliente_completos(self):
         """
         Verifica si el cliente tiene todos los campos obligatorios completos.
-        Retorna True si está completo, False si falta algún campo obligatorio.
+        La obligatoriedad se lee de configuracion.json, el valor de sesiones.json.
         """
         cliente = self.session_manager.get_cliente(self.numero)
-        for campo, config in cliente.items():
-            if not isinstance(config, dict):
-                continue
-            if config.get("obligatorio") and not config.get("valor", "").strip():
-                return False
-        return True
+        if not cliente:
+            return False
 
-    def get_campos_pendientes(self):
-        """
-        Retorna la lista de campos que aún no tienen valor, sean obligatorios o no.
-        La diferencia es que los no obligatorios no validan el tipo de dato.
-        """
-        cliente = self.session_manager.get_cliente(self.numero)
-        pendientes = []
-        for campo, config in cliente.items():
-            if not isinstance(config, dict):
-                continue
-            # Excluimos pushname porque se precarga automáticamente
+        estructura = self.config.data.get("estructura_sesion", {}).get("cliente", {})
+        for campo, config in estructura.items():
             if campo == "pushname":
                 continue
-            if not config.get("valor", "").strip():
+            if config.get("obligatorio") and not cliente.get(campo, {}).get("valor", "").strip():
+                return False
+        return True
+    
+    def tiene_datos_direccion_completos(self):
+        """
+        Verifica si la dirección tiene todos los campos obligatorios completos.
+        La obligatoriedad se lee de configuracion.json, el valor de sesiones.json.
+        """
+        direccion = self.session_manager.get_direccion(self.numero)
+        if not direccion:
+            return False
+
+        estructura = self.config.data.get("estructura_sesion", {}).get("direccion", {})
+        for campo, config in estructura.items():
+            if config.get("obligatorio") and not direccion.get(campo, {}).get("valor", "").strip():
+                return False
+        return True 
+
+    def get_campos_pendientes_cliente(self):
+        """
+        Retorna campos de cliente sin valor, leyendo estructura de configuracion.json
+        y valores de sesiones.json.
+        """
+        cliente = self.session_manager.get_cliente(self.numero)
+        estructura = self.config.data.get("estructura_sesion", {}).get("cliente", {})
+        pendientes = []
+        for campo in estructura.keys():
+            if campo == "pushname":
+                continue
+            if not cliente.get(campo, {}).get("valor", "").strip():
                 pendientes.append(campo)
         return pendientes
+    
+    def get_campos_pendientes_direccion(self):
+        """
+        Retorna campos de dirección sin valor, leyendo estructura de configuracion.json
+        y valores de sesiones.json.
+        """
+        direccion = self.session_manager.get_direccion(self.numero)
+        estructura = self.config.data.get("estructura_sesion", {}).get("direccion", {})
+        pendientes = []
+        for campo in estructura.keys():
+            if not direccion.get(campo, {}).get("valor", "").strip():
+                pendientes.append(campo)
+        return pendientes  
 
     # ── FLUJO DE REGISTRO ─────────────────────────────────────────────────────
 
     def iniciar_registro(self, sesiones):
-        """
-        Punto de entrada del flujo de registro.
-        Busca el primer campo obligatorio pendiente y lo solicita.
-        """
-        pendientes = self.get_campos_pendientes()
+        """Punto de entrada del flujo de registro. Busca el primer campo pendiente y lo solicita."""
+        pendientes = self.get_campos_pendientes_cliente()
         if not pendientes:
             self.sw.enviar("✅ Tus datos ya están completos.")
             return
 
-        # Arrancamos por el primer campo pendiente
         campo = pendientes[0]
         sesiones[self.numero].registro_campo_actual = campo
-        sesiones[self.numero].registro_reintento = False  # ← primer intento
-        self.sw.enviar(self.MENSAJES_CAMPO.get(campo, f"Ingresá tu {campo}:"))
+        sesiones[self.numero].registro_reintento = False
+
+        # Config del campo viene de configuracion.json
+        config_campo = self._get_config_campo_cliente(campo)
+        self.sw.enviar(config_campo.get("msj_pedido", f"Ingresá tu {campo}:"))
 
     def procesar_registro(self, comando, sesiones):
         """
         Procesa la respuesta del usuario durante el flujo de registro.
-        Retorna 'ok' si el registro se completó, 'cancelado' si falló, None si sigue en curso.
+        Retorna 'ok' si completó, 'cancelado' si falló, None si sigue en curso.
         """
         campo = getattr(sesiones[self.numero], "registro_campo_actual", None)
         if not campo:
             return None
 
-        cliente = self.session_manager.get_cliente(self.numero)
-        config_campo = cliente.get(campo, {})
+        # Config del campo viene de configuracion.json
+        config_campo = self._get_config_campo_cliente(campo)
         tipo = config_campo.get("tipo", "texto")
         es_obligatorio = config_campo.get("obligatorio", False)
         es_reintento = getattr(sesiones[self.numero], "registro_reintento", False)
@@ -152,7 +175,7 @@ class SubMenuRegistro:
             if comando.strip():
                 return self._guardar_y_continuar(campo, comando, sesiones)
             else:
-                self.sw.enviar(self.MENSAJES_CAMPO.get(campo, f"Ingresá tu {campo}:"))
+                self.sw.enviar(config_campo.get("msj_pedido", f"Ingresá tu {campo}:"))
             return None
 
         # Para campos obligatorios validamos el tipo
@@ -160,14 +183,12 @@ class SubMenuRegistro:
             return self._guardar_y_continuar(campo, comando, sesiones)
         else:
             if es_reintento:
-                # ❌ Segundo fallo: cancelamos
                 sesiones[self.numero].registro_campo_actual = None
                 sesiones[self.numero].registro_reintento = False
                 return "cancelado"
             else:
-                # ⚠️ Primer fallo: reintentamos
                 sesiones[self.numero].registro_reintento = True
-                self.sw.enviar(self.MENSAJES_REINTENTO.get(campo, f"⚠️ Dato inválido. Intentá nuevamente:"))
+                self.sw.enviar(config_campo.get("msj_reintento", "⚠️ Dato inválido. Intentá nuevamente:"))
             return None
     
     def esta_en_registro(self, sesiones):
@@ -202,16 +223,16 @@ class SubMenuRegistro:
         """Guarda el valor del campo y avanza al siguiente pendiente o cierra el registro."""
         self.session_manager.editar_cliente(self.numero, campo, comando.strip().lower())
         sesiones[self.numero].registro_reintento = False
-        pendientes = self.get_campos_pendientes()
+        pendientes = self.get_campos_pendientes_cliente()
 
         if pendientes:
-            # Hay más campos: pedimos el siguiente
             siguiente = pendientes[0]
             sesiones[self.numero].registro_campo_actual = siguiente
-            self.sw.enviar(self.MENSAJES_CAMPO.get(siguiente, f"Ingresá tu {siguiente}:"))
-            return None  # ← sigue en curso
+            # Config del siguiente campo viene de configuracion.json
+            config_siguiente = self._get_config_campo_cliente(siguiente)
+            self.sw.enviar(config_siguiente.get("msj_pedido", f"Ingresá tu {siguiente}:"))
+            return None
         else:
-            # ✅ Registro completo
             sesiones[self.numero].registro_campo_actual = None
-            return "ok"  # ← terminó bien
+            return "ok"
  

@@ -13,6 +13,30 @@
     "textos_mensajes": ["root"]
   },
 
+  "estructura_sesion": {
+    "rol_defecto": "usuario",
+    "duracion_horas": 1,
+    "cliente": {
+      "pushname":  {"valor": "", "obligatorio": false, "tipo": "texto",    "msj_pedido": "", "msj_reintento": ""},
+      "nombre":    {"valor": "", "obligatorio": true,  "tipo": "texto",    "msj_pedido": "👤 Por favor ingresá tu *nombre*:", "msj_reintento": "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:"},
+      "apellido":  {"valor": "", "obligatorio": true,  "tipo": "texto",    "msj_pedido": "👤 Por favor ingresá tu *apellido*:", "msj_reintento": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:"},
+      "telefono":  {"valor": "", "obligatorio": false, "tipo": "telefono", "msj_pedido": "📱 Por favor ingresá tu *teléfono* (solo números):", "msj_reintento": "⚠️ El teléfono ingresado no es válido. Por favor ingresá solo números:"},
+      "email":     {"valor": "", "obligatorio": true,  "tipo": "email",    "msj_pedido": "📧 Por favor ingresá tu *email*:", "msj_reintento": "⚠️ El email ingresado no es válido. El formato debe ser ejemplo@dominio.com:"},
+      "dni":       {"valor": "", "obligatorio": true,  "tipo": "numero",   "msj_pedido": "🪪 Por favor ingresá tu *DNI* (solo números):", "msj_reintento": "⚠️ El DNI ingresado no es válido. Por favor ingresá solo números:"},
+      "cumpleanos": {"valor": "", "obligatorio": false, "tipo": "fecha", "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):", "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"}
+    },
+    "direccion": {
+      "alias":         {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Ingresá un nombre para esta dirección (ej: *Casa*, *Trabajo*):", "msj_reintento": "⚠️ El alias ingresado no es válido. Intentá nuevamente:"},
+      "direccion":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Por favor ingresá tu *calle/dirección*:", "msj_reintento": "⚠️ La dirección ingresada no es válida. Intentá nuevamente:"},
+      "altura":        {"valor": "", "obligatorio": true,  "tipo": "numero", "msj_pedido": "🏠 Ingresá el *número de altura*:", "msj_reintento": "⚠️ La altura debe ser solo números. Intentá nuevamente:"},
+      "piso":          {"valor": "", "obligatorio": false, "tipo": "texto",  "msj_pedido": "🏠 Ingresá el *piso* (o '-' si no aplica):", "msj_reintento": ""},
+      "depto":         {"valor": "", "obligatorio": false, "tipo": "texto",  "msj_pedido": "🏠 Ingresá el *departamento* (o '-' si no aplica):", "msj_reintento": ""},
+      "localidad":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Ingresá tu *localidad*:", "msj_reintento": "⚠️ La localidad ingresada no es válida. Intentá nuevamente:"},
+      "codigo_postal": {"valor": "", "obligatorio": true,  "tipo": "numero", "msj_pedido": "🏠 Ingresá tu *código postal*:", "msj_reintento": "⚠️ El código postal debe ser solo números. Intentá nuevamente:"},
+      "provincia":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Ingresá tu *provincia*:", "msj_reintento": "⚠️ La provincia ingresada no es válida. Intentá nuevamente:"}
+    }
+  },
+
   "horarios_fijos": {
     "lunes":    { "abierto": true,  "apertura": "09:00", "cierre": "20:00" },
     "martes":   { "abierto": true,  "apertura": "09:00", "cierre": "20:00" },

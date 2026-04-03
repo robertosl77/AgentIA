@@ -2,6 +2,9 @@
 import json
 import os
 from datetime import datetime, timedelta
+from src.config_loader import ConfigLoader
+
+_instancia = None
 
 class SessionManager:
     """
@@ -17,8 +20,17 @@ class SessionManager:
     DURACION_SESION_HORAS = 1
     PATH = r"data\sesiones.json"
 
+    def __new__(cls):
+        global _instancia
+        if _instancia is None:
+            _instancia = super().__new__(cls)
+        return _instancia
+
     def __init__(self):
-        self.data = self._cargar_archivo()
+        # Solo inicializamos una vez
+        if not hasattr(self, 'data'):
+            self.config = ConfigLoader()
+            self.data = self._cargar_archivo()
 
     # ── PERSISTENCIA ──────────────────────────────────────────────────────────
 
@@ -39,33 +51,29 @@ class SessionManager:
 
     # ── ESTRUCTURA BASE ───────────────────────────────────────────────────────
 
-    def _sesion_vacia(self, numero):
-        """Retorna la estructura base de una sesión nueva."""
+    def _sesion_vacia(self):
+        """
+        Retorna la estructura base de una sesión nueva.
+        La estructura de campos se lee de configuracion.json.
+        Solo se persiste el valor por campo, el resto es configuración del sistema.
+        """
         ahora = datetime.now()
-        expira = ahora + timedelta(hours=self.DURACION_SESION_HORAS)
+        estructura = self.config.data.get("estructura_sesion", {})
+        duracion = estructura.get("duracion_horas", 1)
+        expira = ahora + timedelta(hours=duracion)
+
+        # Solo guardamos el valor, la config del campo vive en configuracion.json
+        cliente = {k: {"valor": ""} for k in estructura.get("cliente", {}).keys()}
+        direccion = {k: {"valor": ""} for k in estructura.get("direccion", {}).keys()}
+
         return {
-            "rol": "usuario",  # ← por defecto todos son usuarios
+            "rol": estructura.get("rol_defecto", "usuario"),
             "login": {
                 "timestamp": ahora.isoformat(),
                 "expira": expira.isoformat()
             },
-            "cliente": {
-                "pushname": {"valor": "", "obligatorio": False, "tipo": "texto"},    # ← nombre de WhatsApp, se precarga automáticamente
-                "nombre":   {"valor": "", "obligatorio": True,  "tipo": "texto"},
-                "apellido": {"valor": "", "obligatorio": True,  "tipo": "texto"},
-                "telefono": {"valor": "", "obligatorio": False, "tipo": "telefono"},
-                "email":    {"valor": "", "obligatorio": True, "tipo": "email"},
-                "dni":      {"valor": "", "obligatorio": True,  "tipo": "numero"}
-            },            
-            "direccion": {
-                "direccion": "",
-                "altura": "",
-                "piso": "",
-                "depto": "",
-                "localidad": "",
-                "codigo_postal": "",
-                "provincia": ""
-            }
+            "cliente": cliente,
+            "direccion": direccion
         }
 
     # ── LOGIN / SESIÓN ────────────────────────────────────────────────────────
@@ -82,7 +90,7 @@ class SessionManager:
 
         if numero not in sesiones:
             # Primera vez que se conecta: creamos sesión desde cero
-            sesiones[numero] = self._sesion_vacia(numero)
+            sesiones[numero] = self._sesion_vacia()
             self.data["sesiones"] = sesiones
             self._guardar_archivo()
             return True
@@ -99,7 +107,7 @@ class SessionManager:
             # Sesión expirada: reiniciamos login pero preservamos datos del cliente
             datos_cliente = sesiones[numero].get("cliente", {})
             datos_direccion = sesiones[numero].get("direccion", {})
-            sesiones[numero] = self._sesion_vacia(numero)
+            sesiones[numero] = self._sesion_vacia()
             sesiones[numero]["cliente"] = datos_cliente       # ← preservamos
             sesiones[numero]["direccion"] = datos_direccion   # ← preservamos
             self.data["sesiones"] = sesiones
@@ -142,13 +150,7 @@ class SessionManager:
     def editar_cliente(self, numero, campo, valor):
         """Edita el valor de un campo específico del cliente y persiste."""
         if numero in self.data["sesiones"]:
-            cliente = self.data["sesiones"][numero]["cliente"]
-            if isinstance(cliente.get(campo), dict):
-                # ← nueva estructura: modificamos solo el "valor"
-                self.data["sesiones"][numero]["cliente"][campo]["valor"] = valor
-            else:
-                # ← estructura legacy (otros usuarios en el JSON todavía sin migrar)
-                self.data["sesiones"][numero]["cliente"][campo] = valor
+            self.data["sesiones"][numero]["cliente"][campo]["valor"] = valor
             self._guardar_archivo()
 
     def borrar_cliente(self, numero):

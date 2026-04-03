@@ -83,10 +83,19 @@ class MenuPrincipal:
         """Muestra la bienvenida completa y el menú principal. Solo al primer contacto o sesión expirada."""
         self.sesiones[self.numero].menu = "principal"
 
-        # Bienvenida personalizada según datos disponibles del cliente
         self.sw.enviar(self.mensaje_bienvenida())
+        self._enviar_mensajes_emergentes()
 
-        # Mensajes emergentes: guardia próxima y cierre eventual si corresponde
+        if self._requiere_registro_cliente():
+            return
+        
+        if self._requiere_registro_direccion():
+            return
+
+        self.mostrar_menu(rol)
+
+    def _enviar_mensajes_emergentes(self):
+        """Envía avisos de guardia próxima y cierre eventual si corresponde."""
         msg_guardia = self.horarios.mensaje_proximas_guardias()
         if msg_guardia:
             self.sw.enviar(msg_guardia)
@@ -95,19 +104,30 @@ class MenuPrincipal:
         if msg_cierre:
             self.sw.enviar(msg_cierre)
 
-        # Verificamos si el cliente tiene datos obligatorios completos
-        if not self.registro.tiene_datos_completos():
-            # Avisamos cordialmente antes de derivar al registro
-            self.sw.enviar(
-                "📋 Para poder brindarte una mejor atención, necesitamos que completes "
-                "algunos datos antes de continuar.\n\n"
-                "Solo te tomará un momento. ¡Empecemos! 😊"
-            )
-            self.registro.iniciar_registro(self.sesiones)
-            return
+    def _requiere_registro_cliente(self):
+        """
+        Valida si el cliente tiene datos obligatorios completos.
+        Si no los tiene, lo deriva al flujo de registro y retorna True.
+        Reutilizable en cualquier punto del flujo que requiera datos del cliente.
+        """
+        if self.registro.tiene_datos_cliente_completos():
+            return False
 
-        # Menú principal o bloqueo por horario según corresponda
-        self.mostrar_menu(rol)
+        self.sw.enviar(
+            "📋 Para poder brindarte una mejor atención, necesitamos que completes "
+            "algunos datos antes de continuar.\n\n"
+            "Solo te tomará un momento. ¡Empecemos! 😊"
+        )
+        self.registro.iniciar_registro(self.sesiones)
+        return True
+
+    def _requiere_registro_direccion(self):
+        """
+        [INTERFAZ] Valida si el cliente tiene datos de dirección completos.
+        Si no los tiene, lo deriva al flujo de registro de dirección y retorna True.
+        Reutilizable en cualquier punto del flujo que requiera dirección del cliente.
+        """
+        pass          
 
     def _gestionar_bloqueo(self, comando, rol):
         """Maneja el caso de usuario bloqueado por horario. Solo deja pasar submenús permitidos."""
@@ -163,7 +183,6 @@ class MenuPrincipal:
         Cada submenú tiene su propia lógica de negocio.
         """
         if comando == "salir":
-            # Reseteamos al menú principal
             self.sesiones[self.numero].menu = "principal"
             self.sesiones[self.numero].submenu = None
             self.sw.enviar("Volviendo al menú principal...")
@@ -181,7 +200,6 @@ class MenuPrincipal:
             self.horarios.submenu_horarios(comando)
 
         elif nombre_submenu == "staff":
-            # Próximamente: submenú de staff
             self.sw.enviar("🚧 Panel de staff próximamente...")
 
         else:
