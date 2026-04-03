@@ -150,7 +150,11 @@ class SessionManager:
     def editar_cliente(self, numero, campo, valor):
         """Edita el valor de un campo específico del cliente y persiste."""
         if numero in self.data["sesiones"]:
-            self.data["sesiones"][numero]["cliente"][campo]["valor"] = valor
+            cliente = self.data["sesiones"][numero]["cliente"]
+            if campo not in cliente:
+                # ← campo nuevo que no existía en la sesión, lo creamos
+                cliente[campo] = {"valor": ""}
+            cliente[campo]["valor"] = valor
             self._guardar_archivo()
 
     def borrar_cliente(self, numero):

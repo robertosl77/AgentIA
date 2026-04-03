@@ -23,7 +23,7 @@
       "telefono":  {"valor": "", "obligatorio": false, "tipo": "telefono", "msj_pedido": "📱 Por favor ingresá tu *teléfono* (solo números):", "msj_reintento": "⚠️ El teléfono ingresado no es válido. Por favor ingresá solo números:"},
       "email":     {"valor": "", "obligatorio": true,  "tipo": "email",    "msj_pedido": "📧 Por favor ingresá tu *email*:", "msj_reintento": "⚠️ El email ingresado no es válido. El formato debe ser ejemplo@dominio.com:"},
       "dni":       {"valor": "", "obligatorio": true,  "tipo": "numero",   "msj_pedido": "🪪 Por favor ingresá tu *DNI* (solo números):", "msj_reintento": "⚠️ El DNI ingresado no es válido. Por favor ingresá solo números:"},
-      "cumpleanos": {"valor": "", "obligatorio": false, "tipo": "fecha", "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):", "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"}
+      "cumpleanos": {"valor": "", "obligatorio": true, "tipo": "fecha", "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):", "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"}
     },
     "direccion": {
       "alias":         {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Ingresá un nombre para esta dirección (ej: *Casa*, *Trabajo*):", "msj_reintento": "⚠️ El alias ingresado no es válido. Intentá nuevamente:"},

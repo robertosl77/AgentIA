@@ -119,6 +119,38 @@
       "comando": "hola",
       "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 86, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 239, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 127, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
       "resuelto": false
+    },
+    {
+      "id": 16,
+      "timestamp": "2026-04-03T19:21:09.310115",
+      "numero": "231400003358774@lid",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 27, in administro_menu\n    self._resetear_estado_memoria(pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 80, in _resetear_estado_memoria\n    self.session_manager.editar_cliente(self.numero, \"pushname\", pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 153, in editar_cliente\n    self.data[\"sesiones\"][numero][\"cliente\"][campo][\"valor\"] = valor\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^\nKeyError: 'pushname'\n",
+      "resuelto": false
+    },
+    {
+      "id": 17,
+      "timestamp": "2026-04-03T19:28:06.183525",
+      "numero": "5491168387770@c.us",
+      "comando": "-",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 33, in administro_menu\n    resultado = self.registro.procesar_registro(comando, self.sesiones)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\submenu_registro.py\", line 176, in procesar_registro\n    return self._guardar_y_continuar(campo, comando, sesiones)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\submenu_registro.py\", line 224, in _guardar_y_continuar\n    self.session_manager.editar_cliente(self.numero, campo, comando.strip().lower())\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 153, in editar_cliente\n    self.data[\"sesiones\"][numero][\"cliente\"][campo][\"valor\"] = valor\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^\nKeyError: 'cumpleanos'\n",
+      "resuelto": false
+    },
+    {
+      "id": 18,
+      "timestamp": "2026-04-03T19:36:49.676212",
+      "numero": "5491168387770@c.us",
+      "comando": "10/02/1977",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 33, in administro_menu\n    resultado = self.registro.procesar_registro(comando, self.sesiones)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\submenu_registro.py\", line 183, in procesar_registro\n    return self._guardar_y_continuar(campo, comando, sesiones)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\submenu_registro.py\", line 224, in _guardar_y_continuar\n    self.session_manager.editar_cliente(self.numero, campo, comando.strip().lower())\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 153, in editar_cliente\n    self.data[\"sesiones\"][numero][\"cliente\"][campo][\"valor\"] = valor\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^\nKeyError: 'cumpleanos'\n",
+      "resuelto": false
+    },
+    {
+      "id": 19,
+      "timestamp": "2026-04-03T19:39:39.253705",
+      "numero": "231400003358774@lid",
+      "comando": "10/02/1977",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 33, in administro_menu\n    resultado = self.registro.procesar_registro(comando, self.sesiones)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\submenu_registro.py\", line 183, in procesar_registro\n    return self._guardar_y_continuar(campo, comando, sesiones)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\submenu_registro.py\", line 224, in _guardar_y_continuar\n    self.session_manager.editar_cliente(self.numero, campo, comando.strip().lower())\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 153, in editar_cliente\n    self.data[\"sesiones\"][numero][\"cliente\"][campo][\"valor\"] = valor\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^\nKeyError: 'cumpleanos'\n",
+      "resuelto": false
     }
   ]
 }
