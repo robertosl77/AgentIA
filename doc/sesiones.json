@@ -1,0 +1,35 @@
+{
+  "sesiones": {
+    "231400003358774@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T19:47:57.471196",
+        "expira": "2026-04-03T20:47:57.471196"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Roberto SL"
+        },
+        "nombre": {
+          "valor": "roberto"
+        },
+        "apellido": {
+          "valor": "sl"
+        },
+        "telefono": {
+          "valor": "-"
+        },
+        "email": {
+          "valor": "robertosl77@gmail.com"
+        },
+        "dni": {
+          "valor": "25784362"
+        },
+        "cumpleanos": {
+          "valor": "-"
+        }
+      },
+      "direccion": {}
+    }
+  }
+}
