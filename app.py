@@ -2,10 +2,11 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 from flask import Flask, request, jsonify
 from src.menu_principal import MenuPrincipal
-
+from src.error_logger import ErrorLogger
 
 app = Flask(__name__)
 sesiones = {}
+error_logger = ErrorLogger()  # ← instancia global para persistir entre requests
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -18,10 +19,28 @@ def webhook():
     if numero not in sesiones:
         # IMPORTANTE: MenuPrincipal NO debe tener inputs en su __init__
         sesiones[numero] = MenuPrincipal(numero)
-    
-    # Procesamos el comando y enviamos respuesta
-    sesiones[numero].administro_menu(sesiones,texto,pushname)
-    
+
+    try:
+        # Procesamos el comando y enviamos respuesta
+        sesiones[numero].administro_menu(sesiones, texto, pushname)
+
+    except Exception as e:
+        # Registramos el error técnico en error_log.json
+        error_logger.registrar(numero, texto, e)
+
+        # Avisamos al cliente sin exponer detalles técnicos
+        try:
+            sesiones[numero].sw.enviar(
+                "⚠️ Ocurrió un problema técnico. Ya fue registrado y será revisado.\n"
+                "Por favor intentá nuevamente en unos momentos."
+            )
+        except Exception:
+            # Si tampoco podemos mandarle el mensaje, al menos quedó en el log
+            pass
+
+        # Reseteamos la sesión en memoria para que pueda reintentar limpio
+        del sesiones[numero]
+
     return jsonify({"status": "ok"})
 
 if __name__ == "__main__":

@@ -1,0 +1,124 @@
+{
+  "errores": [
+    {
+      "id": 1,
+      "timestamp": "2026-04-03T12:44:51.140996",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 2,
+      "timestamp": "2026-04-03T17:26:45.728450",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 3,
+      "timestamp": "2026-04-03T17:28:10.093527",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 4,
+      "timestamp": "2026-04-03T17:28:32.534857",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 5,
+      "timestamp": "2026-04-03T17:28:59.196836",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 6,
+      "timestamp": "2026-04-03T17:31:08.241952",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 7,
+      "timestamp": "2026-04-03T17:32:00.192739",
+      "numero": "231400003358774@lid",
+      "comando": "d",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 8,
+      "timestamp": "2026-04-03T17:34:09.271953",
+      "numero": "231400003358774@lid",
+      "comando": "hola?",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 9,
+      "timestamp": "2026-04-03T17:36:35.854915",
+      "numero": "231400003358774@lid",
+      "comando": "holaaaa!",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    },
+    {
+      "id": 10,
+      "timestamp": "2026-04-03T18:16:29.297026",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 25, in administro_menu\n    es_nueva = self.session_manager.verificar_o_crear(self.numero)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 81, in verificar_o_crear\n    sesiones[numero] = self._sesion_vacia()\n                       ^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 49, in _sesion_vacia\n    estructura = self.config.data.get(\"estructura_sesion\", {})\n                 ^^^^^^^^^^^\nAttributeError: 'SessionManager' object has no attribute 'config'\n",
+      "resuelto": false
+    },
+    {
+      "id": 11,
+      "timestamp": "2026-04-03T18:17:29.004103",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 25, in administro_menu\n    es_nueva = self.session_manager.verificar_o_crear(self.numero)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 81, in verificar_o_crear\n    sesiones[numero] = self._sesion_vacia()\n                       ^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 49, in _sesion_vacia\n    estructura = self.config.data.get(\"estructura_sesion\", {})\n                 ^^^^^^^^^^^\nAttributeError: 'SessionManager' object has no attribute 'config'\n",
+      "resuelto": false
+    },
+    {
+      "id": 12,
+      "timestamp": "2026-04-03T18:17:53.716320",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 25, in administro_menu\n    es_nueva = self.session_manager.verificar_o_crear(self.numero)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 81, in verificar_o_crear\n    sesiones[numero] = self._sesion_vacia()\n                       ^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 49, in _sesion_vacia\n    estructura = self.config.data.get(\"estructura_sesion\", {})\n                 ^^^^^^^^^^^\nAttributeError: 'SessionManager' object has no attribute 'config'\n",
+      "resuelto": false
+    },
+    {
+      "id": 13,
+      "timestamp": "2026-04-03T18:18:03.456773",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 25, in administro_menu\n    es_nueva = self.session_manager.verificar_o_crear(self.numero)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 81, in verificar_o_crear\n    sesiones[numero] = self._sesion_vacia()\n                       ^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 49, in _sesion_vacia\n    estructura = self.config.data.get(\"estructura_sesion\", {})\n                 ^^^^^^^^^^^\nAttributeError: 'SessionManager' object has no attribute 'config'\n",
+      "resuelto": false
+    },
+    {
+      "id": 14,
+      "timestamp": "2026-04-03T18:19:00.698312",
+      "numero": "5491168387770@c.us",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 25, in administro_menu\n    es_nueva = self.session_manager.verificar_o_crear(self.numero)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 81, in verificar_o_crear\n    sesiones[numero] = self._sesion_vacia()\n                       ^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 49, in _sesion_vacia\n    estructura = self.config.data.get(\"estructura_sesion\", {})\n                 ^^^^^^^^^^^\nAttributeError: 'SessionManager' object has no attribute 'config'\n",
+      "resuelto": false
+    },
+    {
+      "id": 15,
+      "timestamp": "2026-04-03T18:50:44.131745",
+      "numero": "231400003358774@lid",
+      "comando": "hola",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 86, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 239, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 127, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
+      "resuelto": false
+    }
+  ]
+}

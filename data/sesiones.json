@@ -3,121 +3,57 @@
     "231400003358774@lid": {
       "rol": "usuario",
       "login": {
-        "timestamp": "2026-04-02T01:20:27.571879",
-        "expira": "2026-04-02T02:20:27.571879"
+        "timestamp": "2026-04-03T19:14:52.340584",
+        "expira": "2026-04-03T20:14:52.340584"
       },
       "cliente": {
         "pushname": {
-          "valor": "Roberto SL",
-          "obligatorio": false,
-          "tipo": "texto"
+          "valor": "Roberto SL"
         },
         "nombre": {
-          "valor": "roberto",
-          "obligatorio": true,
-          "tipo": "texto"
+          "valor": "roberto"
         },
         "apellido": {
-          "valor": "sl",
-          "obligatorio": true,
-          "tipo": "texto"
+          "valor": "sl"
         },
         "telefono": {
-          "valor": "-",
-          "obligatorio": false,
-          "tipo": "telefono"
+          "valor": "-"
         },
         "email": {
-          "valor": "robertosl77@gmail.com",
-          "obligatorio": true,
-          "tipo": "email"
+          "valor": "robertosl77@gmail.com"
         },
         "dni": {
-          "valor": "25784362",
-          "obligatorio": true,
-          "tipo": "numero"
+          "valor": "25784362"
+        },
+        "cumpleanos": {
+          "valor": "10/02/1977"
         }
       },
       "direccion": {
-        "direccion": "",
-        "altura": "",
-        "piso": "",
-        "depto": "",
-        "localidad": "",
-        "codigo_postal": "",
-        "provincia": ""
-      }
-    },
-    "31456491524202@lid": {
-      "rol": "usuario",
-      "login": {
-        "timestamp": "2026-03-31T23:57:16.155051",
-        "expira": "2026-04-01T00:57:16.155051"
-      },
-      "cliente": {
-        "pushname": "Luciano Scigliotti",
-        "telefono": "",
-        "nombre": "",
-        "apellido": "",
-        "email": "",
-        "dni": ""
-      },
-      "direccion": {
-        "direccion": "",
-        "altura": "",
-        "piso": "",
-        "depto": "",
-        "localidad": "",
-        "codigo_postal": "",
-        "provincia": ""
-      }
-    },
-    "166911170113665@lid": {
-      "rol": "usuario",
-      "login": {
-        "timestamp": "2026-04-01T10:24:19.246960",
-        "expira": "2026-04-01T11:24:19.246960"
-      },
-      "cliente": {
-        "pushname": "Ivan Sycz",
-        "telefono": "",
-        "nombre": "",
-        "apellido": "",
-        "email": "",
-        "dni": ""
-      },
-      "direccion": {
-        "direccion": "",
-        "altura": "",
-        "piso": "",
-        "depto": "",
-        "localidad": "",
-        "codigo_postal": "",
-        "provincia": ""
-      }
-    },
-    "5491168387770@c.us": {
-      "rol": "usuario",
-      "login": {
-        "timestamp": "2026-04-01T23:09:43.365435",
-        "expira": "2026-04-02T00:09:43.365435"
-      },
-      "cliente": {
-        "pushname": "",
-        "telefono": "",
-        "nombre": "",
-        "apellido": "",
-        "email": "",
-        "dni": ""
-      },
-      "direccion": {
-        "direccion": "",
-        "altura": "",
-        "piso": "",
-        "depto": "",
-        "localidad": "",
-        "codigo_postal": "",
-        "provincia": ""
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
       }
     }
   }
