@@ -13,27 +13,46 @@
     "textos_mensajes": ["root"]
   },
 
+  "validadores": {
+    "fecha_pasado": {"tipo": "fecha_pasada", "msj_error": "⚠️ La fecha debe ser pasada. Intentá nuevamente:"},
+    "fecha_futuro": {"tipo": "fecha_futura", "msj_error": "⚠️ La fecha debe ser futura. Intentá nuevamente:"},
+    "fecha_mayor_18": {"tipo": "edad_minima", "edad": 18, "msj_error": "⚠️ Debes ser mayor de 18 años. Intentá nuevamente:"},
+    "fecha_mayor_21": {"tipo": "edad_minima", "edad": 21, "msj_error": "⚠️ Debes ser mayor de 21 años. Intentá nuevamente:"},
+    "fecha_limite_30": {"tipo": "fecha_limite", "dias": 30, "msj_error": "⚠️ La fecha debe ser dentro de los próximos 30 días. Intentá nuevamente:"},
+    "fecha_limite_60": {"tipo": "fecha_limite", "dias": 60, "msj_error": "⚠️ La fecha debe ser dentro de los próximos 60 días. Intentá nuevamente:"},
+    "fecha_limite_90": {"tipo": "fecha_limite", "dias": 90, "msj_error": "⚠️ La fecha debe ser dentro de los próximos 90 días. Intentá nuevamente:"},
+    "texto_maximo_50": {"tipo": "longitud_maxima", "parametro": 50, "msj_error": "⚠️ El texto no debe superar los 50 caracteres. Intentá nuevamente:"},
+    "texto_maximo_100": {"tipo": "longitud_maxima", "parametro": 100, "msj_error": "⚠️ El texto no debe superar los 100 caracteres. Intentá nuevamente:"},
+    "texto_minimo_3": {"tipo": "longitud_minima", "parametro": 3, "msj_error": "⚠️ El texto debe tener al menos 3 caracteres. Intentá nuevamente:"},
+    "texto_minimo_10": {"tipo": "longitud_minima", "parametro": 10, "msj_error": "⚠️ El texto debe tener al menos 10 caracteres. Intentá nuevamente:"},
+    "fecha_formato_1": {"tipo": "fecha", "formato": "%d/%m/%Y", "msj_error": "⚠️ El formato de fecha debe ser DD/MM/AAAA. Intentá nuevamente:"},
+    "fecha_formato_2": {"tipo": "fecha", "formato": "%d/%m/%Y:%H:%M", "msj_error": "⚠️ El formato de fecha y hora debe ser DD/MM/AAAA:HH:MM. Intentá nuevamente:"},
+    "email_formato": {"tipo": "email", "formato": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", "msj_error": "⚠️ El formato del email no es válido. Intentá nuevamente:"}
+  },
+
   "estructura_sesion": {
     "rol_defecto": "usuario",
     "duracion_horas": 1,
+    "reintentos_input": 3,
     "cliente": {
-      "pushname":  {"valor": "", "obligatorio": false, "tipo": "texto",    "msj_pedido": "", "msj_reintento": ""},
-      "nombre":    {"valor": "", "obligatorio": true,  "tipo": "texto",    "msj_pedido": "👤 Por favor ingresá tu *nombre*:", "msj_reintento": "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:"},
-      "apellido":  {"valor": "", "obligatorio": true,  "tipo": "texto",    "msj_pedido": "👤 Por favor ingresá tu *apellido*:", "msj_reintento": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:"},
-      "telefono":  {"valor": "", "obligatorio": false, "tipo": "telefono", "msj_pedido": "📱 Por favor ingresá tu *teléfono* (solo números):", "msj_reintento": "⚠️ El teléfono ingresado no es válido. Por favor ingresá solo números:"},
-      "email":     {"valor": "", "obligatorio": true,  "tipo": "email",    "msj_pedido": "📧 Por favor ingresá tu *email*:", "msj_reintento": "⚠️ El email ingresado no es válido. El formato debe ser ejemplo@dominio.com:"},
-      "dni":       {"valor": "", "obligatorio": true,  "tipo": "numero",   "msj_pedido": "🪪 Por favor ingresá tu *DNI* (solo números):", "msj_reintento": "⚠️ El DNI ingresado no es válido. Por favor ingresá solo números:"},
-      "cumpleanos": {"valor": "", "obligatorio": true, "tipo": "fecha", "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):", "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"}
+      "pushname":  {"valor": "", "obligatorio": false, "tipo": "texto",    "validadores": [], "msj_pedido": "", "msj_reintento": ""},
+      "nombre":    {"valor": "", "obligatorio": true,  "tipo": "texto",    "validadores": ["texto_minimo_3", "texto_maximo_50"], "msj_pedido": "👤 Por favor ingresá tu *nombre*:", "msj_reintento": "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:"},
+      "apellido":  {"valor": "", "obligatorio": true,  "tipo": "texto",    "validadores": ["texto_maximo_50"], "msj_pedido": "👤 Por favor ingresá tu *apellido*:", "msj_reintento": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:"},
+      "telefono":  {"valor": "", "obligatorio": false, "tipo": "telefono", "validadores": [], "msj_pedido": "📱 Por favor ingresá tu *teléfono* (solo números):", "msj_reintento": "⚠️ El teléfono ingresado no es válido. Por favor ingresá solo números:"},
+      "email":     {"valor": "", "obligatorio": true,  "tipo": "email",    "validadores": ["email_formato"], "msj_pedido": "📧 Por favor ingresá tu *email*:", "msj_reintento": "⚠️ El email ingresado no es válido. El formato debe ser ejemplo@dominio.com:"},
+      "dni":       {"valor": "", "obligatorio": true,  "tipo": "numero",   "validadores": [], "msj_pedido": "🪪 Por favor ingresá tu *DNI* (solo números):", "msj_reintento": "⚠️ El DNI ingresado no es válido. Por favor ingresá solo números:"},
+      "cumpleanos": {"valor": "", "obligatorio": true, "tipo": "fecha",    "validadores": ["fecha_mayor_21"], "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):", "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"}
     },
+
     "direccion": {
-      "alias":         {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Ingresá un nombre para esta dirección (ej: *Casa*, *Trabajo*):", "msj_reintento": "⚠️ El alias ingresado no es válido. Intentá nuevamente:"},
-      "direccion":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Por favor ingresá tu *calle/dirección*:", "msj_reintento": "⚠️ La dirección ingresada no es válida. Intentá nuevamente:"},
-      "altura":        {"valor": "", "obligatorio": true,  "tipo": "numero", "msj_pedido": "🏠 Ingresá el *número de altura*:", "msj_reintento": "⚠️ La altura debe ser solo números. Intentá nuevamente:"},
-      "piso":          {"valor": "", "obligatorio": false, "tipo": "texto",  "msj_pedido": "🏠 Ingresá el *piso* (o '-' si no aplica):", "msj_reintento": ""},
-      "depto":         {"valor": "", "obligatorio": false, "tipo": "texto",  "msj_pedido": "🏠 Ingresá el *departamento* (o '-' si no aplica):", "msj_reintento": ""},
-      "localidad":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Ingresá tu *localidad*:", "msj_reintento": "⚠️ La localidad ingresada no es válida. Intentá nuevamente:"},
-      "codigo_postal": {"valor": "", "obligatorio": true,  "tipo": "numero", "msj_pedido": "🏠 Ingresá tu *código postal*:", "msj_reintento": "⚠️ El código postal debe ser solo números. Intentá nuevamente:"},
-      "provincia":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "msj_pedido": "🏠 Ingresá tu *provincia*:", "msj_reintento": "⚠️ La provincia ingresada no es válida. Intentá nuevamente:"}
+      "alias":         {"valor": "", "obligatorio": true,  "tipo": "texto",  "validadores": [], "msj_pedido": "🏠 Ingresá un nombre para esta dirección (ej: *Casa*, *Trabajo*):", "msj_reintento": "⚠️ El alias ingresado no es válido. Intentá nuevamente:"},
+      "direccion":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "validadores": [],  "msj_pedido": "🏠 Por favor ingresá tu *calle/dirección*:", "msj_reintento": "⚠️ La dirección ingresada no es válida. Intentá nuevamente:"},
+      "altura":        {"valor": "", "obligatorio": true,  "tipo": "numero", "validadores": [], "msj_pedido": "🏠 Ingresá el *número de altura*:", "msj_reintento": "⚠️ La altura debe ser solo números. Intentá nuevamente:"},
+      "piso":          {"valor": "", "obligatorio": false, "tipo": "texto",  "validadores": [], "msj_pedido": "🏠 Ingresá el *piso* (o '-' si no aplica):", "msj_reintento": ""},
+      "depto":         {"valor": "", "obligatorio": false, "tipo": "texto",  "validadores": [], "msj_pedido": "🏠 Ingresá el *departamento* (o '-' si no aplica):", "msj_reintento": ""},
+      "localidad":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "validadores": [], "msj_pedido": "🏠 Ingresá tu *localidad*:", "msj_reintento": "⚠️ La localidad ingresada no es válida. Intentá nuevamente:"},
+      "codigo_postal": {"valor": "", "obligatorio": true,  "tipo": "numero", "validadores": [], "msj_pedido": "🏠 Ingresá tu *código postal*:", "msj_reintento": "⚠️ El código postal debe ser solo números. Intentá nuevamente:"},
+      "provincia":     {"valor": "", "obligatorio": true,  "tipo": "texto",  "validadores": [], "msj_pedido": "🏠 Ingresá tu *provincia*:", "msj_reintento": "⚠️ La provincia ingresada no es válida. Intentá nuevamente:"}
     }
   },
 

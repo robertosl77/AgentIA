@@ -3,8 +3,8 @@
     "231400003358774@lid": {
       "rol": "usuario",
       "login": {
-        "timestamp": "2026-04-03T19:47:57.471196",
-        "expira": "2026-04-03T20:47:57.471196"
+        "timestamp": "2026-04-03T20:48:29.953737",
+        "expira": "2026-04-03T21:48:29.953737"
       },
       "cliente": {
         "pushname": {
@@ -26,57 +26,34 @@
           "valor": "25784362"
         },
         "cumpleanos": {
-          "valor": "-"
+          "valor": "10/02/1977"
         }
       },
-      "direccion": {}
-    },
-    "31456491524202@lid": {
-      "rol": "usuario",
-      "login": {
-        "timestamp": "2026-03-31T23:57:16.155051",
-        "expira": "2026-04-01T00:57:16.155051"
-      },
-      "cliente": {
-        "pushname": "Luciano Scigliotti",
-        "telefono": "",
-        "nombre": "",
-        "apellido": "",
-        "email": "",
-        "dni": ""
-      },
       "direccion": {
-        "direccion": "",
-        "altura": "",
-        "piso": "",
-        "depto": "",
-        "localidad": "",
-        "codigo_postal": "",
-        "provincia": ""
-      }
-    },
-    "166911170113665@lid": {
-      "rol": "usuario",
-      "login": {
-        "timestamp": "2026-04-01T10:24:19.246960",
-        "expira": "2026-04-01T11:24:19.246960"
-      },
-      "cliente": {
-        "pushname": "Ivan Sycz",
-        "telefono": "",
-        "nombre": "",
-        "apellido": "",
-        "email": "",
-        "dni": ""
-      },
-      "direccion": {
-        "direccion": "",
-        "altura": "",
-        "piso": "",
-        "depto": "",
-        "localidad": "",
-        "codigo_postal": "",
-        "provincia": ""
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
       }
     }
   }
