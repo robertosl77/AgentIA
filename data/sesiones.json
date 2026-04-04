@@ -55,6 +55,846 @@
           "valor": ""
         }
       }
+    },
+    "64076784861265@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T20:56:38.646906",
+        "expira": "2026-04-03T21:56:38.646906"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Norali "
+        },
+        "nombre": {
+          "valor": "norali"
+        },
+        "apellido": {
+          "valor": ""
+        },
+        "telefono": {
+          "valor": ""
+        },
+        "email": {
+          "valor": ""
+        },
+        "dni": {
+          "valor": ""
+        },
+        "cumpleanos": {
+          "valor": ""
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "199724619559011@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T20:58:18.395809",
+        "expira": "2026-04-03T21:58:18.395809"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Martin Lopez"
+        },
+        "nombre": {
+          "valor": "bue son re vagos"
+        },
+        "apellido": {
+          "valor": "lópez"
+        },
+        "telefono": {
+          "valor": "1234567890"
+        },
+        "email": {
+          "valor": "tincho_k-po10@hotmail.con"
+        },
+        "dni": {
+          "valor": ""
+        },
+        "cumpleanos": {
+          "valor": ""
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "3436628160599@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T20:58:29.673453",
+        "expira": "2026-04-03T21:58:29.673453"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "David Draise"
+        },
+        "nombre": {
+          "valor": "nombre"
+        },
+        "apellido": {
+          "valor": "apellido"
+        },
+        "telefono": {
+          "valor": "1230"
+        },
+        "email": {
+          "valor": "mail@mail.mail"
+        },
+        "dni": {
+          "valor": "2"
+        },
+        "cumpleanos": {
+          "valor": "11/1/1121"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "31456491524202@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T20:58:39.514904",
+        "expira": "2026-04-03T21:58:39.514904"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Luciano Scigliotti"
+        },
+        "nombre": {
+          "valor": "luciano scigliotti"
+        },
+        "apellido": {
+          "valor": "scigliotti"
+        },
+        "telefono": {
+          "valor": "1162077036"
+        },
+        "email": {
+          "valor": "lscigliotti@palmac.com.ar"
+        },
+        "dni": {
+          "valor": "12345678"
+        },
+        "cumpleanos": {
+          "valor": "20/02/1980"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "246909180604423@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T20:59:21.261354",
+        "expira": "2026-04-03T21:59:21.261354"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Seba Montero"
+        },
+        "nombre": {
+          "valor": "pero si ya me dijiste hola seba montero"
+        },
+        "apellido": {
+          "valor": "raúl"
+        },
+        "telefono": {
+          "valor": "626728366272"
+        },
+        "email": {
+          "valor": "sebatuguachiturromantiko@yahoo.com"
+        },
+        "dni": {
+          "valor": "112244"
+        },
+        "cumpleanos": {
+          "valor": "01/01/1875"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "166911170113665@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:01:57.010638",
+        "expira": "2026-04-03T22:01:57.010638"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Ivan Sycz"
+        },
+        "nombre": {
+          "valor": "ivan"
+        },
+        "apellido": {
+          "valor": "sycz"
+        },
+        "telefono": {
+          "valor": "2246508466"
+        },
+        "email": {
+          "valor": "sycz93@gmail.com"
+        },
+        "dni": {
+          "valor": "37674189"
+        },
+        "cumpleanos": {
+          "valor": "24/07/1993"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "102482348867798@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:02:12.921671",
+        "expira": "2026-04-03T22:02:12.921671"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Pablo Sevilla"
+        },
+        "nombre": {
+          "valor": "pablo"
+        },
+        "apellido": {
+          "valor": "sevilla"
+        },
+        "telefono": {
+          "valor": "1141441646"
+        },
+        "email": {
+          "valor": "pepe@pepe.com"
+        },
+        "dni": {
+          "valor": "1234456789"
+        },
+        "cumpleanos": {
+          "valor": "10/10/1980"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "93295816487069@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:02:17.603989",
+        "expira": "2026-04-03T22:02:17.603989"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Sol"
+        },
+        "nombre": {
+          "valor": "manola"
+        },
+        "apellido": {
+          "valor": "mi culpa y tus  bolas"
+        },
+        "telefono": {
+          "valor": "066677777"
+        },
+        "email": {
+          "valor": "soybarata@cobropoco.com"
+        },
+        "dni": {
+          "valor": "48777654"
+        },
+        "cumpleanos": {
+          "valor": "11/10/2000"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "186994470699163@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:02:41.573592",
+        "expira": "2026-04-03T22:02:41.573592"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Andrea Rugama"
+        },
+        "nombre": {
+          "valor": ""
+        },
+        "apellido": {
+          "valor": ""
+        },
+        "telefono": {
+          "valor": ""
+        },
+        "email": {
+          "valor": ""
+        },
+        "dni": {
+          "valor": ""
+        },
+        "cumpleanos": {
+          "valor": ""
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "74599320518684@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:03:14.709965",
+        "expira": "2026-04-03T22:03:14.709965"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Marina"
+        },
+        "nombre": {
+          "valor": "marina"
+        },
+        "apellido": {
+          "valor": "mascia"
+        },
+        "telefono": {
+          "valor": "1164827725"
+        },
+        "email": {
+          "valor": "marinalmascia@yahoo.com.ar"
+        },
+        "dni": {
+          "valor": "11111122"
+        },
+        "cumpleanos": {
+          "valor": "07/04/2000"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "234397991178296@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:05:48.983301",
+        "expira": "2026-04-03T22:05:48.983301"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Débora"
+        },
+        "nombre": {
+          "valor": "debora"
+        },
+        "apellido": {
+          "valor": "guevara"
+        },
+        "telefono": {
+          "valor": "3434059672"
+        },
+        "email": {
+          "valor": "deboguevara@gmail.com"
+        },
+        "dni": {
+          "valor": "28257597"
+        },
+        "cumpleanos": {
+          "valor": "04/09/1980"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "272756310544392@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:09:12.304953",
+        "expira": "2026-04-03T22:09:12.304953"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Mauricio"
+        },
+        "nombre": {
+          "valor": "ya lo sabes"
+        },
+        "apellido": {
+          "valor": "se"
+        },
+        "telefono": {
+          "valor": "2236895962"
+        },
+        "email": {
+          "valor": "hola@dominio.col"
+        },
+        "dni": {
+          "valor": "1111111"
+        },
+        "cumpleanos": {
+          "valor": "22/11/1911"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "126516868431925@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:16:16.628418",
+        "expira": "2026-04-03T22:16:16.628418"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Eva"
+        },
+        "nombre": {
+          "valor": ""
+        },
+        "apellido": {
+          "valor": ""
+        },
+        "telefono": {
+          "valor": ""
+        },
+        "email": {
+          "valor": ""
+        },
+        "dni": {
+          "valor": ""
+        },
+        "cumpleanos": {
+          "valor": ""
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "197955093061738@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:20:33.966219",
+        "expira": "2026-04-03T22:20:33.966219"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Marco"
+        },
+        "nombre": {
+          "valor": "a bueno"
+        },
+        "apellido": {
+          "valor": "no quiero"
+        },
+        "telefono": {
+          "valor": "es um testeo"
+        },
+        "email": {
+          "valor": ""
+        },
+        "dni": {
+          "valor": ""
+        },
+        "cumpleanos": {
+          "valor": ""
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "103156524560474@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:21:28.946074",
+        "expira": "2026-04-03T22:21:28.946074"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Sebastian Gonzalez"
+        },
+        "nombre": {
+          "valor": "sebastián"
+        },
+        "apellido": {
+          "valor": "gonzález"
+        },
+        "telefono": {
+          "valor": "1151386084"
+        },
+        "email": {
+          "valor": "sebas.hgonzalez@gmail.com"
+        },
+        "dni": {
+          "valor": "28777666"
+        },
+        "cumpleanos": {
+          "valor": "05/10/1980"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
     }
   }
 }
