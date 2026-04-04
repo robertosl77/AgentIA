@@ -1,5 +1,5 @@
 # src/cliente/registro_base.py
-from src.cliente.validadores import Validadores
+from src.registro.validadores import Validadores
 from src.session_manager import SessionManager
 from src.config_loader import ConfigLoader
 from src.send_wpp import SendWPP

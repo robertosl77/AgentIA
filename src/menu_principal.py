@@ -3,7 +3,7 @@ from src.send_wpp import SendWPP
 from src.horarios import SubMenuHorarios
 from src.config_loader import ConfigLoader
 from src.session_manager import SessionManager
-from src.cliente import SubMenuRegistro
+from src.cliente import SubMenuCliente
 from src.staff import SubMenuStaff
 
 class MenuPrincipal:
@@ -14,7 +14,7 @@ class MenuPrincipal:
         self.sw = SendWPP(numero)
         self.horarios = SubMenuHorarios(numero)
         self.session_manager = SessionManager()
-        self.registro = SubMenuRegistro(numero)
+        self.registro = SubMenuCliente(numero)
         self.staff = SubMenuStaff(numero)
         # 
         self.sesiones = None
@@ -49,6 +49,10 @@ class MenuPrincipal:
                     self.sesiones[self.numero].menu = None
                     self.sesiones[self.numero].submenu = None
             return
+        
+        if self.staff.esta_en_flujo(self.sesiones):
+            self.staff.procesar_flujo(comando, self.sesiones)
+            return        
 
         seleccion_anterior = getattr(self.sesiones[self.numero], "menu", None)
 
@@ -203,7 +207,7 @@ class MenuPrincipal:
             self.horarios.submenu_horarios(comando)
 
         elif nombre_submenu == "staff":
-            self.staff.submenu_staff(comando)
+            self.staff.submenu_staff(comando, self.sesiones)
 
         else:
             self.sw.enviar("❌ Submenú no reconocido.")

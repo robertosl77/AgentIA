@@ -1,8 +1,8 @@
-# src/cliente/submenu_registro.py
-from src.cliente.registro_cliente import RegistroCliente
-from src.cliente.registro_direccion import RegistroDireccion
+# src/cliente/submenu_cliente.py
+from src.registro.registro_cliente import RegistroCliente
+from src.registro.registro_direccion import RegistroDireccion
 
-class SubMenuRegistro:
+class SubMenuCliente:
     """
     Orquestador de los flujos de registro de cliente y dirección.
     Delega toda la lógica en RegistroCliente y RegistroDireccion.

@@ -3,8 +3,8 @@
     "231400003358774@lid": {
       "rol": "root",
       "login": {
-        "timestamp": "2026-04-04T14:03:25.637030",
-        "expira": "2026-04-04T15:03:25.637030"
+        "timestamp": "2026-04-04T15:28:47.447110",
+        "expira": "2026-04-04T16:28:47.447110"
       },
       "cliente": {
         "pushname": {
@@ -1091,6 +1091,62 @@
         },
         "cumpleanos": {
           "valor": "01/06/1980"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "176218246783125@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-04T15:26:42.490618",
+        "expira": "2026-04-04T16:26:42.490618"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Vanesa"
+        },
+        "nombre": {
+          "valor": "vanesa"
+        },
+        "apellido": {
+          "valor": "di ciur"
+        },
+        "telefono": {
+          "valor": "1140381723"
+        },
+        "email": {
+          "valor": "vdiciurcio@mail.com"
+        },
+        "dni": {
+          "valor": "23123456"
+        },
+        "cumpleanos": {
+          "valor": "03/04/1974"
         }
       },
       "direccion": {

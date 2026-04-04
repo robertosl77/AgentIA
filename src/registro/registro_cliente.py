@@ -1,5 +1,5 @@
 # src/cliente/registro_cliente.py
-from src.cliente.registro_base import RegistroBase
+from src.registro.registro_base import RegistroBase
 
 class RegistroCliente(RegistroBase):
     """
