@@ -3,8 +3,8 @@
     "231400003358774@lid": {
       "rol": "usuario",
       "login": {
-        "timestamp": "2026-04-03T20:48:29.953737",
-        "expira": "2026-04-03T21:48:29.953737"
+        "timestamp": "2026-04-04T03:13:31.017281",
+        "expira": "2026-04-04T04:13:31.017281"
       },
       "cliente": {
         "pushname": {
@@ -922,7 +922,7 @@
           "valor": "46705551"
         },
         "cumpleanos": {
-          "valor": ""
+          "valor": "10/02/1977"
         }
       },
       "direccion": {
@@ -979,6 +979,118 @@
         },
         "cumpleanos": {
           "valor": "08/08/1888"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "212897250725978@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T23:01:48.201447",
+        "expira": "2026-04-04T00:01:48.201447"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Matias Rodeghiero"
+        },
+        "nombre": {
+          "valor": "matias"
+        },
+        "apellido": {
+          "valor": "rodeghiero"
+        },
+        "telefono": {
+          "valor": "1158576412"
+        },
+        "email": {
+          "valor": "mrodeghiero@gmail.com"
+        },
+        "dni": {
+          "valor": "12342346"
+        },
+        "cumpleanos": {
+          "valor": "16/12/1976"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "5491168387770@c.us": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-04T13:29:38.174984",
+        "expira": "2026-04-04T14:29:38.174984"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": ""
+        },
+        "nombre": {
+          "valor": "jacinto"
+        },
+        "apellido": {
+          "valor": "pachimaguida"
+        },
+        "telefono": {
+          "valor": "1155667788"
+        },
+        "email": {
+          "valor": "jpachi@email.com"
+        },
+        "dni": {
+          "valor": "35000111"
+        },
+        "cumpleanos": {
+          "valor": "01/06/1980"
         }
       },
       "direccion": {

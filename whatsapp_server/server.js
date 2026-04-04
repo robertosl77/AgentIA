@@ -11,7 +11,7 @@ let qrCode = null; // Guardamos el QR hasta que el cliente escanee
 wppconnect.create({
     session: 'session-saas',
     // headless: true, // Opcional: Ejecuta sin abrir el navegador
-    folderNameToken: './tokens',
+    folderNameToken: './tokens',  // relativo a server.js
     catchQR: (base64Qrimg, asciiQR) => {
         console.log('Escanea el código QR en la terminal:');
         console.log(asciiQR);

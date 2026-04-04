@@ -1,8 +1,10 @@
+# src/menu_principal.py
 from src.send_wpp import SendWPP
-from src.submenu_horarios import SubMenuHorarios
+from src.horarios import SubMenuHorarios
 from src.config_loader import ConfigLoader
 from src.session_manager import SessionManager
-from src.submenu_registro import SubMenuRegistro
+from src.cliente import SubMenuRegistro
+from src.staff import SubMenuStaff
 
 class MenuPrincipal:
     """Menú Principal del Bot"""
@@ -13,6 +15,7 @@ class MenuPrincipal:
         self.horarios = SubMenuHorarios(numero)
         self.session_manager = SessionManager()
         self.registro = SubMenuRegistro(numero)
+        self.staff = SubMenuStaff(numero)
         # 
         self.sesiones = None
         self.numero = numero
@@ -31,7 +34,7 @@ class MenuPrincipal:
         # ── PRIORIDAD MÁXIMA: si está en flujo de registro, todo va ahí ──────────
         if self.registro.esta_en_registro(self.sesiones):
             resultado = self.registro.procesar_registro(comando, self.sesiones)
-            
+
             if not self.registro.esta_en_registro(self.sesiones):
                 if resultado == "ok":
                     # ✅ Registro exitoso: volvemos al menú
@@ -88,7 +91,7 @@ class MenuPrincipal:
 
         if self._requiere_registro_cliente():
             return
-        
+
         if self._requiere_registro_direccion():
             return
 
@@ -118,7 +121,7 @@ class MenuPrincipal:
             "algunos datos antes de continuar.\n\n"
             "Solo te tomará un momento. ¡Empecemos! 😊"
         )
-        self.registro.iniciar_registro(self.sesiones)
+        self.registro.iniciar_registro_cliente(self.sesiones)
         return True
 
     def _requiere_registro_direccion(self):
@@ -127,7 +130,7 @@ class MenuPrincipal:
         Si no los tiene, lo deriva al flujo de registro de dirección y retorna True.
         Reutilizable en cualquier punto del flujo que requiera dirección del cliente.
         """
-        pass          
+        pass
 
     def _gestionar_bloqueo(self, comando, rol):
         """Maneja el caso de usuario bloqueado por horario. Solo deja pasar submenús permitidos."""
@@ -200,7 +203,7 @@ class MenuPrincipal:
             self.horarios.submenu_horarios(comando)
 
         elif nombre_submenu == "staff":
-            self.sw.enviar("🚧 Panel de staff próximamente...")
+            self.staff.submenu_staff(comando)
 
         else:
             self.sw.enviar("❌ Submenú no reconocido.")
@@ -238,7 +241,6 @@ class MenuPrincipal:
         nombre_negocio = self.config.data.get("nombre_negocio", "nuestro negocio")
         nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)
 
-        # ← ahora pushname es un dict {"valor": ..., "obligatorio": ..., "tipo": ...}
         pushname_data = self.session_manager.get_cliente(self.numero).get("pushname", {})
         pushname = pushname_data.get("valor", "") if isinstance(pushname_data, dict) else pushname_data
 

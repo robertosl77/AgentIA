@@ -2,7 +2,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 from flask import Flask, request, jsonify
 from src.menu_principal import MenuPrincipal
-from src.error_logger import ErrorLogger
+from src.log.error_logger import ErrorLogger
 
 app = Flask(__name__)
 sesiones = {}
@@ -72,3 +72,8 @@ if __name__ == "__main__":
 #   -Method POST `
 #   -ContentType "application/json" `
 #   -Body '{"from": "5491168387770@c.us", "body": "1"}'
+
+
+
+# Borrado de todos los pycaches:
+# Get-ChildItem -Path . -Recurse -Filter "__pycache__" -Directory | Remove-Item -Recurse -Force

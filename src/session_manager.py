@@ -168,8 +168,14 @@ class SessionManager:
         pass
 
     def editar_direccion(self, numero, campo, valor):
-        """[INTERFAZ] Edita un campo específico de la dirección y persiste."""
-        pass
+        """Edita el valor de un campo específico de la dirección y persiste."""
+        if numero in self.data["sesiones"]:
+            direccion = self.data["sesiones"][numero]["direccion"]
+            if campo not in direccion:
+                # ← campo nuevo que no existía en la sesión, lo creamos
+                direccion[campo] = {"valor": ""}
+            direccion[campo]["valor"] = valor
+            self._guardar_archivo()
 
     def borrar_direccion(self, numero):
         """[INTERFAZ] Borra los datos de dirección."""
