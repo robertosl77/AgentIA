@@ -895,6 +895,118 @@
           "valor": ""
         }
       }
+    },
+    "117909837881444@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:32:54.314956",
+        "expira": "2026-04-03T22:32:54.314956"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "AGUSTINA💋"
+        },
+        "nombre": {
+          "valor": "agustina"
+        },
+        "apellido": {
+          "valor": "filippi"
+        },
+        "telefono": {
+          "valor": "1166019746"
+        },
+        "email": {
+          "valor": "agustbd12345@gmail.com"
+        },
+        "dni": {
+          "valor": "46705551"
+        },
+        "cumpleanos": {
+          "valor": "10/02/1977"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
+    },
+    "137121176276994@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:34:18.837155",
+        "expira": "2026-04-03T22:34:18.837155"
+      },
+      "cliente": {
+        "pushname": {
+          "valor": "Gabriel Rabinovich"
+        },
+        "nombre": {
+          "valor": "ni en pedo"
+        },
+        "apellido": {
+          "valor": "anda palla bobo"
+        },
+        "telefono": {
+          "valor": "1122334455"
+        },
+        "email": {
+          "valor": "cacaculo@yimail.con"
+        },
+        "dni": {
+          "valor": "45678900"
+        },
+        "cumpleanos": {
+          "valor": "08/08/1888"
+        }
+      },
+      "direccion": {
+        "alias": {
+          "valor": ""
+        },
+        "direccion": {
+          "valor": ""
+        },
+        "altura": {
+          "valor": ""
+        },
+        "piso": {
+          "valor": ""
+        },
+        "depto": {
+          "valor": ""
+        },
+        "localidad": {
+          "valor": ""
+        },
+        "codigo_postal": {
+          "valor": ""
+        },
+        "provincia": {
+          "valor": ""
+        }
+      }
     }
   }
 }
