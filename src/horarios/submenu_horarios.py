@@ -83,7 +83,7 @@ class SubMenuHorarios:
 
     def submenu_dias_de_guardia(self):
         """Filtra, ordena y formatea las guardias con el día de la semana."""
-        guardias = self.config.data.get("dias_de_guardia", [])
+        guardias = self.config.data.get("dias_de_guardia", {}).get("fechas", [])
         if not guardias:
             return "No hay días de guardia programados."
 
@@ -203,7 +203,7 @@ class SubMenuHorarios:
         hoy = datetime.now().date()
         en_7_dias = hoy + timedelta(days=7)
 
-        guardias = self.config.data.get("dias_de_guardia", [])
+        guardias = self.config.data.get("dias_de_guardia", {}).get("fechas", [])
         proximas = []
 
         for f_str in guardias:
@@ -323,7 +323,8 @@ class SubMenuHorarios:
                 return f"🚫 *Cerrado*: {c.get('motivo', 'Cierre eventual')}."
 
         # 2. Prioridad 2: ¿Hoy es día de guardia? (Si es guardia, asumimos abierto 24hs o según lógica)
-        if hoy.strftime("%Y-%m-%d") in self.config.data.get("dias_de_guardia", []):
+        guardias = self.config.data.get("dias_de_guardia", {}).get("fechas", [])
+        if hoy.strftime("%Y-%m-%d") in guardias:
             return "✅ *Abierto*: Hoy estamos de Guardia."
 
         # 3. Prioridad 3: Horarios fijos

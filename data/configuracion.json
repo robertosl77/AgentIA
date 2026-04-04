@@ -20,7 +20,7 @@
     "fecha_mayor_21": {"tipo": "edad_minima", "edad": 21, "msj_error": "⚠️ Debes ser mayor de 21 años. Intentá nuevamente:"},
     "fecha_limite_30": {"tipo": "fecha_limite", "dias": 30, "msj_error": "⚠️ La fecha debe ser dentro de los próximos 30 días. Intentá nuevamente:"},
     "fecha_limite_60": {"tipo": "fecha_limite", "dias": 60, "msj_error": "⚠️ La fecha debe ser dentro de los próximos 60 días. Intentá nuevamente:"},
-    "fecha_limite_90": {"tipo": "fecha_limite", "dias": 90, "msj_error": "⚠️ La fecha debe ser dentro de los próximos 90 días. Intentá nuevamente:"},
+    "fecha_limite_90    ": {"tipo": "fecha_limite", "dias": 90, "msj_error": "⚠️ La fecha debe ser dentro de los próximos 90 días. Intentá nuevamente:"},
     "texto_maximo_50": {"tipo": "longitud_maxima", "parametro": 50, "msj_error": "⚠️ El texto no debe superar los 50 caracteres. Intentá nuevamente:"},
     "texto_maximo_100": {"tipo": "longitud_maxima", "parametro": 100, "msj_error": "⚠️ El texto no debe superar los 100 caracteres. Intentá nuevamente:"},
     "texto_minimo_3": {"tipo": "longitud_minima", "parametro": 3, "msj_error": "⚠️ El texto debe tener al menos 3 caracteres. Intentá nuevamente:"},
@@ -66,12 +66,15 @@
     "domingo":  { "abierto": false, "apertura": "09:00", "cierre": "20:00" }
   },
 
-  "dias_de_guardia": [
-    "2026-03-28",
-    "2026-04-03",
-    "2026-04-06",
-    "2026-04-12"
-  ],
+  "dias_de_guardia": {
+      "validadores": ["fecha_futura", "fecha_limite_90"],
+      "fechas": [
+          "2026-03-28",
+          "2026-04-03",
+          "2026-04-06",
+          "2026-04-12"
+      ]
+  },
 
   "cierres_eventuales": [
     { "desde": "2026-04-02", "hasta": "2026-04-05", "motivo": "Vacaciones de semana santa" },
