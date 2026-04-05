@@ -260,15 +260,22 @@
         },
         {
           "id": "2",
+          "roles": ["root", "admin", "usuario"],
+          "activacion": ["2"],
+          "texto": "2. 🚛 Auxilios Mecánicos",
+          "submenu": "auxilios"
+        },
+        {
+          "id": "3",
           "roles": [
             "root",
             "admin",
             "usuario"
           ],
           "activacion": [
-            "2"
+            "3"
           ],
-          "texto": "2. Otra opción (próximamente)",
+          "texto": "3. Otra opción (próximamente)",
           "submenu": null
         }
       ]

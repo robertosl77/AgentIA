@@ -5,6 +5,7 @@ from src.config_loader import ConfigLoader
 from src.session_manager import SessionManager
 from src.cliente import SubMenuCliente
 from src.staff import SubMenuStaff
+from src.auxilios import SubMenuAuxilios
 
 class MenuPrincipal:
     """Menú Principal del Bot"""
@@ -16,6 +17,7 @@ class MenuPrincipal:
         self.session_manager = SessionManager()
         self.registro = SubMenuCliente(numero)
         self.staff = SubMenuStaff(numero)
+        self.auxilios = SubMenuAuxilios(numero)        
         # 
         self.sesiones = None
         self.numero = numero
@@ -52,6 +54,10 @@ class MenuPrincipal:
         
         if self.staff.esta_en_flujo(self.sesiones):
             self.staff.procesar_flujo(comando, self.sesiones)
+            return        
+        
+        if self.auxilios.esta_en_flujo(self.sesiones):
+            self.auxilios.procesar_flujo(comando, self.sesiones)
             return        
 
         seleccion_anterior = getattr(self.sesiones[self.numero], "menu", None)
@@ -163,7 +169,6 @@ class MenuPrincipal:
         return None
 
     def _procesar_menu_principal(self, comando, rol):
-        """Resuelve el comando en el contexto del menú principal y muestra el submenú correspondiente."""
         menu_principal = self.config.get_menu_principal()
         opcion = self.config.resolver_activacion(comando, menu_principal, rol)
 
@@ -171,29 +176,31 @@ class MenuPrincipal:
             self.sw.enviar("❌ Opción no válida.")
             return
 
-        # Guardamos en sesión qué opción eligió para el próximo mensaje
         self.sesiones[self.numero].menu = opcion["id"]
         self.sesiones[self.numero].submenu = None
 
+        if opcion.get("submenu") == "auxilios":
+            self.auxilios.mostrar_menu(self.sesiones)
+            return
+
         if opcion.get("submenu"):
-            # Mostramos el submenú correspondiente
             submenu_data = self.config.get_submenu(opcion["submenu"])
             if submenu_data:
                 self.sw.enviar(self.config.armar_menu(submenu_data, rol))
         else:
-            # Opción sin submenú: próximamente
             self.sw.enviar("🚧 Próximamente...")
 
     def _procesar_submenu(self, nombre_submenu, comando, rol):
-        """
-        Delega el comando al handler correspondiente según el nombre del submenú.
-        Cada submenú tiene su propia lógica de negocio.
-        """
         if comando == "salir":
             self.sesiones[self.numero].menu = "principal"
             self.sesiones[self.numero].submenu = None
             self.sw.enviar("Volviendo al menú principal...")
             self.mostrar_menu(rol)
+            return
+
+        # Auxilios tiene su propio config, se maneja aparte
+        if nombre_submenu == "auxilios":
+            self.auxilios.submenu_auxilios(comando, self.sesiones)
             return
 
         # Validamos que el comando sea una activación válida para el rol

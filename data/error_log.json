@@ -2,26 +2,10 @@
   "errores": [
     {
       "id": 1,
-      "timestamp": "2026-04-03T12:44:51.140996",
-      "numero": "5491168387770@c.us",
-      "comando": "hola",
-      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 87, in _bienvenida_y_menu\n    self.sw.enviar(self.mensaje_bienvenida())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 219, in mensaje_bienvenida\n    nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\session_manager.py\", line 119, in get_nombre_cliente\n    nombre = cliente.get(\"nombre\", {}).get(\"valor\", \"\").strip().title()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'get'\n",
-      "resuelto": false
-    },
-    {
-      "id": 2,
-      "timestamp": "2026-04-05T11:10:17.424962",
+      "timestamp": "2026-04-05T17:03:59.555260",
       "numero": "231400003358774@lid",
-      "comando": "hola",
-      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 61, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 96, in _bienvenida_y_menu\n    if self._requiere_registro_cliente():\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 120, in _requiere_registro_cliente\n    if self.registro.tiene_datos_cliente_completos():\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\cliente\\submenu_cliente.py\", line 30, in tiene_datos_cliente_completos\n    return self._cliente.tiene_datos_completos()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\registro\\registro_base.py\", line 87, in tiene_datos_completos\n    resultado = self._validar(tipo, valor, validadores_campo, self._get_config_validadores())\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\registro\\validadores.py\", line 61, in _validar\n    \"hora\":     self.valida_hora\n                ^^^^^^^^^^^^^^^^\nAttributeError: 'RegistroCliente' object has no attribute 'valida_hora'. Did you mean: 'valida_fecha'?\n",
-      "resuelto": false
-    },
-    {
-      "id": 3,
-      "timestamp": "2026-04-05T11:26:52.947513",
-      "numero": "231400003358774@lid",
-      "comando": "si",
-      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self.staff.procesar_flujo(comando, self.sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\staff\\submenu_staff.py\", line 59, in procesar_flujo\n    self.horarios.procesar(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\staff\\gestion_horarios_fijos.py\", line 57, in procesar\n    self._procesar_abierto(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\staff\\gestion_horarios_fijos.py\", line 261, in _procesar_abierto\n    f\"⏰ Cierre: *{datos['cierre']}*\\n\"\n                   ~~~~~^^^^^^^^^^\nKeyError: 'cierre'\n",
+      "comando": "5",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 79, in administro_menu\n    self._procesar_submenu(opcion_activa[\"submenu\"], comando, rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 203, in _procesar_submenu\n    self.auxilios.submenu_auxilios(comando, self.sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\submenu_auxilios.py\", line 46, in submenu_auxilios\n    handler(sesiones)\nTypeError: 'ConfiguracionAuxilios' object is not callable\n",
       "resuelto": false
     }
   ]

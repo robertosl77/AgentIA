@@ -1,0 +1,59 @@
+{
+  "conductores": [
+    {
+      "nombre": "sebastian montero",
+      "telefono": "1155557777",
+      "dni": "22555777",
+      "id": 1
+    }
+  ],
+  "vehiculos_propios": [
+    {
+      "patente": "ABC123",
+      "alias": "ford f100",
+      "id": 1
+    }
+  ],
+  "vehiculos_auxiliados": [
+    {
+      "patente": "CBA321",
+      "ris": "liviano",
+      "id": 1
+    }
+  ],
+  "servicios": [
+    {
+      "timestamp": "2026-04-05T17:14:47.496528",
+      "nro_movimiento": "aaaa",
+      "fecha": "2026-04-05",
+      "conductor": "sebastian montero",
+      "vehiculo_propio": "ABC123",
+      "vehiculo_auxiliado": {
+        "patente": "CBA321",
+        "ris": "liviano"
+      },
+      "origen": "Salliquelo",
+      "destino": "Caba",
+      "tramos": [
+        {
+          "tipo_camino": "asfalto",
+          "km_original": 700,
+          "km_excedente": 700,
+          "precio_km": 835,
+          "subtotal": 584500
+        }
+      ],
+      "movida": {
+        "aplica": false,
+        "radio_km": 15,
+        "km_total": 700,
+        "km_maximo": 200,
+        "monto": 0
+      },
+      "extras": [],
+      "info_extra": "me fui a lo de robert",
+      "total": 584500,
+      "id": 1
+    }
+  ]
+}

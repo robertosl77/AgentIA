@@ -1,0 +1,311 @@
+{
+  "nombre_modulo": "Auxilios Mecánicos",
+  "objetos": {
+    "servicio": {
+      "reglamental": true,
+      "habilitado": true,
+      "campos": {
+        "nro_movimiento": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "numero",
+          "validadores": [
+            "texto_minimo_3"
+          ],
+          "msj_pedido": "🔢 Ingresá el *N° de movimiento* (código de aseguradora, ej: 10410858):",
+          "msj_reintento": "⚠️ El número ingresado no es válido. Intentá nuevamente:"
+        },
+        "fecha": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "fecha",
+          "validadores": [
+            "fecha_formato_1"
+          ],
+          "msj_pedido": "📅 Ingresá la *fecha* del servicio (DD/MM/AAAA) o escribí *hoy*:",
+          "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"
+        },
+        "origen": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "texto",
+          "validadores": [],
+          "msj_pedido": "📍 Ingresá el *origen* del viaje (o elegí de la lista):",
+          "msj_reintento": "⚠️ El origen ingresado no es válido. Intentá nuevamente:"
+        },
+        "destino": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "texto",
+          "validadores": [],
+          "msj_pedido": "📍 Ingresá el *destino* del viaje (o elegí de la lista):",
+          "msj_reintento": "⚠️ El destino ingresado no es válido. Intentá nuevamente:"
+        },
+        "info_extra": {
+          "valor": "",
+          "obligatorio": false,
+          "tipo": "texto",
+          "validadores": [
+            "texto_maximo_100"
+          ],
+          "msj_pedido": "📝 ¿Alguna información extra? (o escribí *-* para omitir):",
+          "msj_reintento": ""
+        }
+      }
+    },
+    "conductor": {
+      "reglamental": false,
+      "habilitado": true,
+      "campos": {
+        "nombre": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "texto",
+          "validadores": [
+            "texto_minimo_3",
+            "texto_maximo_50"
+          ],
+          "msj_pedido": "👤 Ingresá el *nombre completo* del conductor:",
+          "msj_reintento": "⚠️ El nombre ingresado no es válido. Intentá nuevamente:"
+        },
+        "telefono": {
+          "valor": "",
+          "obligatorio": false,
+          "tipo": "telefono",
+          "validadores": [],
+          "msj_pedido": "📱 Ingresá el *teléfono* del conductor:",
+          "msj_reintento": "⚠️ El teléfono ingresado no es válido. Intentá nuevamente:"
+        },
+        "dni": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "numero",
+          "validadores": [],
+          "msj_pedido": "🪪 Ingresá el *DNI* del conductor:",
+          "msj_reintento": "⚠️ El DNI ingresado no es válido. Intentá nuevamente:"
+        }
+      }
+    },
+    "vehiculo_propio": {
+      "reglamental": false,
+      "habilitado": true,
+      "campos": {
+        "patente": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "texto",
+          "validadores": [
+            "texto_maximo_10"
+          ],
+          "msj_pedido": "🚛 Ingresá la *patente* del vehículo propio:",
+          "msj_reintento": "⚠️ La patente ingresada no es válida. Intentá nuevamente:"
+        },
+        "alias": {
+          "valor": "",
+          "obligatorio": false,
+          "tipo": "texto",
+          "validadores": [
+            "texto_maximo_50"
+          ],
+          "msj_pedido": "🏷️ Ingresá un *alias* para el vehículo (ej: Grúa Grande):",
+          "msj_reintento": ""
+        }
+      }
+    },
+    "vehiculo_auxiliado": {
+      "reglamental": true,
+      "habilitado": true,
+      "campos": {
+        "patente": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "texto",
+          "validadores": [
+            "texto_maximo_10"
+          ],
+          "msj_pedido": "🚗 Ingresá la *patente* del vehículo auxiliado:",
+          "msj_reintento": "⚠️ La patente ingresada no es válida. Intentá nuevamente:"
+        },
+        "ris": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "opcion",
+          "opciones": [
+            "liviano",
+            "semi_pesado",
+            "pesado"
+          ],
+          "msj_pedido": "⚖️ Seleccioná la categoría *RIS*:\n1. Liviano\n2. Semi pesado\n3. Pesado",
+          "msj_reintento": "⚠️ Opción no válida. Elegí 1, 2 o 3:"
+        }
+      }
+    }
+  },
+  "catalogos": {
+    "puntos_frecuentes": [
+      "Salliquelo",
+      "Tres Lomas",
+      "Trenque Lauquen",
+      "Bragado"
+    ],
+    "recorridos_establecidos": [],
+    "tipos_camino": [
+      {
+        "nombre": "asfalto",
+        "precio_por_km": {
+          "liviano": 835,
+          "semi_pesado": 924,
+          "pesado": 1001
+        }
+      },
+      {
+        "nombre": "ripio",
+        "precio_por_km": {
+          "liviano": 924,
+          "semi_pesado": 960,
+          "pesado": 1001
+        }
+      }
+    ],
+    "ris_categorias": [
+      {
+        "nombre": "liviano",
+        "peso": "Hasta 2000 kg"
+      },
+      {
+        "nombre": "semi_pesado",
+        "peso": "2000-2500 kg"
+      },
+      {
+        "nombre": "pesado",
+        "peso": "2500-3500 kg"
+      }
+    ]
+  },
+  "tarifas": {
+    "movida": {
+      "radio_km": 15,
+      "km_maximo": 200,
+      "precios": {
+        "liviano": 33392,
+        "semi_pesado": 37566,
+        "pesado": 46201
+      }
+    },
+    "cancelado_activado": {
+      "reglamental": false,
+      "habilitado": false,
+      "precios": {
+        "liviano": 17769,
+        "semi_pesado": 17769,
+        "pesado": 26383
+      }
+    },
+    "mecanica_ligera": {
+      "reglamental": false,
+      "habilitado": false,
+      "precio_movida": 29220,
+      "precio_por_km": 751
+    },
+    "extraccion": {
+      "reglamental": false,
+      "habilitado": false,
+      "precio": 32000
+    },
+    "hora_espera": {
+      "reglamental": false,
+      "habilitado": false,
+      "precio": 20034
+    },
+    "custodia": {
+      "reglamental": false,
+      "habilitado": false,
+      "precio": 25404
+    },
+    "remis": {
+      "reglamental": false,
+      "habilitado": false,
+      "precio_por_km": 751
+    }
+  },
+  "submenu": {
+    "consulta": "🚛 Módulo de Auxilios Mecánicos:",
+    "opciones": [
+      {
+        "id": "1",
+        "roles": [
+          "root",
+          "admin",
+          "usuario"
+        ],
+        "activacion": [
+          "1"
+        ],
+        "texto": "1. Registrar servicio",
+        "handler": "registrar_servicio"
+      },
+      {
+        "id": "2",
+        "roles": [
+          "root",
+          "admin"
+        ],
+        "activacion": [
+          "2"
+        ],
+        "texto": "2. Gestionar conductores",
+        "handler": "gestionar_conductores",
+        "requiere": "conductor"
+      },
+      {
+        "id": "3",
+        "roles": [
+          "root",
+          "admin"
+        ],
+        "activacion": [
+          "3"
+        ],
+        "texto": "3. Gestionar vehículos propios",
+        "handler": "gestionar_vehiculos",
+        "requiere": "vehiculo_propio"
+      },
+      {
+        "id": "4",
+        "roles": [
+          "root",
+          "admin"
+        ],
+        "activacion": [
+          "4"
+        ],
+        "texto": "4. Gestionar recorridos",
+        "handler": "gestionar_recorridos"
+      },
+      {
+        "id": "5",
+        "roles": [
+          "root",
+          "admin"
+        ],
+        "activacion": [
+          "5"
+        ],
+        "texto": "5. Configuración",
+        "handler": "configuracion_modulo"
+      },
+      {
+        "id": "salir",
+        "roles": [
+          "root",
+          "admin",
+          "usuario"
+        ],
+        "activacion": [
+          "salir"
+        ],
+        "texto": "Escribí 'salir' para volver"
+      }
+    ]
+  }
+}
