@@ -183,6 +183,22 @@
       "comando": "hola",
       "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 57, in administro_menu\n    self._bienvenida_y_menu(rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 92, in _bienvenida_y_menu\n    if self._requiere_registro_cliente():\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 124, in _requiere_registro_cliente\n    self.registro.iniciar_registro_cliente(self.sesiones)\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'SubMenuCliente' object has no attribute 'iniciar_registro_cliente'. Did you mean: 'iniciar_registro_direccion'?\n",
       "resuelto": false
+    },
+    {
+      "id": 24,
+      "timestamp": "2026-04-04T21:28:42.462383",
+      "numero": "231400003358774@lid",
+      "comando": "cancelar",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self.staff.procesar_flujo(comando, self.sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\staff\\submenu_staff.py\", line 53, in procesar_flujo\n    self._procesar_seleccion_guardia(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\staff\\submenu_staff.py\", line 106, in _procesar_seleccion_guardia\n    self.submenu_staff(sesiones)\nTypeError: SubMenuStaff.submenu_staff() missing 1 required positional argument: 'sesiones'\n",
+      "resuelto": false
+    },
+    {
+      "id": 25,
+      "timestamp": "2026-04-04T21:29:45.123269",
+      "numero": "231400003358774@lid",
+      "comando": "cancelar",
+      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 54, in administro_menu\n    self.staff.procesar_flujo(comando, self.sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\staff\\submenu_staff.py\", line 53, in procesar_flujo\n    self._procesar_seleccion_guardia(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\staff\\submenu_staff.py\", line 106, in _procesar_seleccion_guardia\n    self.submenu_staff(sesiones)\nTypeError: SubMenuStaff.submenu_staff() missing 1 required positional argument: 'sesiones'\n",
+      "resuelto": false
     }
   ]
 }
