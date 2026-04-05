@@ -90,6 +90,16 @@
       "formato": "%d/%m/%Y:%H:%M",
       "msj_error": "⚠️ El formato de fecha y hora debe ser DD/MM/AAAA:HH:MM. Intentá nuevamente:"
     },
+    "hora_formato_1": {
+      "tipo": "hora", 
+      "formato": "%H:%M", 
+      "msj_error": "⚠️ El formato debe ser HH:MM (ej: 09:00). Intentá nuevamente:"
+    },
+    "hora_formato_2": {
+      "tipo": "hora", 
+      "formato": "%H:%M:%S", 
+      "msj_error": "⚠️ El formato debe ser HH:MM:SS (ej: 09:00:00). Intentá nuevamente:"
+    },
     "email_formato": {
       "tipo": "email",
       "formato": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
@@ -374,7 +384,7 @@
               "3"
             ],
             "texto": "3. Editar Horarios Fijos",
-            "handler": ""
+            "handler": "editar_horarios_fijos"
           },
           {
             "id": "salir",

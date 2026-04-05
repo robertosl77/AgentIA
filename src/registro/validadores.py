@@ -39,6 +39,14 @@ class Validadores:
         except ValueError:
             return False
 
+    def valida_hora(self, valor):
+        """Valida formato de hora HH:MM."""
+        try:
+            datetime.strptime(valor.strip(), "%H:%M")
+            return True
+        except ValueError:
+            return False
+
     def valida_fecha_hora(self, valor):
         """[INTERFAZ] Valida formato de fecha y hora DD/MM/AAAA HH:MM."""
         pass
@@ -58,6 +66,7 @@ class Validadores:
             "email":    self.valida_email,
             "telefono": self.valida_telefono,
             "fecha":    self.valida_fecha,
+            "hora":     self.valida_hora
         }
         validador_tipo = validadores_tipo.get(tipo)
         if validador_tipo and not validador_tipo(valor):
@@ -134,5 +143,11 @@ class Validadores:
                 return True
             except ValueError:
                 return False
+        elif tipo_v == "hora":
+            try:
+                datetime.strptime(valor.strip(), config_v.get("formato", "%H:%M"))
+                return True
+            except ValueError:
+                return False            
 
         return True  # tipo desconocido: dejamos pasar

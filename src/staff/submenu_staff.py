@@ -4,6 +4,7 @@ from src.config_loader import ConfigLoader
 from src.session_manager import SessionManager
 from src.staff.gestion_guardias import GestionGuardias
 from src.staff.gestion_cierres_eventuales import GestionCierresEventuales
+from src.staff.gestion_horarios_fijos import GestionHorariosFijos
 
 class SubMenuStaff:
     """
@@ -18,6 +19,7 @@ class SubMenuStaff:
         self.session_manager = SessionManager()
         self.guardias = GestionGuardias(numero)
         self.cierres = GestionCierresEventuales(numero)
+        self.horarios = GestionHorariosFijos(numero)
 
     def submenu_staff(self, comando, sesiones):
         """Procesa el comando dentro del submenú de staff."""
@@ -43,14 +45,18 @@ class SubMenuStaff:
 
     def esta_en_flujo(self, sesiones):
         """Retorna True si el usuario está en medio de cualquier flujo de staff."""
-        return self.guardias.esta_en_flujo(sesiones) or self.cierres.esta_en_flujo(sesiones)
+        return (self.guardias.esta_en_flujo(sesiones) or 
+            self.cierres.esta_en_flujo(sesiones) or 
+            self.horarios.esta_en_flujo(sesiones))
 
     def procesar_flujo(self, comando, sesiones):
         """Delega el comando al flujo activo."""
         if self.guardias.esta_en_flujo(sesiones):
             self.guardias.procesar(comando, sesiones)
         elif self.cierres.esta_en_flujo(sesiones):
-            self.cierres.procesar(comando, sesiones)            
+            self.cierres.procesar(comando, sesiones)       
+        elif self.horarios.esta_en_flujo(sesiones):
+            self.horarios.procesar(comando, sesiones)                 
 
     # ── HANDLERS ──────────────────────────────────────────────────────────────
 
@@ -61,5 +67,4 @@ class SubMenuStaff:
         self.cierres.iniciar(sesiones)
 
     def editar_horarios_fijos(self, sesiones):
-        """[INTERFAZ] Delega en GestionHorarios cuando esté implementado."""
-        pass
+        self.horarios.iniciar(sesiones)

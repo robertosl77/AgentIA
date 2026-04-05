@@ -46,7 +46,7 @@ class SubMenuHorarios:
                 self.sw.enviar(f"❌ Handler '{handler_nombre}' no encontrado.")
 
     def submenu_horarios_fijos(self):
-        horarios = self.datos.data.get("horarios_fijos", {})
+        horarios = self.datos.data.get("horarios_fijos", {}).get("dias", {})
         if not horarios:
             return "No hay horarios configurados actualmente."
 

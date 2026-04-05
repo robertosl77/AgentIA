@@ -1,39 +1,49 @@
 {
   "horarios_fijos": {
-    "lunes": {
-      "abierto": true,
-      "apertura": "09:00",
-      "cierre": "20:00"
+    "validadores": [
+      "hora_formato_1"
+    ],
+    "confirma_edicion": true,
+    "opciones_edicion_masiva": {
+      "todos_los_dias": true,
+      "solo_dias_habiles": true
     },
-    "martes": {
-      "abierto": true,
-      "apertura": "09:00",
-      "cierre": "20:00"
-    },
-    "miercoles": {
-      "abierto": true,
-      "apertura": "09:00",
-      "cierre": "20:00"
-    },
-    "jueves": {
-      "abierto": true,
-      "apertura": "09:00",
-      "cierre": "20:00"
-    },
-    "viernes": {
-      "abierto": true,
-      "apertura": "09:00",
-      "cierre": "20:00"
-    },
-    "sabado": {
-      "abierto": true,
-      "apertura": "09:00",
-      "cierre": "15:00"
-    },
-    "domingo": {
-      "abierto": false,
-      "apertura": "09:00",
-      "cierre": "20:00"
+    "dias": {
+      "lunes": {
+        "abierto": true,
+        "apertura": "09:00",
+        "cierre": "20:00"
+      },
+      "martes": {
+        "abierto": true,
+        "apertura": "09:00",
+        "cierre": "20:00"
+      },
+      "miercoles": {
+        "abierto": true,
+        "apertura": "09:00",
+        "cierre": "20:00"
+      },
+      "jueves": {
+        "abierto": true,
+        "apertura": "09:00",
+        "cierre": "20:00"
+      },
+      "viernes": {
+        "abierto": true,
+        "apertura": "09:00",
+        "cierre": "20:00"
+      },
+      "sabado": {
+        "abierto": true,
+        "apertura": "09:00",
+        "cierre": "20:00"
+      },
+      "domingo": {
+        "abierto": false,
+        "apertura": "09:00",
+        "cierre": "20:00"
+      }
     }
   },
   "dias_de_guardia": {
