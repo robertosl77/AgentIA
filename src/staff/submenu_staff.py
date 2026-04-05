@@ -1,6 +1,7 @@
 # src/staff/submenu_staff.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
+from src.data_loader import DataLoader
 from src.session_manager import SessionManager
 from src.registro.validadores import Validadores
 from datetime import datetime
@@ -17,6 +18,7 @@ class SubMenuStaff(Validadores):
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
+        self.datos = DataLoader()
         self.session_manager = SessionManager()
 
     def submenu_staff(self, comando, sesiones):
@@ -95,7 +97,7 @@ class SubMenuStaff(Validadores):
 
     def _get_guardias_futuras(self):
         hoy = datetime.now().date()
-        fechas = self.config.data.get("dias_de_guardia", {}).get("fechas", [])
+        fechas = self.datos.data.get("dias_de_guardia", {}).get("fechas", [])
         futuras = [f for f in fechas if datetime.strptime(f, "%Y-%m-%d").date() > hoy]
         return sorted(futuras)
 
@@ -126,7 +128,7 @@ class SubMenuStaff(Validadores):
         fecha_elegida = futuras[indice]
         sesiones[self.numero].staff_dato_temporal = fecha_elegida
 
-        confirma = self.config.data.get("dias_de_guardia", {}).get("confirma_elimina", False)
+        confirma = self.datos.data.get("dias_de_guardia", {}).get("confirma_elimina", False)
         if confirma:
             f_obj = datetime.strptime(fecha_elegida, "%Y-%m-%d")
             sesiones[self.numero].staff_campo_actual = "guardia_confirmar_elimina"
@@ -153,7 +155,7 @@ class SubMenuStaff(Validadores):
 
     def _eliminar_guardia(self, fecha_iso, sesiones):
         """Elimina la guardia del JSON y vuelve al menú."""
-        fechas = self.config.data["dias_de_guardia"]["fechas"]
+        fechas = self.datos.data["dias_de_guardia"]["fechas"]
         if fecha_iso in fechas:
             fechas.remove(fecha_iso)
             self._guardar_config()
@@ -176,7 +178,7 @@ class SubMenuStaff(Validadores):
             self.gestionar_guardias(sesiones)
             return
 
-        validadores_campo = self.config.data.get("dias_de_guardia", {}).get("validadores", [])
+        validadores_campo = self.datos.data.get("dias_de_guardia", {}).get("validadores", [])
         config_validadores = self.config.data.get("validadores", {})
         reintentos_max = self.config.data.get("estructura_sesion", {}).get("reintentos_input", 2)
         reintentos_actuales = getattr(sesiones[self.numero], "staff_reintentos", 0)
@@ -187,7 +189,7 @@ class SubMenuStaff(Validadores):
             fecha_obj = datetime.strptime(comando.strip(), "%d/%m/%Y")
             fecha_iso = fecha_obj.strftime("%Y-%m-%d")
 
-            confirma = self.config.data.get("dias_de_guardia", {}).get("confirma_ingreso", False)
+            confirma = self.datos.data.get("dias_de_guardia", {}).get("confirma_ingreso", False)
             if confirma:
                 sesiones[self.numero].staff_dato_temporal = fecha_iso
                 sesiones[self.numero].staff_campo_actual = "guardia_confirmar_ingreso"
@@ -227,7 +229,7 @@ class SubMenuStaff(Validadores):
 
     def _guardar_guardia(self, fecha_iso, fecha_display, sesiones):
         """Guarda la guardia en el JSON y vuelve al menú."""
-        self.config.data["dias_de_guardia"]["fechas"].append(fecha_iso)
+        self.datos.data["dias_de_guardia"]["fechas"].append(fecha_iso)
         self._guardar_config()
         sesiones[self.numero].staff_campo_actual = None
         sesiones[self.numero].staff_dato_temporal = None
@@ -244,10 +246,8 @@ class SubMenuStaff(Validadores):
         self.sw.enviar(self.config.armar_menu(submenu_data, rol))
 
     def _guardar_config(self):
-        """Persiste configuracion.json con los cambios."""
-        import json
-        with open(self.config.path, "w", encoding="utf-8") as f:
-            json.dump(self.config.data, f, indent=2, ensure_ascii=False)
+        """Persiste datos.json con los cambios."""
+        self.datos.guardar()
 
     def agregar_guardia(self, sesiones):
         """Handler legacy — redirige a gestionar_guardias."""
