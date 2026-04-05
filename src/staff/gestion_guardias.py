@@ -141,6 +141,16 @@ class GestionGuardias(Validadores):
         if resultado is True:
             fecha_obj = datetime.strptime(comando.strip(), "%d/%m/%Y")
             fecha_iso = fecha_obj.strftime("%Y-%m-%d")
+            
+            # Verificamos duplicado
+            if fecha_iso in self.datos.data["dias_de_guardia"]["fechas"]:
+                self.sw.enviar(
+                    f"⚠️ Ya existe una guardia para el *{comando.strip()}*. "
+                    f"No se puede registrar la misma fecha dos veces."
+                )
+                self.iniciar(sesiones)
+                return
+            
             confirma = self.datos.data.get("dias_de_guardia", {}).get("confirma_ingreso", False)
             if confirma:
                 sesiones[self.numero].staff_dato_temporal = fecha_iso
