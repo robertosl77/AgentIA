@@ -149,13 +149,7 @@
       "Bragado",
       "Caba"
     ],
-    "recorridos_establecidos": [
-      {
-        "origen": "Caba",
-        "destino": "Salliquelo",
-        "km": 700
-      }
-    ],
+    "recorridos_establecidos": [],
     "tipos_camino": [
       {
         "nombre": "asfalto",
