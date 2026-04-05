@@ -31,6 +31,10 @@
       "tipo": "fecha_futura",
       "msj_error": "⚠️ La fecha debe ser futura. Intentá nuevamente:"
     },
+    "fecha_hoy_o_futura": {
+        "tipo": "fecha_hoy_o_futura",
+        "msj_error": "⚠️ La fecha debe ser hoy o posterior. Intentá nuevamente:"
+    },    
     "fecha_mayor_18": {
       "tipo": "edad_minima",
       "edad": 18,
@@ -358,8 +362,8 @@
             "activacion": [
               "2"
             ],
-            "texto": "2. Registrar Cierre Eventual",
-            "handler": ""
+            "texto": "2. Gestionar Cierre Eventual",
+            "handler": "gestionar_cierre_eventual"
           },
           {
             "id": "3",

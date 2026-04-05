@@ -94,6 +94,13 @@ class Validadores:
                 return f > ahora
             except ValueError:
                 return False
+            
+        elif tipo_v == "fecha_hoy_o_futura":
+            try:
+                f = datetime.strptime(valor.strip(), "%d/%m/%Y").date()
+                return f >= datetime.now().date()
+            except ValueError:
+                return False            
 
         elif tipo_v == "edad_minima":
             try:

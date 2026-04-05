@@ -89,7 +89,7 @@ class SubMenuHorarios:
         return "\n".join(lineas)
 
     def submenu_cierres_eventuales(self):
-        cierres = self.datos.data.get("cierres_eventuales", [])
+        cierres = self.datos.data.get("cierres_eventuales", {}).get("datos", [])
         if not cierres:
             return "No hay cierres eventuales programados."
 
@@ -177,7 +177,7 @@ class SubMenuHorarios:
             return f"{dias_es[fecha.strftime('%A')]} {fecha.day} de {meses_es[fecha.month]}"
 
         hoy = datetime.now().date()
-        cierres = self.datos.data.get("cierres_eventuales", [])
+        cierres = self.datos.data.get("cierres_eventuales", {}).get("datos", [])
         vigentes = []
 
         for c in cierres:
@@ -217,7 +217,7 @@ class SubMenuHorarios:
         }
         dia_json = traduccion[ahora.strftime('%A').lower()]
 
-        for c in self.datos.data.get("cierres_eventuales", []):
+        for c in self.datos.data.get("cierres_eventuales", {}).get("datos", []):
             f_desde = datetime.strptime(c["desde"], "%Y-%m-%d").date()
             f_hasta = datetime.strptime(c["hasta"], "%Y-%m-%d").date()
             if f_desde <= hoy <= f_hasta:

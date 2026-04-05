@@ -52,21 +52,36 @@
       "2026-05-05"
     ]
   },
-  "cierres_eventuales": [
-    {
-      "desde": "2026-04-02",
-      "hasta": "2026-04-05",
-      "motivo": "Vacaciones de semana santa"
-    },
-    {
-      "desde": "2026-05-01",
-      "hasta": "2026-05-01",
-      "motivo": "Día del Trabajador"
-    },
-    {
-      "desde": "2026-06-15",
-      "hasta": "2026-06-20",
-      "motivo": "Reformas en el local"
-    }
-  ]
+  "cierres_eventuales": {
+    "validadores_desde": [
+      "fecha_formato_1",
+      "fecha_hoy_o_futura"
+    ],
+    "validadores_hasta": [
+      "fecha_formato_1",
+      "fecha_hoy_o_futura"
+    ],
+    "validadores_motivo": [
+      "texto_maximo_50"
+    ],
+    "confirma_ingreso": true,
+    "confirma_elimina": true,
+    "datos": [
+      {
+        "desde": "2026-04-02",
+        "hasta": "2026-04-05",
+        "motivo": "Vacaciones de semana santa"
+      },
+      {
+        "desde": "2026-06-15",
+        "hasta": "2026-06-20",
+        "motivo": "Reformas en el local"
+      },
+      {
+        "desde": "2026-05-01",
+        "hasta": "2026-05-01",
+        "motivo": "feriado dia del trabajador"
+      }
+    ]
+  }
 }
