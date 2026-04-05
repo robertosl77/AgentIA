@@ -51,6 +51,10 @@ class Validadores:
         """[INTERFAZ] Valida formato de fecha y hora DD/MM/AAAA HH:MM."""
         pass
 
+    def valida_alfanumerico(self, valor):
+        """Valida que el valor contenga solo letras, números y espacios."""
+        return bool(valor.strip()) and all(c.isalnum() or c.isspace() for c in valor)    
+
     # ── DISPATCHER PRINCIPAL ──────────────────────────────────────────────────
 
     def _validar(self, tipo, valor, validadores_campo=[], config_validadores={}):
@@ -66,7 +70,8 @@ class Validadores:
             "email":    self.valida_email,
             "telefono": self.valida_telefono,
             "fecha":    self.valida_fecha,
-            "hora":     self.valida_hora
+            "hora":     self.valida_hora,
+            "alfanumerico": self.valida_alfanumerico
         }
         validador_tipo = validadores_tipo.get(tipo)
         if validador_tipo and not validador_tipo(valor):

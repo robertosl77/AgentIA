@@ -8,7 +8,7 @@
         "nro_movimiento": {
           "valor": "",
           "obligatorio": true,
-          "tipo": "numero",
+          "tipo": "alfanumerico",
           "validadores": [
             "texto_minimo_3"
           ],
@@ -146,9 +146,16 @@
       "Salliquelo",
       "Tres Lomas",
       "Trenque Lauquen",
-      "Bragado"
+      "Bragado",
+      "Caba"
     ],
-    "recorridos_establecidos": [],
+    "recorridos_establecidos": [
+      {
+        "origen": "Caba",
+        "destino": "Salliquelo",
+        "km": 700
+      }
+    ],
     "tipos_camino": [
       {
         "nombre": "asfalto",
