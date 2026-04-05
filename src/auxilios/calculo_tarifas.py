@@ -146,6 +146,12 @@ class CalculoTarifas:
             "subtotal": subtotal
         }
 
+    # ── FORMATO ────────────────────────────────────────────────────────────────
+
+    def _formato_moneda(self, valor):
+        """Formatea un número a moneda argentina: $33.392"""
+        return f"${valor:,.0f}".replace(",", ".")
+
     # ── DESGLOSE PARA CONFIRMACIÓN ────────────────────────────────────────────
 
     def generar_desglose(self, resultado):
@@ -158,7 +164,7 @@ class CalculoTarifas:
         # Movida
         movida = resultado["movida"]
         if movida["aplica"]:
-            lineas.append(f"🚛 Movida ({movida['radio_km']}km incluidos): ${movida['monto']:,.0f}")
+            lineas.append(f"🚛 Movida ({movida['radio_km']}km incluidos): {self._formato_moneda(movida['monto'])}")
         else:
             lineas.append(f"🚛 Movida: No aplica (recorrido ≥ {movida['km_maximo']}km)")
 
@@ -167,7 +173,7 @@ class CalculoTarifas:
             if t["km_excedente"] > 0:
                 lineas.append(
                     f"🛣️ {t['tipo_camino'].capitalize()}: "
-                    f"{t['km_excedente']}km × ${t['precio_km']:,.0f} = ${t['subtotal']:,.0f}"
+                    f"{t['km_excedente']}km × {self._formato_moneda(t['precio_km'])} = {self._formato_moneda(t['subtotal'])}"
                 )
             elif t["km_original"] > 0:
                 lineas.append(
@@ -178,9 +184,9 @@ class CalculoTarifas:
         # Extras
         for e in resultado["extras"]["detalle"]:
             nombre_display = e["nombre"].replace("_", " ").capitalize()
-            lineas.append(f"➕ {nombre_display}: ${e['monto']:,.0f}")
+            lineas.append(f"➕ {nombre_display}: {self._formato_moneda(e['monto'])}")
 
         # Total
-        lineas.append(f"\n💰 *TOTAL: ${resultado['total']:,.0f}*")
+        lineas.append(f"\n💰 *TOTAL: {self._formato_moneda(resultado['total'])}*")
 
         return "\n".join(lineas)
