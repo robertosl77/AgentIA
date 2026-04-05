@@ -153,9 +153,11 @@ class RegistroServicio(Validadores):
             # Sin conductores → iniciar carga
             sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_carga_nombre"
             sesiones[self.numero].auxilios_reintentos = 0
+            campos_conductor = self.config.get_campos("conductor")
+            msj_nombre = campos_conductor.get("nombre", {}).get("msj_pedido", "Ingresá el nombre:")
             self.sw.enviar(
-                "👤 No hay conductores registrados. Vamos a cargar uno.\n\n"
-                "Ingresá el *nombre* del conductor:"
+                f"👤 No hay conductores registrados. Vamos a cargar uno.\n\n"
+                f"{msj_nombre}"
             )
         elif len(conductores) == 1:
             # Un solo conductor → selección automática
@@ -199,7 +201,9 @@ class RegistroServicio(Validadores):
 
         if campo_actual == "servicio_conductor_carga_nombre":
             if not self.valida_texto(comando):
-                self.sw.enviar("⚠️ Nombre no válido. Intentá nuevamente:")
+                campos_conductor = self.config.get_campos("conductor")
+                msj = campos_conductor.get("nombre", {}).get("msj_reintento", "⚠️ Nombre no válido. Intentá nuevamente:")
+                self.sw.enviar(msj)
                 return
             sesiones[self.numero].auxilios_dato_temporal["_conductor_temp"] = {"nombre": comando.strip()}
             campos_conductor = self.config.get_campos("conductor")
@@ -239,7 +243,9 @@ class RegistroServicio(Validadores):
         elif campo_actual == "servicio_conductor_carga_dni":
             temp = sesiones[self.numero].auxilios_dato_temporal.get("_conductor_temp", {})
             if not self.valida_numero(comando):
-                self.sw.enviar("⚠️ DNI no válido. Ingresá solo números:")
+                campos_conductor = self.config.get_campos("conductor")
+                msj = campos_conductor.get("dni", {}).get("msj_reintento", "⚠️ DNI no válido. Ingresá solo números:")
+                self.sw.enviar(msj)
                 return
             temp["dni"] = comando.strip()
             sesiones[self.numero].auxilios_dato_temporal["_conductor_temp"] = temp
@@ -265,9 +271,11 @@ class RegistroServicio(Validadores):
         if len(vehiculos) == 0:
             sesiones[self.numero].auxilios_campo_actual = "servicio_vpropio_carga_patente"
             sesiones[self.numero].auxilios_reintentos = 0
+            campos_vpropio = self.config.get_campos("vehiculo_propio")
+            msj_patente = campos_vpropio.get("patente", {}).get("msj_pedido", "Ingresá la patente:")
             self.sw.enviar(
-                "🚛 No hay vehículos propios registrados. Vamos a cargar uno.\n\n"
-                "Ingresá la *patente* del vehículo:"
+                f"🚛 No hay vehículos propios registrados. Vamos a cargar uno.\n\n"
+                f"{msj_patente}"
             )
         elif len(vehiculos) == 1:
             v = vehiculos[0]
@@ -321,7 +329,9 @@ class RegistroServicio(Validadores):
                 "patente": comando.strip().upper()
             }
             sesiones[self.numero].auxilios_campo_actual = "servicio_vpropio_carga_alias"
-            self.sw.enviar("🏷️ Ingresá un *alias* para el vehículo (o *-* para omitir):")
+            campos_vpropio = self.config.get_campos("vehiculo_propio")
+            msj_alias = campos_vpropio.get("alias", {}).get("msj_pedido", "Ingresá un alias:")
+            self.sw.enviar(msj_alias)
 
         elif campo_actual == "servicio_vpropio_carga_alias":
             temp = sesiones[self.numero].auxilios_dato_temporal.get("_vpropio_temp", {})
