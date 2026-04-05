@@ -1,4 +1,4 @@
-# src/staff/gestion_cierres.py
+# src/staff/gestion_cierres_eventuales.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.data_loader import DataLoader
@@ -6,7 +6,7 @@ from src.session_manager import SessionManager
 from src.registro.validadores import Validadores
 from datetime import datetime
 
-class GestionCierres(Validadores):
+class GestionCierresEventuales(Validadores):
     """
     Gestiona el flujo completo de cierres eventuales.
     Responsabilidades:

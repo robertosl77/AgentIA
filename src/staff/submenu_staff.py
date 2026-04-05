@@ -3,7 +3,7 @@ from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.session_manager import SessionManager
 from src.staff.gestion_guardias import GestionGuardias
-from src.staff.gestion_cierres import GestionCierres
+from src.staff.gestion_cierres_eventuales import GestionCierresEventuales
 
 class SubMenuStaff:
     """
@@ -17,7 +17,7 @@ class SubMenuStaff:
         self.config = ConfigLoader()
         self.session_manager = SessionManager()
         self.guardias = GestionGuardias(numero)
-        self.cierres = GestionCierres(numero)
+        self.cierres = GestionCierresEventuales(numero)
 
     def submenu_staff(self, comando, sesiones):
         """Procesa el comando dentro del submenú de staff."""
