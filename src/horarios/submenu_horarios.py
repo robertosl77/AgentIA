@@ -227,7 +227,7 @@ class SubMenuHorarios:
         if hoy.strftime("%Y-%m-%d") in guardias:
             return "✅ *Abierto*: Hoy estamos de Guardia."
 
-        config = self.datos.data.get("horarios_fijos", {}).get(dia_json, {})
+        config = self.datos.data.get("horarios_fijos", {}).get("dias", {}).get(dia_json, {})
         if config.get("abierto"):
             ap = datetime.strptime(config["apertura"], "%H:%M").time()
             ci = datetime.strptime(config["cierre"], "%H:%M").time()

@@ -5,23 +5,6 @@
     "palabra_escape": "horarios",
     "motor_envio": "wppconnect"
   },
-  "permisos_edicion": {
-    "horarios_fijos": [
-      "root"
-    ],
-    "dias_de_guardia": [
-      "root",
-      "admin"
-    ],
-    "cierres_eventuales": [
-      "root",
-      "admin",
-      "supervisores"
-    ],
-    "textos_mensajes": [
-      "root"
-    ]
-  },
   "validadores": {
     "fecha_pasado": {
       "tipo": "fecha_pasada",

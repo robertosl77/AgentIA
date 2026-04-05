@@ -104,12 +104,13 @@ class SessionManager:
             expira = datetime.min
 
         if datetime.now() > expira:
-            # Sesión expirada: reiniciamos login pero preservamos datos del cliente
             datos_cliente = sesiones[numero].get("cliente", {})
             datos_direccion = sesiones[numero].get("direccion", {})
+            rol_actual = sesiones[numero].get("rol", "usuario")
             sesiones[numero] = self._sesion_vacia()
-            sesiones[numero]["cliente"] = datos_cliente       # ← preservamos
-            sesiones[numero]["direccion"] = datos_direccion   # ← preservamos
+            sesiones[numero]["cliente"] = datos_cliente
+            sesiones[numero]["direccion"] = datos_direccion
+            sesiones[numero]["rol"] = rol_actual
             self.data["sesiones"] = sesiones
             self._guardar_archivo()
             return True  # Sesión reiniciada = tratar como nuevo ingreso
