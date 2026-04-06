@@ -182,7 +182,6 @@ class GestionRecorridos(Validadores):
             self._cancelar(sesiones)
             return
 
-        reintentos_max = 3
         reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0)
 
         try:
@@ -192,7 +191,7 @@ class GestionRecorridos(Validadores):
         except ValueError:
             reintentos += 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= reintentos_max:
+            if reintentos >= self.config.data.get("reintentos_input", 3):
                 self.sw.enviar("❌ Se canceló la carga. Volviendo al menú de recorridos...")
                 self._cancelar(sesiones)
             else:
@@ -255,7 +254,7 @@ class GestionRecorridos(Validadores):
         else:
             reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= 3:
+            if reintentos >= self.config.data.get("reintentos_input", 3):
                 sesiones[self.numero].auxilios_campo_actual = None
                 sesiones[self.numero].auxilios_dato_temporal = {}
                 sesiones[self.numero].auxilios_reintentos = 0

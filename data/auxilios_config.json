@@ -1,5 +1,6 @@
 {
   "nombre_modulo": "Auxilios Mecánicos",
+  "reintentos_input": 3,
   "objetos": {
     "servicio": {
       "reglamental": true,

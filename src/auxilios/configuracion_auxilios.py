@@ -151,7 +151,7 @@ class ConfiguracionAuxilios:
         else:
             reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= 3:
+            if reintentos >= self.config.data.get("reintentos_input", 3):
                 sesiones[self.numero].auxilios_campo_actual = None
                 sesiones[self.numero].auxilios_dato_temporal = {}
                 sesiones[self.numero].auxilios_reintentos = 0

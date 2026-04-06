@@ -137,7 +137,6 @@ class GestionConductores(Validadores):
         tipo = config_campo.get("tipo", "texto")
         validadores_campo = config_campo.get("validadores", [])
         es_obligatorio = config_campo.get("obligatorio", True)
-        reintentos_max = 3  # TODO: leer de config global
         reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0)
 
         # Campos no obligatorios: aceptamos guión como vacío
@@ -156,7 +155,7 @@ class GestionConductores(Validadores):
         else:
             reintentos += 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= reintentos_max:
+            if reintentos >= self.config.data.get("reintentos_input", 3):
                 sesiones[self.numero].auxilios_campo_actual = None
                 sesiones[self.numero].auxilios_dato_temporal = {}
                 sesiones[self.numero].auxilios_reintentos = 0
@@ -208,7 +207,7 @@ class GestionConductores(Validadores):
         else:
             reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= 3:
+            if reintentos >= self.config.data.get("reintentos_input", 3):
                 sesiones[self.numero].auxilios_campo_actual = None
                 sesiones[self.numero].auxilios_dato_temporal = {}
                 sesiones[self.numero].auxilios_reintentos = 0

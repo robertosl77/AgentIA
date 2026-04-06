@@ -140,7 +140,6 @@ class GestionVehiculosAuxiliados(Validadores):
         config_campo = campos_config.get(campo, {})
 
         tipo = config_campo.get("tipo", "texto")
-        reintentos_max = 3
         reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0)
 
         # Campo tipo opción (ris)
@@ -154,7 +153,7 @@ class GestionVehiculosAuxiliados(Validadores):
             except ValueError:
                 reintentos += 1
                 sesiones[self.numero].auxilios_reintentos = reintentos
-                if reintentos >= reintentos_max:
+                if reintentos >= self.config.data.get("reintentos_input", 3):
                     sesiones[self.numero].auxilios_campo_actual = None
                     sesiones[self.numero].auxilios_dato_temporal = {}
                     sesiones[self.numero].auxilios_reintentos = 0
@@ -189,7 +188,7 @@ class GestionVehiculosAuxiliados(Validadores):
         else:
             reintentos += 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= reintentos_max:
+            if reintentos >= self.config.data.get("reintentos_input", 3):
                 sesiones[self.numero].auxilios_campo_actual = None
                 sesiones[self.numero].auxilios_dato_temporal = {}
                 sesiones[self.numero].auxilios_reintentos = 0
@@ -245,7 +244,7 @@ class GestionVehiculosAuxiliados(Validadores):
         else:
             reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= 3:
+            if reintentos >= self.config.data.get("reintentos_input", 3):
                 sesiones[self.numero].auxilios_campo_actual = None
                 sesiones[self.numero].auxilios_dato_temporal = {}
                 sesiones[self.numero].auxilios_reintentos = 0

@@ -696,7 +696,7 @@ class RegistroServicio(Validadores):
         else:
             reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= 3:
+            if reintentos >= self.config.data.get("reintentos_input", 3):
                 sesiones[self.numero].auxilios_campo_actual = None
                 sesiones[self.numero].auxilios_dato_temporal = {}
                 sesiones[self.numero].auxilios_reintentos = 0
@@ -753,9 +753,8 @@ class RegistroServicio(Validadores):
         """Maneja reintentos con mensaje de error."""
         reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
         sesiones[self.numero].auxilios_reintentos = reintentos
-        reintentos_max = 3
 
-        if reintentos >= reintentos_max:
+        if reintentos >= self.config.data.get("reintentos_input", 3):
             self._cancelar(sesiones)
         else:
             msj = resultado if isinstance(resultado, str) else config_campo.get("msj_reintento", "⚠️ Dato inválido. Intentá nuevamente:")
