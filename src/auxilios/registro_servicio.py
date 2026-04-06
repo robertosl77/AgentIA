@@ -99,8 +99,7 @@ class RegistroServicio(Validadores):
         validadores_campo = config_campo.get("validadores", [])
         config_validadores = self.config_global.data.get("validadores", {})
 
-        tipo = config_campo.get("tipo", "texto")
-        resultado = self._validar(tipo, comando, validadores_campo, config_validadores)
+        resultado = self._validar("texto", comando, validadores_campo, config_validadores)
         if resultado is True:
             sesiones[self.numero].auxilios_dato_temporal["nro_movimiento"] = comando.strip()
             self._ir_a_fecha(sesiones)
@@ -738,23 +737,30 @@ class RegistroServicio(Validadores):
     # ── HELPERS ───────────────────────────────────────────────────────────────
 
     def _resolver_punto(self, comando):
-        """Resuelve punto: número de lista o texto libre."""
+        """
+        Resuelve punto: número de lista o texto libre.
+        Si es número fuera de rango, lo toma como texto libre.
+        """
         puntos = self.config.get_puntos_frecuentes()
         try:
             indice = int(comando.strip()) - 1
             if 0 <= indice < len(puntos):
                 return puntos[indice]
-            return None
+            # Número fuera de rango → texto libre
         except ValueError:
-            texto = comando.strip().title()
-            return texto if len(texto) >= 2 else None
+            pass
+
+        # Texto libre: lo tomamos como punto nuevo
+        texto = comando.strip().title()
+        return texto if len(texto) >= 2 else None
 
     def _manejar_reintento(self, comando, sesiones, config_campo, resultado):
         """Maneja reintentos con mensaje de error."""
         reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
         sesiones[self.numero].auxilios_reintentos = reintentos
+        reintentos_max = self.config.data.get("reintentos_input", 3)
 
-        if reintentos >= self.config.data.get("reintentos_input", 3):
+        if reintentos >= reintentos_max:
             self._cancelar(sesiones)
         else:
             msj = resultado if isinstance(resultado, str) else config_campo.get("msj_reintento", "⚠️ Dato inválido. Intentá nuevamente:")

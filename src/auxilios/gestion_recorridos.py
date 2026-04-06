@@ -127,7 +127,14 @@ class GestionRecorridos(Validadores):
 
         origen = self._resolver_punto(comando)
         if not origen:
-            self.sw.enviar("⚠️ Origen no válido. Intentá nuevamente:")
+            reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
+            sesiones[self.numero].auxilios_reintentos = reintentos
+            reintentos_max = self.config.data.get("reintentos_input", 3)
+            if reintentos >= reintentos_max:
+                self.sw.enviar("❌ Se canceló la carga. Volviendo al menú de recorridos...")
+                self._cancelar(sesiones)
+            else:
+                self.sw.enviar("⚠️ Origen no válido. Intentá nuevamente:")
             return
 
         sesiones[self.numero].auxilios_dato_temporal["origen"] = origen
@@ -154,7 +161,14 @@ class GestionRecorridos(Validadores):
 
         destino = self._resolver_punto(comando)
         if not destino:
-            self.sw.enviar("⚠️ Destino no válido. Intentá nuevamente:")
+            reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
+            sesiones[self.numero].auxilios_reintentos = reintentos
+            reintentos_max = self.config.data.get("reintentos_input", 3)
+            if reintentos >= reintentos_max:
+                self.sw.enviar("❌ Se canceló la carga. Volviendo al menú de recorridos...")
+                self._cancelar(sesiones)
+            else:
+                self.sw.enviar("⚠️ Destino no válido. Intentá nuevamente:")
             return
 
         origen = sesiones[self.numero].auxilios_dato_temporal.get("origen", "")
@@ -182,6 +196,7 @@ class GestionRecorridos(Validadores):
             self._cancelar(sesiones)
             return
 
+        reintentos_max = self.config.data.get("reintentos_input", 3)
         reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0)
 
         try:
@@ -191,7 +206,7 @@ class GestionRecorridos(Validadores):
         except ValueError:
             reintentos += 1
             sesiones[self.numero].auxilios_reintentos = reintentos
-            if reintentos >= self.config.data.get("reintentos_input", 3):
+            if reintentos >= reintentos_max:
                 self.sw.enviar("❌ Se canceló la carga. Volviendo al menú de recorridos...")
                 self._cancelar(sesiones)
             else:
@@ -268,8 +283,8 @@ class GestionRecorridos(Validadores):
     def _resolver_punto(self, comando):
         """
         Resuelve el punto ingresado.
-        Si es un número, busca en puntos frecuentes.
-        Si es texto, lo toma como punto nuevo.
+        Si es un número válido de la lista, busca en puntos frecuentes.
+        Si es número fuera de rango o texto, lo toma como punto nuevo.
         """
         puntos = self.config.get_puntos_frecuentes()
 
@@ -277,13 +292,15 @@ class GestionRecorridos(Validadores):
             indice = int(comando.strip()) - 1
             if 0 <= indice < len(puntos):
                 return puntos[indice]
-            return None
+            # Número fuera de rango → texto libre
         except ValueError:
-            # Texto libre: lo tomamos como punto nuevo
-            texto = comando.strip().title()
-            if len(texto) < 2:
-                return None
-            return texto
+            pass
+
+        # Texto libre: lo tomamos como punto nuevo
+        texto = comando.strip().title()
+        if len(texto) < 2:
+            return None
+        return texto
 
     def _agregar_punto_frecuente(self, punto):
         """Agrega un punto al catálogo de puntos frecuentes si no existe."""
