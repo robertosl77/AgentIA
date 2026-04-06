@@ -1,12 +1,3 @@
 {
-  "errores": [
-    {
-      "id": 1,
-      "timestamp": "2026-04-05T17:03:59.555260",
-      "numero": "231400003358774@lid",
-      "comando": "5",
-      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 79, in administro_menu\n    self._procesar_submenu(opcion_activa[\"submenu\"], comando, rol)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 203, in _procesar_submenu\n    self.auxilios.submenu_auxilios(comando, self.sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\submenu_auxilios.py\", line 46, in submenu_auxilios\n    handler(sesiones)\nTypeError: 'ConfiguracionAuxilios' object is not callable\n",
-      "resuelto": false
-    }
-  ]
+  "errores": []
 }

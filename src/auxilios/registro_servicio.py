@@ -99,7 +99,8 @@ class RegistroServicio(Validadores):
         validadores_campo = config_campo.get("validadores", [])
         config_validadores = self.config_global.data.get("validadores", {})
 
-        resultado = self._validar("texto", comando, validadores_campo, config_validadores)
+        tipo = config_campo.get("tipo", "texto")
+        resultado = self._validar(tipo, comando, validadores_campo, config_validadores)
         if resultado is True:
             sesiones[self.numero].auxilios_dato_temporal["nro_movimiento"] = comando.strip()
             self._ir_a_fecha(sesiones)
