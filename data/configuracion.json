@@ -87,6 +87,16 @@
       "tipo": "email",
       "formato": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
       "msj_error": "⚠️ El formato del email no es válido. Intentá nuevamente:"
+    },
+    "patente_argentina": {
+      "tipo": "patente",
+      "formato": "^[A-Z]{3}[0-9]{3}$",
+      "msj_error": "⚠️ La patente no es válida. Intentá nuevamente:"
+    },
+    "patente_mercosur": {
+      "tipo": "patente",
+      "formato": "^[A-Z]{2}[0-9]{3}[A-Z]{2}$",
+      "msj_error": "⚠️ La patente no es válida. Intentá nuevamente:"
     }
   },
   "estructura_sesion": {

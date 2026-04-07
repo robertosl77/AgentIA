@@ -94,9 +94,10 @@
         "patente": {
           "valor": "",
           "obligatorio": true,
-          "tipo": "texto",
+          "tipo": "patente",
           "validadores": [
-            "texto_maximo_10"
+            "patente_argentina",
+            "patente_mercosur"
           ],
           "msj_pedido": "🚛 Ingresá la *patente* del vehículo propio:",
           "msj_reintento": "⚠️ La patente ingresada no es válida. Intentá nuevamente:"
@@ -120,9 +121,10 @@
         "patente": {
           "valor": "",
           "obligatorio": true,
-          "tipo": "texto",
+          "tipo": "patente",
           "validadores": [
-            "texto_maximo_10"
+            "patente_argentina",
+            "patente_mercosur"
           ],
           "msj_pedido": "🚗 Ingresá la *patente* del vehículo auxiliado:",
           "msj_reintento": "⚠️ La patente ingresada no es válida. Intentá nuevamente:"

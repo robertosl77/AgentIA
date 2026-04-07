@@ -71,7 +71,8 @@ class Validadores:
             "telefono": self.valida_telefono,
             "fecha":    self.valida_fecha,
             "hora":     self.valida_hora,
-            "alfanumerico": self.valida_alfanumerico
+            "alfanumerico": self.valida_alfanumerico,
+            "patente":  lambda v: bool(re.match(r"^[A-Z]{3}[0-9]{3}$", v.strip().upper())) or bool(re.match(r"^[A-Z]{2}[0-9]{3}[A-Z]{2}$", v.strip().upper()))
         }
         validador_tipo = validadores_tipo.get(tipo)
         if validador_tipo and not validador_tipo(valor):
