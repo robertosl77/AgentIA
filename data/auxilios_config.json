@@ -275,25 +275,52 @@
         "requiere": "vehiculo_propio"
       },
       {
-          "id": "4",
-          "roles": ["root", "admin"],
-          "activacion": ["4"],
-          "texto": "4. Gestionar vehículos auxiliados",
-          "handler": "gestionar_vehiculos_auxiliados"
+        "id": "4",
+        "roles": [
+          "root",
+          "admin"
+        ],
+        "activacion": [
+          "4"
+        ],
+        "texto": "4. Gestionar vehículos auxiliados",
+        "handler": "gestionar_vehiculos_auxiliados"
       },
       {
-          "id": "5",
-          "roles": ["root", "admin"],
-          "activacion": ["5"],
-          "texto": "5. Gestionar recorridos",
-          "handler": "gestionar_recorridos"
+        "id": "5",
+        "roles": [
+          "root",
+          "admin"
+        ],
+        "activacion": [
+          "5"
+        ],
+        "texto": "5. Gestionar recorridos",
+        "handler": "gestionar_recorridos"
       },
       {
-          "id": "6",
-          "roles": ["root", "admin"],
-          "activacion": ["6"],
-          "texto": "6. Configuración",
-          "handler": "configuracion_modulo"
+        "id": "6",
+        "roles": [
+          "root",
+          "admin"
+        ],
+        "activacion": [
+          "6"
+        ],
+        "texto": "6. Gestionar precios",
+        "handler": "gestionar_precios"
+      },
+      {
+        "id": "7",
+        "roles": [
+          "root",
+          "admin"
+        ],
+        "activacion": [
+          "7"
+        ],
+        "texto": "7. Configuración",
+        "handler": "configuracion_modulo"
       },
       {
         "id": "salir",

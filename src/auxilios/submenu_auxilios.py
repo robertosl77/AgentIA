@@ -7,6 +7,7 @@ from src.auxilios.gestion_conductores import GestionConductores
 from src.auxilios.gestion_vehiculos_propios import GestionVehiculosPropios
 from src.auxilios.gestion_vehiculos_auxiliados import GestionVehiculosAuxiliados
 from src.auxilios.gestion_recorridos import GestionRecorridos
+from src.auxilios.gestion_precios import GestionPrecios
 from src.auxilios.configuracion_auxilios import ConfiguracionAuxilios
 
 class SubMenuAuxilios:
@@ -26,6 +27,7 @@ class SubMenuAuxilios:
         self.vehiculos_propios = GestionVehiculosPropios(numero)
         self.vehiculos_auxiliados = GestionVehiculosAuxiliados(numero)
         self.recorridos = GestionRecorridos(numero)
+        self.precios = GestionPrecios(numero)
         self.configuracion = ConfiguracionAuxilios(numero)
 
     # ── SUBMENÚ ───────────────────────────────────────────────────────────────
@@ -64,6 +66,7 @@ class SubMenuAuxilios:
             self.vehiculos_propios.esta_en_flujo(sesiones) or
             self.vehiculos_auxiliados.esta_en_flujo(sesiones) or
             self.recorridos.esta_en_flujo(sesiones) or
+            self.precios.esta_en_flujo(sesiones) or
             self.configuracion.esta_en_flujo(sesiones)
         )
 
@@ -79,6 +82,8 @@ class SubMenuAuxilios:
             self.vehiculos_auxiliados.procesar(comando, sesiones)           
         elif self.recorridos.esta_en_flujo(sesiones):
             self.recorridos.procesar(comando, sesiones)
+        elif self.precios.esta_en_flujo(sesiones):
+            self.precios.procesar(comando, sesiones)            
         elif self.configuracion.esta_en_flujo(sesiones):
             self.configuracion.procesar(comando, sesiones)
 
@@ -98,6 +103,9 @@ class SubMenuAuxilios:
 
     def gestionar_recorridos(self, sesiones):
         self.recorridos.iniciar(sesiones)
+
+    def gestionar_precios(self, sesiones):
+        self.precios.iniciar(sesiones)        
 
     def configuracion_modulo(self, sesiones):
         self.configuracion.iniciar(sesiones)
