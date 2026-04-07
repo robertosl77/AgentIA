@@ -1,7 +1,7 @@
 # src/horarios/submenu_horarios.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
-from src.data_loader import DataLoader
+from src.horarios.data_loader import DataLoader
 from src.session_manager import SessionManager
 from datetime import datetime, timedelta
 

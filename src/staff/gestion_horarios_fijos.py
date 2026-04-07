@@ -1,7 +1,7 @@
 # src/staff/gestion_horarios_fijos.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
-from src.data_loader import DataLoader
+from src.horarios.data_loader import DataLoader
 from src.session_manager import SessionManager
 from src.registro.validadores import Validadores
 from datetime import datetime

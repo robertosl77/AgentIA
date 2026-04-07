@@ -11,7 +11,7 @@ class DataLoader:
     A diferencia de ConfigLoader, estos datos se modifican en runtime.
     """
 
-    PATH = r"data\datos.json"
+    PATH = r"data\horarios_data.json"
 
     def __new__(cls):
         global _instancia

@@ -1,6 +1,5 @@
 import json
 import os
-from datetime import datetime
 
 class ConfigLoader:
     def __init__(self, path=r"data\configuracion.json"):

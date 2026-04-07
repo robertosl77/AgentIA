@@ -77,3 +77,6 @@ if __name__ == "__main__":
 
 # Borrado de todos los pycaches:
 # Get-ChildItem -Path . -Recurse -Filter "__pycache__" -Directory | Remove-Item -Recurse -Force
+
+# Para generar un txt con la estructura de carpetas y archivos:
+# tree /f > "doc\estructura.txt"       
