@@ -271,32 +271,29 @@
           "3"
         ],
         "texto": "3. Gestionar vehículos propios",
-        "handler": "gestionar_vehiculos",
+        "handler": "gestionar_vehiculos_propios",
         "requiere": "vehiculo_propio"
       },
       {
-        "id": "4",
-        "roles": [
-          "root",
-          "admin"
-        ],
-        "activacion": [
-          "4"
-        ],
-        "texto": "4. Gestionar recorridos",
-        "handler": "gestionar_recorridos"
+          "id": "4",
+          "roles": ["root", "admin"],
+          "activacion": ["4"],
+          "texto": "4. Gestionar vehículos auxiliados",
+          "handler": "gestionar_vehiculos_auxiliados"
       },
       {
-        "id": "5",
-        "roles": [
-          "root",
-          "admin"
-        ],
-        "activacion": [
-          "5"
-        ],
-        "texto": "5. Configuración",
-        "handler": "configuracion_modulo"
+          "id": "5",
+          "roles": ["root", "admin"],
+          "activacion": ["5"],
+          "texto": "5. Gestionar recorridos",
+          "handler": "gestionar_recorridos"
+      },
+      {
+          "id": "6",
+          "roles": ["root", "admin"],
+          "activacion": ["6"],
+          "texto": "6. Configuración",
+          "handler": "configuracion_modulo"
       },
       {
         "id": "salir",

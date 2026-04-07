@@ -5,6 +5,7 @@ from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
 from src.auxilios.registro_servicio import RegistroServicio
 from src.auxilios.gestion_conductores import GestionConductores
 from src.auxilios.gestion_vehiculos_propios import GestionVehiculosPropios
+from src.auxilios.gestion_vehiculos_auxiliados import GestionVehiculosAuxiliados
 from src.auxilios.gestion_recorridos import GestionRecorridos
 from src.auxilios.configuracion_auxilios import ConfiguracionAuxilios
 
@@ -22,7 +23,8 @@ class SubMenuAuxilios:
         self.config = AuxiliosConfigLoader()
         self.servicio = RegistroServicio(numero)
         self.conductores = GestionConductores(numero)
-        self.vehiculos = GestionVehiculosPropios(numero)
+        self.vehiculos_propios = GestionVehiculosPropios(numero)
+        self.vehiculos_auxiliados = GestionVehiculosAuxiliados(numero)
         self.recorridos = GestionRecorridos(numero)
         self.configuracion = ConfiguracionAuxilios(numero)
 
@@ -59,7 +61,8 @@ class SubMenuAuxilios:
         return (
             self.servicio.esta_en_flujo(sesiones) or
             self.conductores.esta_en_flujo(sesiones) or
-            self.vehiculos.esta_en_flujo(sesiones) or
+            self.vehiculos_propios.esta_en_flujo(sesiones) or
+            self.vehiculos_auxiliados.esta_en_flujo(sesiones) or
             self.recorridos.esta_en_flujo(sesiones) or
             self.configuracion.esta_en_flujo(sesiones)
         )
@@ -70,8 +73,10 @@ class SubMenuAuxilios:
             self.servicio.procesar(comando, sesiones)
         elif self.conductores.esta_en_flujo(sesiones):
             self.conductores.procesar(comando, sesiones)
-        elif self.vehiculos.esta_en_flujo(sesiones):
-            self.vehiculos.procesar(comando, sesiones)
+        elif self.vehiculos_propios.esta_en_flujo(sesiones):
+            self.vehiculos_propios.procesar(comando, sesiones)
+        elif self.vehiculos_auxiliados.esta_en_flujo(sesiones):
+            self.vehiculos_auxiliados.procesar(comando, sesiones)           
         elif self.recorridos.esta_en_flujo(sesiones):
             self.recorridos.procesar(comando, sesiones)
         elif self.configuracion.esta_en_flujo(sesiones):
@@ -85,11 +90,15 @@ class SubMenuAuxilios:
     def gestionar_conductores(self, sesiones):
         self.conductores.iniciar(sesiones)
 
-    def gestionar_vehiculos(self, sesiones):
-        self.vehiculos.iniciar(sesiones)
+    def gestionar_vehiculos_propios(self, sesiones):
+        self.vehiculos_propios.iniciar(sesiones)
+
+    def gestionar_vehiculos_auxiliados(self, sesiones):
+        self.vehiculos_auxiliados.iniciar(sesiones)
 
     def gestionar_recorridos(self, sesiones):
         self.recorridos.iniciar(sesiones)
 
     def configuracion_modulo(self, sesiones):
         self.configuracion.iniciar(sesiones)
+        

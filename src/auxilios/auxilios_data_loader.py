@@ -119,6 +119,12 @@ class AuxiliosDataLoader:
         vehiculos.append(datos)
         self.guardar()
         return nuevo_id
+    
+    def eliminar_vehiculo_auxiliado(self, vehiculo_id):
+        """Elimina un vehículo auxiliado por ID y persiste."""
+        vehiculos = self.get_vehiculos_auxiliados()
+        self.data["vehiculos_auxiliados"] = [v for v in vehiculos if v.get("id") != vehiculo_id]
+        self.guardar()    
 
     # ── SERVICIOS ─────────────────────────────────────────────────────────────
 
