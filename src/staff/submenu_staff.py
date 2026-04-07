@@ -1,7 +1,7 @@
 # src/staff/submenu_staff.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
-from src.session_manager import SessionManager
+from src.sesiones.session_manager import SessionManager
 from src.staff.gestion_guardias import GestionGuardias
 from src.staff.gestion_cierres_eventuales import GestionCierresEventuales
 from src.staff.gestion_horarios_fijos import GestionHorariosFijos

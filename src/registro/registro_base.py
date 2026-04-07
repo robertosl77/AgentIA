@@ -1,6 +1,6 @@
 # src/cliente/registro_base.py
 from src.registro.validadores import Validadores
-from src.session_manager import SessionManager
+from src.sesiones.session_manager import SessionManager
 from src.config_loader import ConfigLoader
 from src.send_wpp import SendWPP
 
@@ -34,11 +34,11 @@ class RegistroBase(Validadores):
         return []
 
     def _get_datos_sesion(self):
-        """Retorna los datos actuales de la sección desde sesiones.json."""
+        """Retorna los datos actuales de la sección desde sesiones_data.json."""
         raise NotImplementedError
 
     def _persistir_campo(self, campo, valor):
-        """Persiste el valor de un campo en sesiones.json."""
+        """Persiste el valor de un campo en sesiones_data.json."""
         raise NotImplementedError
 
     def _get_atributo_campo_actual(self):
@@ -68,7 +68,7 @@ class RegistroBase(Validadores):
     def tiene_datos_completos(self):
         """
         Verifica si la sección tiene todos los campos obligatorios completos y válidos.
-        La estructura se lee de configuracion.json, los valores de sesiones.json.
+        La estructura se lee de configuracion.json, los valores de sesiones_data.json.
         """
         datos = self._get_datos_sesion()
         if not datos:

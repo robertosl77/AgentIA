@@ -19,11 +19,11 @@ class RegistroDireccion(RegistroBase):
         return []
 
     def _get_datos_sesion(self):
-        """Retorna los datos actuales de dirección desde sesiones.json."""
+        """Retorna los datos actuales de dirección desde sesiones_data.json."""
         return self.session_manager.get_direccion(self.numero)
 
     def _persistir_campo(self, campo, valor):
-        """Persiste el valor de un campo de dirección en sesiones.json."""
+        """Persiste el valor de un campo de dirección en sesiones_data.json."""
         self.session_manager.editar_direccion(self.numero, campo, valor)
 
     def _get_atributo_campo_actual(self):

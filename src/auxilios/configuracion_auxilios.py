@@ -1,7 +1,7 @@
 # src/auxilios/configuracion_auxilios.py
 import json
 from src.send_wpp import SendWPP
-from src.session_manager import SessionManager
+from src.sesiones.session_manager import SessionManager
 from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
 
 class ConfiguracionAuxilios:

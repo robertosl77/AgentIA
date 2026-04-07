@@ -31,7 +31,7 @@ AgentIA/
 ├── data/
 │   ├── configuracion.json    ← config estática (mensajes, validadores, estructura sesión)
 │   ├── datos.json            ← datos operativos (horarios, guardias, cierres)
-│   ├── sesiones.json         ← sesiones de usuarios
+│   ├── sesiones_data.json         ← sesiones de usuarios
 │   └── error_log.json        ← log de errores técnicos
 ├── src/
 │   ├── config_loader.py      ← singleton, lee configuracion.json
@@ -68,7 +68,7 @@ AgentIA/
 ---
 
 ## SISTEMA DE ROLES
-Roles en sesiones.json por usuario: `usuario`, `admin`, `supervisor`, `root`
+Roles en sesiones_data.json por usuario: `usuario`, `admin`, `supervisor`, `root`
 - Los roles filtran qué opciones de menú ve cada usuario (definido en configuracion.json/mensajes)
 - El rol se preserva al expirar la sesión (fix reciente)
 

@@ -1,6 +1,6 @@
 # src/auxilios/registro_servicio.py
 from src.send_wpp import SendWPP
-from src.session_manager import SessionManager
+from src.sesiones.session_manager import SessionManager
 from src.config_loader import ConfigLoader
 from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
 from src.auxilios.auxilios_data_loader import AuxiliosDataLoader

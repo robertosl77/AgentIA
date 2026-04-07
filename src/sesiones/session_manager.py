@@ -8,7 +8,7 @@ _instancia = None
 
 class SessionManager:
     """
-    Gestiona las sesiones de los usuarios en sesiones.json.
+    Gestiona las sesiones de los usuarios en sesiones_data.json.
     Responsabilidades:
         - Crear sesión al primer contacto
         - Verificar si la sesión está vigente (1 hora)
@@ -18,7 +18,7 @@ class SessionManager:
     """
 
     DURACION_SESION_HORAS = 1
-    PATH = r"data\sesiones.json"
+    PATH = r"data\sesiones_data.json"
 
     def __new__(cls):
         global _instancia

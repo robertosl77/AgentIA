@@ -19,11 +19,11 @@ class RegistroCliente(RegistroBase):
         return ["pushname"]
 
     def _get_datos_sesion(self):
-        """Retorna los datos actuales del cliente desde sesiones.json."""
+        """Retorna los datos actuales del cliente desde sesiones_data.json."""
         return self.session_manager.get_cliente(self.numero)
 
     def _persistir_campo(self, campo, valor):
-        """Persiste el valor de un campo del cliente en sesiones.json."""
+        """Persiste el valor de un campo del cliente en sesiones_data.json."""
         self.session_manager.editar_cliente(self.numero, campo, valor)
 
     def _get_atributo_campo_actual(self):

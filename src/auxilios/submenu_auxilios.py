@@ -1,6 +1,6 @@
 # src/auxilios/submenu_auxilios.py
 from src.send_wpp import SendWPP
-from src.session_manager import SessionManager
+from src.sesiones.session_manager import SessionManager
 from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
 from src.auxilios.registro_servicio import RegistroServicio
 from src.auxilios.gestion_conductores import GestionConductores
