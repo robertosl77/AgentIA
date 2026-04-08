@@ -1,0 +1,303 @@
+
+<h2 class="sr-only">Simulador de flujo conversacional de carga de servicio con integración Maps</h2>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+#chat-container {
+  max-width: 420px;
+  margin: 0 auto;
+  font-family: var(--font-sans);
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  border: 0.5px solid var(--color-border-tertiary);
+}
+#chat-header {
+  background: #075E54;
+  color: #fff;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#chat-header .avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: #128C7E;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+#chat-messages {
+  padding: 12px;
+  min-height: 360px;
+  max-height: 460px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.msg {
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.msg.bot {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  align-self: flex-start;
+  border-top-left-radius: 2px;
+}
+.msg.user {
+  background: #DCF8C6;
+  color: #111;
+  align-self: flex-end;
+  border-top-right-radius: 2px;
+}
+#input-area {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary);
+}
+#input-area input {
+  flex: 1;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  outline: none;
+}
+#input-area button {
+  background: #075E54;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#input-area button:hover { background: #128C7E; }
+.typing { font-size: 12px; color: var(--color-text-tertiary); padding: 4px 12px; align-self: flex-start; }
+#options-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 12px 10px;
+}
+#options-bar button {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+#options-bar button:hover { background: var(--color-background-secondary); }
+.maps-result {
+  background: var(--color-background-info);
+  border: 0.5px solid var(--color-border-info);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin: 2px 0;
+  font-size: 12px;
+  color: var(--color-text-info);
+}
+</style>
+
+<div id="chat-container">
+  <div id="chat-header">
+    <div class="avatar">B</div>
+    <div>
+      <div>Bot Auxilio</div>
+      <div style="font-size:11px;opacity:0.8">en linea</div>
+    </div>
+  </div>
+  <div id="chat-messages"></div>
+  <div id="options-bar"></div>
+  <div id="input-area">
+    <input type="text" id="user-input" placeholder="Escribi un mensaje..." />
+    <button id="send-btn">&#9654;</button>
+  </div>
+</div>
+
+<script>
+const msgs = document.getElementById('chat-messages');
+const input = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const optBar = document.getElementById('options-bar');
+
+let step = 0;
+let datos = {};
+
+const MAPS_DB = {
+  "corrientes 1234": [
+    "Av. Corrientes 1234, CABA, Buenos Aires",
+    "Av. Corrientes 1234, San Isidro, Buenos Aires",
+    "Corrientes 1234, Rosario, Santa Fe"
+  ],
+  "rivadavia 5000": [
+    "Av. Rivadavia 5000, Caballito, CABA",
+    "Av. Rivadavia 5000, Ramos Mejia, Buenos Aires"
+  ],
+  "san martin 800": [
+    "San Martin 800, Microcentro, CABA",
+    "San Martin 800, Quilmes, Buenos Aires",
+    "San Martin 800, La Plata, Buenos Aires"
+  ]
+};
+
+function addMsg(text, type) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + type;
+  d.textContent = text;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addMapsResults(results) {
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.style.padding = '8px';
+  let html = '<div style="font-size:13px;margin-bottom:6px">📍 Seleccioná tu dirección:</div>';
+  results.forEach((r, i) => {
+    html += `<div class="maps-result">${i+1}. ${r}</div>`;
+  });
+  html += '<div style="font-size:11px;color:var(--color-text-secondary);margin-top:6px">Ingresá el número o escribí otra dirección</div>';
+  d.innerHTML = html;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function setOptions(opts) {
+  optBar.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.textContent = o;
+    b.onclick = () => handleInput(o);
+    optBar.appendChild(b);
+  });
+}
+
+function clearOptions() { optBar.innerHTML = ''; }
+
+function showTyping() {
+  return new Promise(resolve => {
+    const t = document.createElement('div');
+    t.className = 'typing';
+    t.textContent = 'escribiendo...';
+    msgs.appendChild(t);
+    msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(() => { t.remove(); resolve(); }, 600);
+  });
+}
+
+async function botSay(text, opts) {
+  await showTyping();
+  addMsg(text, 'bot');
+  if (opts) setOptions(opts);
+  else clearOptions();
+}
+
+async function botMaps(results) {
+  await showTyping();
+  addMapsResults(results);
+  clearOptions();
+}
+
+let mapsResults = [];
+let mapsContext = '';
+
+async function handleInput(text) {
+  if (!text.trim()) return;
+  addMsg(text, 'user');
+  input.value = '';
+  clearOptions();
+
+  if (step === 0) {
+    await botSay("👋 ¡Hola Roberto! Bienvenido a Auxilio Mecánico.\n\n¿Qué deseás hacer?\n\n1. Cargar nuevo servicio\n2. Ver servicios activos\n3. Configuración", ["1", "2", "3"]);
+    step = 1;
+  } else if (step === 1) {
+    if (text === "1") {
+      await botSay("🚗 Nuevo servicio de auxilio\n\nIngresá la patente del vehículo auxiliado:");
+      step = 2;
+    } else {
+      await botSay("🚧 Próximamente...", ["1", "2", "3"]);
+    }
+  } else if (step === 2) {
+    datos.patente = text.toUpperCase();
+    await botSay(`Patente: *${datos.patente}*\n\n📍 Ingresá la dirección de ORIGEN (calle y altura):`);
+    mapsContext = 'origen';
+    step = 3;
+  } else if (step === 3 || step === 5) {
+    let query = text.toLowerCase().trim();
+    let numChoice = parseInt(query);
+
+    if (!isNaN(numChoice) && mapsResults.length > 0 && numChoice >= 1 && numChoice <= mapsResults.length) {
+      let elegida = mapsResults[numChoice - 1];
+      if (mapsContext === 'origen') {
+        datos.origen = elegida;
+        await botSay(`✅ Origen: ${elegida}\n\n📍 Ahora ingresá la dirección de DESTINO (calle y altura):`);
+        mapsContext = 'destino';
+        mapsResults = [];
+        step = 5;
+      } else {
+        datos.destino = elegida;
+        mapsResults = [];
+        await showTyping();
+        addMsg("🔄 Calculando distancia...", 'bot');
+        await new Promise(r => setTimeout(r, 800));
+        let km = (Math.random() * 25 + 3).toFixed(1);
+        datos.km = km;
+        await botSay(`📏 Distancia: ${km} km\n\nOrigen: ${datos.origen}\nDestino: ${datos.destino}\nPatente: ${datos.patente}\n\n¿Confirmás el servicio?\nRespondé *si* o *no*:`, ["si", "no"]);
+        step = 6;
+      }
+    } else {
+      let found = null;
+      for (let key in MAPS_DB) {
+        if (query.includes(key)) { found = MAPS_DB[key]; break; }
+      }
+      if (found) {
+        mapsResults = found;
+        await botMaps(found);
+      } else if (query.length < 5) {
+        await botSay("❌ No encontramos resultados. Intentá con más detalle (ej: calle, altura y localidad):");
+      } else {
+        mapsResults = [
+          `${text.trim()}, CABA, Buenos Aires`,
+          `${text.trim()}, Zona Norte, Buenos Aires`
+        ];
+        await botMaps(mapsResults);
+      }
+    }
+  } else if (step === 6) {
+    if (text.toLowerCase() === "si") {
+      await botSay(`✅ Servicio registrado correctamente.\n\n🚗 Patente: ${datos.patente}\n📍 Origen: ${datos.origen}\n📍 Destino: ${datos.destino}\n📏 Distancia: ${datos.km} km\n\nVolviendo al menú...`, ["1", "2", "3"]);
+      datos = {};
+      mapsResults = [];
+      step = 1;
+    } else {
+      await botSay("❌ Servicio cancelado. Volviendo al menú...", ["1", "2", "3"]);
+      datos = {};
+      mapsResults = [];
+      step = 1;
+    }
+  }
+}
+
+sendBtn.onclick = () => handleInput(input.value);
+input.onkeydown = (e) => { if (e.key === 'Enter') handleInput(input.value); };
+
+(async () => {
+  await botSay("Escribí 'hola' para comenzar", ["hola"]);
+})();
+</script>

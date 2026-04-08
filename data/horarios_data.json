@@ -91,6 +91,11 @@
         "desde": "2026-05-01",
         "hasta": "2026-05-01",
         "motivo": "feriado dia del trabajador"
+      },
+      {
+        "desde": "2026-04-06",
+        "hasta": "2026-04-06",
+        "motivo": "testing"
       }
     ]
   }
