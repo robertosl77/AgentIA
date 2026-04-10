@@ -1,6 +1,91 @@
 {
-  "conductores": [],
-  "vehiculos_propios": [],
-  "vehiculos_auxiliados": [],
-  "servicios": []
+  "conductores": [
+    {
+      "nombre": "conductor uno",
+      "telefono": "1155556666",
+      "dni": "22666777",
+      "id": 1
+    }
+  ],
+  "vehiculos_propios": [
+    {
+      "patente": "AAA111",
+      "alias": "ford f100",
+      "id": 1
+    }
+  ],
+  "vehiculos_auxiliados": [
+    {
+      "patente": "ABC123",
+      "ris": "liviano",
+      "id": 1
+    }
+  ],
+  "servicios": [
+    {
+      "timestamp": "2026-04-09T23:18:40.157596",
+      "nro_movimiento": "123",
+      "fecha": "2026-04-09",
+      "conductor": "conductor uno",
+      "vehiculo_propio": "AAA111",
+      "vehiculo_auxiliado": {
+        "patente": "ABC123",
+        "ris": "liviano"
+      },
+      "origen": {
+        "direccion_formateada": "Av. Córdoba 1234, C1055AAP Cdad. Autónoma de Buenos Aires",
+        "coordenadas": {
+          "lat": -34.599513,
+          "lng": -58.38442109999999
+        },
+        "place_id": "ChIJZeqe6sfKvJURNzCY1BF9tbM",
+        "componentes": {
+          "calle": "Avenida Córdoba",
+          "altura": "1234",
+          "localidad": "Buenos Aires",
+          "provincia": "Ciudad Autónoma de Buenos Aires",
+          "codigo_postal": "C1055"
+        },
+        "plus_code": "48Q3CJ28+56",
+        "origen_input": "texto"
+      },
+      "destino": {
+        "direccion_formateada": "Av. Corrientes 111, C1000 Cdad. Autónoma de Buenos Aires",
+        "coordenadas": {
+          "lat": -34.602786,
+          "lng": -58.36927970000001
+        },
+        "place_id": "ChIJmTuLjDI1o5URpIVJIwpXAxo",
+        "componentes": {
+          "calle": "Avenida Corrientes",
+          "altura": "111",
+          "localidad": "Buenos Aires",
+          "provincia": "Ciudad Autónoma de Buenos Aires",
+          "codigo_postal": "C1000"
+        },
+        "plus_code": null,
+        "origen_input": "texto"
+      },
+      "tramos": [
+        {
+          "tipo_camino": "asfalto",
+          "km_original": 500,
+          "km_excedente": 500,
+          "precio_km": 835,
+          "subtotal": 417500
+        }
+      ],
+      "movida": {
+        "aplica": false,
+        "radio_km": 15,
+        "km_total": 500,
+        "km_maximo": 200,
+        "monto": 0
+      },
+      "extras": [],
+      "info_extra": "",
+      "total": 417500,
+      "id": 1
+    }
+  ]
 }

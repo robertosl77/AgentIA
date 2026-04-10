@@ -6,6 +6,7 @@ from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
 from src.auxilios.auxilios_data_loader import AuxiliosDataLoader
 from src.auxilios.calculo_tarifas import CalculoTarifas
 from src.registro.validadores import Validadores
+from src.maps.buscador_direccion import BuscadorDireccion
 from datetime import datetime
 
 class RegistroServicio(Validadores):
@@ -17,7 +18,7 @@ class RegistroServicio(Validadores):
         3. conductor (si habilitado: 0→carga, 1→auto, >1→selección)
         4. vehículo propio (si habilitado: 0→carga, 1→auto, >1→selección)
         5. vehículo auxiliado (patente → si existe trae datos, si no pide campos)
-        6. recorrido (seleccionar establecido o cargar origen+destino manual)
+        6. recorrido (seleccionar establecido o cargar origen+destino con Maps)
         7. tramos (tipo_camino + km, puede agregar varios)
         8. extras (si hay habilitados)
         9. info_extra (opcional)
@@ -33,6 +34,7 @@ class RegistroServicio(Validadores):
         self.config = AuxiliosConfigLoader()
         self.datos = AuxiliosDataLoader()
         self.tarifas = CalculoTarifas()
+        self.maps = BuscadorDireccion()
 
     # ── FLUJO PRINCIPAL ───────────────────────────────────────────────────────
 
@@ -70,7 +72,9 @@ class RegistroServicio(Validadores):
             "servicio_ris": self._procesar_ris,
             "servicio_recorrido": self._procesar_recorrido,
             "servicio_origen": self._procesar_origen,
+            "servicio_origen_maps_seleccion": self._procesar_origen_maps_seleccion,
             "servicio_destino": self._procesar_destino,
+            "servicio_destino_maps_seleccion": self._procesar_destino_maps_seleccion,
             "servicio_tramo_tipo": self._procesar_tramo_tipo,
             "servicio_tramo_km": self._procesar_tramo_km,
             "servicio_tramo_otro": self._procesar_tramo_otro,
@@ -151,7 +155,6 @@ class RegistroServicio(Validadores):
         conductores = self.datos.get_conductores()
 
         if len(conductores) == 0:
-            # Sin conductores → iniciar carga
             sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_carga_nombre"
             sesiones[self.numero].auxilios_reintentos = 0
             campos_conductor = self.config.get_campos("conductor")
@@ -161,13 +164,11 @@ class RegistroServicio(Validadores):
                 f"{msj_nombre}"
             )
         elif len(conductores) == 1:
-            # Un solo conductor → selección automática
             conductor = conductores[0]
             sesiones[self.numero].auxilios_dato_temporal["conductor"] = conductor.get("nombre", "")
             self.sw.enviar(f"👤 Conductor: *{conductor.get('nombre', '')}*")
             self._ir_a_vpropio(sesiones)
         else:
-            # Varios → mostrar lista
             sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_seleccion"
             lineas = ["👤 Seleccioná el conductor:\n"]
             for i, c in enumerate(conductores, 1):
@@ -452,66 +453,231 @@ class RegistroServicio(Validadores):
         sesiones[self.numero].auxilios_dato_temporal["destino"] = r["destino"]
         self._ir_a_tramo_tipo(sesiones)
 
-    # ── 6b. ORIGEN/DESTINO MANUAL ─────────────────────────────────────────────
+    # ── 6b. ORIGEN CON MAPS ──────────────────────────────────────────────────
 
     def _ir_a_origen(self, sesiones):
         sesiones[self.numero].auxilios_campo_actual = "servicio_origen"
         sesiones[self.numero].auxilios_reintentos = 0
+        sesiones[self.numero].auxilios_dato_temporal["_maps_resultados"] = []
 
         puntos = self.config.get_puntos_frecuentes()
+        msj_maps = self.maps.get_mensaje("pedido_direccion")
+
         if puntos:
-            lineas = ["📍 Ingresá el *origen* (o elegí de la lista):\n"]
+            lineas = ["📍 *Origen* — Elegí de la lista o ingresá una dirección:\n"]
             for i, p in enumerate(puntos, 1):
                 lineas.append(f"{i}. {p}")
-            lineas.append("\nO escribí el nombre:")
+            lineas.append(f"\n{msj_maps}")
             self.sw.enviar("\n".join(lineas))
         else:
-            self.sw.enviar("📍 Ingresá el *origen* del viaje:")
+            self.sw.enviar(f"📍 *Origen*\n\n{msj_maps}")
 
     def _procesar_origen(self, comando, sesiones):
         if comando.strip() == "cancelar":
             self._cancelar(sesiones)
             return
 
-        origen = self._resolver_punto(comando)
-        if not origen:
-            self.sw.enviar("⚠️ Origen no válido. Intentá nuevamente:")
+        # Intentar resolver como punto frecuente (número de lista)
+        punto = self._resolver_punto_frecuente(comando)
+        if punto:
+            sesiones[self.numero].auxilios_dato_temporal["origen"] = punto
+            self._ir_a_destino(sesiones)
             return
 
-        sesiones[self.numero].auxilios_dato_temporal["origen"] = origen
+        # Detectar tipo de input
+        tipo_input = self.maps.detectar_tipo_input(comando)
+
+        if tipo_input == "coordenadas":
+            resultado = self.maps.resolver_coordenadas(comando)
+            if resultado:
+                sesiones[self.numero].auxilios_dato_temporal["_maps_resultados"] = [resultado]
+                sesiones[self.numero].auxilios_campo_actual = "servicio_origen_maps_seleccion"
+                self.sw.enviar(self.maps.armar_mensaje_unico(resultado))
+            else:
+                self.sw.enviar(self.maps.get_mensaje("geocoding_error"))
+            return
+
+        # Texto libre → buscar en Maps
+        resultados = self.maps.buscar(comando)
+        if resultados:
+            sesiones[self.numero].auxilios_dato_temporal["_maps_resultados"] = resultados
+            sesiones[self.numero].auxilios_campo_actual = "servicio_origen_maps_seleccion"
+            if len(resultados) == 1:
+                self.sw.enviar(self.maps.armar_mensaje_unico(resultados[0]))
+            else:
+                self.sw.enviar(self.maps.armar_mensaje_opciones(resultados))
+        else:
+            self._manejar_reintento_maps(sesiones, "origen")
+
+    def _procesar_origen_maps_seleccion(self, comando, sesiones):
+        """Procesa la selección del usuario sobre resultados de Maps para origen."""
+        if comando.strip() == "cancelar":
+            self._cancelar(sesiones)
+            return
+
+        resultados = sesiones[self.numero].auxilios_dato_temporal.get("_maps_resultados", [])
+
+        # "si" confirma resultado único
+        if comando.strip().lower() == "si" and len(resultados) >= 1:
+            self._seleccionar_direccion_origen(resultados[0], sesiones)
+            return
+
+        # Número de selección
+        try:
+            indice = int(comando.strip()) - 1
+            if 0 <= indice < len(resultados):
+                self._seleccionar_direccion_origen(resultados[indice], sesiones)
+                return
+        except ValueError:
+            pass
+
+        # Si no es número ni "si", es una nueva búsqueda
+        sesiones[self.numero].auxilios_campo_actual = "servicio_origen"
+        self._procesar_origen(comando, sesiones)
+
+    def _seleccionar_direccion_origen(self, direccion, sesiones):
+        """Guarda la dirección seleccionada como origen y avanza a destino."""
+        sesiones[self.numero].auxilios_dato_temporal["origen"] = direccion
+        sesiones[self.numero].auxilios_dato_temporal.pop("_maps_resultados", None)
+        self.sw.enviar(f"✅ Origen: {direccion['direccion_formateada']}")
         self._ir_a_destino(sesiones)
+
+    # ── 6c. DESTINO CON MAPS ─────────────────────────────────────────────────
 
     def _ir_a_destino(self, sesiones):
         sesiones[self.numero].auxilios_campo_actual = "servicio_destino"
         sesiones[self.numero].auxilios_reintentos = 0
+        sesiones[self.numero].auxilios_dato_temporal["_maps_resultados"] = []
 
         puntos = self.config.get_puntos_frecuentes()
+        msj_maps = self.maps.get_mensaje("pedido_direccion")
+
         if puntos:
-            lineas = ["📍 Ingresá el *destino* (o elegí de la lista):\n"]
+            lineas = ["📍 *Destino* — Elegí de la lista o ingresá una dirección:\n"]
             for i, p in enumerate(puntos, 1):
                 lineas.append(f"{i}. {p}")
-            lineas.append("\nO escribí el nombre:")
+            lineas.append(f"\n{msj_maps}")
             self.sw.enviar("\n".join(lineas))
         else:
-            self.sw.enviar("📍 Ingresá el *destino* del viaje:")
+            self.sw.enviar(f"📍 *Destino*\n\n{msj_maps}")
 
     def _procesar_destino(self, comando, sesiones):
         if comando.strip() == "cancelar":
             self._cancelar(sesiones)
             return
 
-        destino = self._resolver_punto(comando)
-        if not destino:
-            self.sw.enviar("⚠️ Destino no válido. Intentá nuevamente:")
+        # Intentar resolver como punto frecuente
+        punto = self._resolver_punto_frecuente(comando)
+        if punto:
+            # Validar que no sea igual al origen
+            origen = sesiones[self.numero].auxilios_dato_temporal.get("origen", "")
+            origen_str = origen if isinstance(origen, str) else origen.get("direccion_formateada", "")
+            if punto.lower() == origen_str.lower():
+                self.sw.enviar("⚠️ El destino no puede ser igual al origen. Intentá nuevamente:")
+                return
+            sesiones[self.numero].auxilios_dato_temporal["destino"] = punto
+            self._ir_a_tramo_tipo(sesiones)
             return
 
+        # Detectar tipo de input
+        tipo_input = self.maps.detectar_tipo_input(comando)
+
+        if tipo_input == "coordenadas":
+            resultado = self.maps.resolver_coordenadas(comando)
+            if resultado:
+                sesiones[self.numero].auxilios_dato_temporal["_maps_resultados"] = [resultado]
+                sesiones[self.numero].auxilios_campo_actual = "servicio_destino_maps_seleccion"
+                self.sw.enviar(self.maps.armar_mensaje_unico(resultado))
+            else:
+                self.sw.enviar(self.maps.get_mensaje("geocoding_error"))
+            return
+
+        # Texto libre → buscar en Maps
+        resultados = self.maps.buscar(comando)
+        if resultados:
+            sesiones[self.numero].auxilios_dato_temporal["_maps_resultados"] = resultados
+            sesiones[self.numero].auxilios_campo_actual = "servicio_destino_maps_seleccion"
+            if len(resultados) == 1:
+                self.sw.enviar(self.maps.armar_mensaje_unico(resultados[0]))
+            else:
+                self.sw.enviar(self.maps.armar_mensaje_opciones(resultados))
+        else:
+            self._manejar_reintento_maps(sesiones, "destino")
+
+    def _procesar_destino_maps_seleccion(self, comando, sesiones):
+        """Procesa la selección del usuario sobre resultados de Maps para destino."""
+        if comando.strip() == "cancelar":
+            self._cancelar(sesiones)
+            return
+
+        resultados = sesiones[self.numero].auxilios_dato_temporal.get("_maps_resultados", [])
+
+        # "si" confirma resultado único
+        if comando.strip().lower() == "si" and len(resultados) >= 1:
+            self._seleccionar_direccion_destino(resultados[0], sesiones)
+            return
+
+        # Número de selección
+        try:
+            indice = int(comando.strip()) - 1
+            if 0 <= indice < len(resultados):
+                self._seleccionar_direccion_destino(resultados[indice], sesiones)
+                return
+        except ValueError:
+            pass
+
+        # Si no es número ni "si", es una nueva búsqueda
+        sesiones[self.numero].auxilios_campo_actual = "servicio_destino"
+        self._procesar_destino(comando, sesiones)
+
+    def _seleccionar_direccion_destino(self, direccion, sesiones):
+        """Guarda la dirección seleccionada como destino y avanza a tramos."""
+        # Validar que no sea igual al origen
         origen = sesiones[self.numero].auxilios_dato_temporal.get("origen", "")
-        if destino.lower() == origen.lower():
+        if isinstance(origen, dict):
+            origen_str = origen.get("direccion_formateada", "")
+        else:
+            origen_str = origen
+        if direccion["direccion_formateada"].lower() == origen_str.lower():
             self.sw.enviar("⚠️ El destino no puede ser igual al origen. Intentá nuevamente:")
             return
 
-        sesiones[self.numero].auxilios_dato_temporal["destino"] = destino
+        sesiones[self.numero].auxilios_dato_temporal["destino"] = direccion
+        sesiones[self.numero].auxilios_dato_temporal.pop("_maps_resultados", None)
+        self.sw.enviar(f"✅ Destino: {direccion['direccion_formateada']}")
         self._ir_a_tramo_tipo(sesiones)
+
+    # ── HELPERS MAPS ──────────────────────────────────────────────────────────
+
+    def _resolver_punto_frecuente(self, comando):
+        """
+        Si el comando es un número válido de la lista de puntos frecuentes,
+        retorna el punto. Si no, retorna None (para que siga el flujo de Maps).
+        """
+        puntos = self.config.get_puntos_frecuentes()
+        if not puntos:
+            return None
+        try:
+            indice = int(comando.strip()) - 1
+            if 0 <= indice < len(puntos):
+                return puntos[indice]
+        except ValueError:
+            pass
+        return None
+
+    def _manejar_reintento_maps(self, sesiones, contexto):
+        """Maneja reintentos cuando Maps no encuentra resultados."""
+        reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0) + 1
+        sesiones[self.numero].auxilios_reintentos = reintentos
+        reintentos_max = self.config.data.get("reintentos_input", 3)
+
+        if reintentos >= reintentos_max:
+            self._cancelar(sesiones)
+        elif reintentos >= 2:
+            # Al 2do reintento, sugerimos formato entre calles
+            self.sw.enviar(self.maps.get_mensaje("sin_resultados_fallback"))
+        else:
+            self.sw.enviar(self.maps.get_mensaje("sin_resultados"))
 
     # ── 7. TRAMOS ─────────────────────────────────────────────────────────────
 
@@ -664,6 +830,10 @@ class RegistroServicio(Validadores):
         va = datos.get("vehiculo_auxiliado", {})
         ris_display = va.get("ris", "").replace("_", " ").capitalize()
 
+        # Resolver display de origen/destino (puede ser string o dict de Maps)
+        origen_display = self._display_direccion(datos.get("origen", ""))
+        destino_display = self._display_direccion(datos.get("destino", ""))
+
         lineas = ["📋 *Resumen del servicio:*\n"]
         lineas.append(f"🔢 N° Movimiento: *{datos.get('nro_movimiento', '')}*")
         lineas.append(f"📅 Fecha: *{fecha_display}*")
@@ -674,7 +844,7 @@ class RegistroServicio(Validadores):
             lineas.append(f"🚛 Grúa: *{datos['vehiculo_propio']}*")
 
         lineas.append(f"🚗 Auxiliado: *{va.get('patente', '')}* ({ris_display})")
-        lineas.append(f"📍 Recorrido: *{datos.get('origen', '')} → {datos.get('destino', '')}*")
+        lineas.append(f"📍 Recorrido: *{origen_display} → {destino_display}*")
 
         if datos.get("info_extra"):
             lineas.append(f"📝 Info extra: {datos['info_extra']}")
@@ -737,23 +907,11 @@ class RegistroServicio(Validadores):
 
     # ── HELPERS ───────────────────────────────────────────────────────────────
 
-    def _resolver_punto(self, comando):
-        """
-        Resuelve punto: número de lista o texto libre.
-        Si es número fuera de rango, lo toma como texto libre.
-        """
-        puntos = self.config.get_puntos_frecuentes()
-        try:
-            indice = int(comando.strip()) - 1
-            if 0 <= indice < len(puntos):
-                return puntos[indice]
-            # Número fuera de rango → texto libre
-        except ValueError:
-            pass
-
-        # Texto libre: lo tomamos como punto nuevo
-        texto = comando.strip().title()
-        return texto if len(texto) >= 2 else None
+    def _display_direccion(self, direccion):
+        """Retorna string de display para origen/destino (puede ser string o dict de Maps)."""
+        if isinstance(direccion, dict):
+            return direccion.get("direccion_formateada", "")
+        return direccion
 
     def _manejar_reintento(self, comando, sesiones, config_campo, resultado):
         """Maneja reintentos con mensaje de error."""

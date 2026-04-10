@@ -3,6 +3,9 @@ ssl._create_default_https_context = ssl._create_unverified_context
 from flask import Flask, request, jsonify
 from src.menu_principal import MenuPrincipal
 from src.log.error_logger import ErrorLogger
+# 
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 sesiones = {}

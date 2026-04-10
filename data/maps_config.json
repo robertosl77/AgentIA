@@ -1,0 +1,17 @@
+{
+    "api_key_env": "GOOGLE_MAPS_API_KEY",
+    "pais": "AR",
+    "idioma": "es",
+    "max_resultados": 3,
+    "tipos_input": ["texto", "coordenadas"],
+    "mensajes": {
+      "pedido_direccion": "📍 Ingresá la dirección (*calle, altura y localidad*):\n(ej: Corrientes 1234, CABA)\n\nTambién podés pegar coordenadas (ej: -34.603, -58.381)",
+      "opciones_encontradas": "📍 Seleccioná tu dirección:",
+      "opcion_ninguna": "Ingresá el número o escribí otra dirección:",
+      "sin_resultados": "❌ No encontramos resultados. Intentá con más detalle\n(calle, altura y localidad):",
+      "sin_resultados_fallback": "❌ No pudimos encontrar la dirección.\nProbá con *calle, entre calles y localidad*\n(ej: Mitre entre Salta y Jujuy, Quilmes):",
+      "direccion_detectada": "📍 Dirección detectada:",
+      "confirmar_unica": "¿Es correcta? Respondé *si* o escribí otra dirección:",
+      "geocoding_error": "❌ No pudimos resolver las coordenadas. Intentá con una dirección de texto:"
+    }
+  }
