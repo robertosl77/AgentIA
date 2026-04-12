@@ -10,12 +10,11 @@ class ObraSocialManager:
     """
     Gestiona el CRUD de obras sociales en obras_sociales.json.
     Singleton — se carga una vez y se reutiliza.
-    Responsabilidades:
-        - Gestionar catálogo de entidades (lista dinámica con destacadas)
-        - Crear asociación persona ↔ obra social (con número y plan)
-        - Buscar obra social por persona
-        - Buscar personas por obra social
-        - Editar y eliminar asociaciones
+    
+    Estructura de asociación:
+        {entidad, numero, plan, personas: [persona_id, ...]}
+    Una obra social (entidad+numero) existe una sola vez.
+    Múltiples personas se vinculan a la misma asociación (grupo familiar).
     """
 
     PATH = os.path.join("data", "farmacia", "obras_sociales.json")
@@ -106,7 +105,6 @@ class ObraSocialManager:
         Si es texto, busca coincidencia en el catálogo completo.
         Retorna (nombre_entidad, es_nueva) o (None, False) si no se resuelve.
         """
-        # Intento por número (selección de lista destacada)
         try:
             indice = int(comando.strip()) - 1
             if 0 <= indice < len(destacadas):
@@ -114,63 +112,83 @@ class ObraSocialManager:
         except ValueError:
             pass
 
-        # Intento por texto — buscar en catálogo completo
         coincidencias = self.buscar_en_catalogo(comando)
         if len(coincidencias) == 1:
             return (coincidencias[0], False)
         elif len(coincidencias) > 1:
-            # Múltiples coincidencias — retornar None para que el flujo pregunte
             return (None, False)
 
-        # No hay coincidencia — entidad nueva
         nombre_nuevo = comando.strip().title()
         if len(nombre_nuevo) >= 3:
             return (nombre_nuevo, True)
 
         return (None, False)
 
-    # ── CREAR ASOCIACIÓN ──────────────────────────────────────────────────────
+    # ── CREAR / VINCULAR ──────────────────────────────────────────────────────
 
-    def crear_asociacion(self, persona_id, entidad, numero, plan=""):
+    def crear_o_vincular(self, persona_id, entidad, numero, plan=""):
         """
-        Crea una asociación persona ↔ obra social.
-        Si la entidad no está en el catálogo, la agrega.
-        Verifica que la persona no tenga ya una asociación con la misma entidad.
-        Retorna el asociacion_id generado, o None si ya existe.
+        Punto de entrada principal para asociar una persona a una obra social.
+        1. Busca si ya existe una asociación con misma entidad+numero.
+           - Si existe: vincula la persona (si no estaba ya).
+        2. Si no existe: crea la asociación nueva.
+        Agrega la entidad al catálogo si es nueva.
+        Retorna (asociacion_id, "vinculado"|"creado"|"ya_vinculado").
         """
-        existente = self.buscar_por_persona_y_entidad(persona_id, entidad)
-        if existente:
-            return None
-
         self.agregar_al_catalogo(entidad)
 
+        # Buscar asociación existente por entidad + numero
+        existente = self.buscar_por_entidad_y_numero(entidad, numero)
+        if existente:
+            aid, datos = existente
+            if persona_id in datos["personas"]:
+                return (aid, "ya_vinculado")
+            datos["personas"].append(persona_id)
+            self._guardar_archivo()
+            return (aid, "vinculado")
+
+        # No existe: crear nueva
         asociacion_id = str(uuid.uuid4())
         self.data["asociaciones"][asociacion_id] = {
             "entidad": entidad.strip(),
             "numero": numero.strip(),
             "plan": plan.strip(),
-            "persona_id": persona_id
+            "personas": [persona_id]
         }
         self._guardar_archivo()
-        return asociacion_id
+        return (asociacion_id, "creado")
 
     # ── BUSCAR ────────────────────────────────────────────────────────────────
 
     def get_asociacion(self, asociacion_id):
-        """Retorna los datos de una asociación por su ID, o None."""
+        """Retorna tupla (asociacion_id, datos) o None."""
         datos = self.data["asociaciones"].get(asociacion_id)
         if datos:
             return (asociacion_id, datos)
         return None
 
+    def buscar_por_entidad_y_numero(self, entidad, numero):
+        """
+        Busca una asociación por entidad + numero (clave de negocio).
+        Comparación case-insensitive en entidad.
+        Retorna tupla (asociacion_id, datos) o None.
+        """
+        entidad_lower = entidad.strip().lower()
+        numero_clean = numero.strip()
+        for aid, datos in self.data["asociaciones"].items():
+            if (datos["entidad"].lower() == entidad_lower and
+                    datos["numero"] == numero_clean):
+                return (aid, datos)
+        return None
+
     def buscar_por_persona(self, persona_id):
         """
-        Retorna todas las asociaciones de obra social de una persona.
+        Retorna todas las asociaciones donde participa la persona.
         Cada elemento: {asociacion_id, entidad, numero, plan}.
         """
         resultado = []
         for aid, datos in self.data["asociaciones"].items():
-            if datos["persona_id"] == persona_id:
+            if persona_id in datos.get("personas", []):
                 resultado.append({
                     "asociacion_id": aid,
                     "entidad": datos["entidad"],
@@ -182,25 +200,24 @@ class ObraSocialManager:
     def buscar_por_persona_y_entidad(self, persona_id, entidad):
         """
         Busca si una persona ya tiene asociación con una entidad específica.
-        Comparación case-insensitive.
         Retorna tupla (asociacion_id, datos) o None.
         """
         entidad_lower = entidad.strip().lower()
         for aid, datos in self.data["asociaciones"].items():
-            if (datos["persona_id"] == persona_id and
+            if (persona_id in datos.get("personas", []) and
                     datos["entidad"].lower() == entidad_lower):
                 return (aid, datos)
         return None
 
     def buscar_personas_por_entidad(self, entidad):
-        """Retorna todas las personas asociadas a una entidad de obra social."""
+        """Retorna todas las asociaciones de una entidad."""
         entidad_lower = entidad.strip().lower()
         resultado = []
         for aid, datos in self.data["asociaciones"].items():
             if datos["entidad"].lower() == entidad_lower:
                 resultado.append({
                     "asociacion_id": aid,
-                    "persona_id": datos["persona_id"],
+                    "personas": datos["personas"],
                     "numero": datos["numero"],
                     "plan": datos["plan"]
                 })
@@ -227,30 +244,53 @@ class ObraSocialManager:
         self._guardar_archivo()
         return True
 
-    # ── BORRAR ────────────────────────────────────────────────────────────────
+    # ── DESVINCULAR / BORRAR ──────────────────────────────────────────────────
+
+    def desvincular_persona(self, asociacion_id, persona_id):
+        """
+        Desvincula una persona de una asociación.
+        Si la asociación queda sin personas, se elimina.
+        Retorna True si se desvinculó.
+        """
+        if asociacion_id not in self.data["asociaciones"]:
+            return False
+
+        personas = self.data["asociaciones"][asociacion_id]["personas"]
+        if persona_id in personas:
+            personas.remove(persona_id)
+            if not personas:
+                del self.data["asociaciones"][asociacion_id]
+            self._guardar_archivo()
+            return True
+        return False
 
     def borrar_asociacion(self, asociacion_id):
-        """Elimina una asociación. Retorna True si se borró."""
+        """Elimina una asociación completa. Retorna True si se borró."""
         if asociacion_id in self.data["asociaciones"]:
             del self.data["asociaciones"][asociacion_id]
             self._guardar_archivo()
             return True
         return False
 
-    def borrar_asociaciones_persona(self, persona_id):
+    def desvincular_todas_persona(self, persona_id):
         """
-        Elimina todas las asociaciones de una persona.
+        Desvincula una persona de todas sus asociaciones.
+        Elimina asociaciones que queden sin personas.
         Se usa al borrar una persona para limpiar referencias.
-        Retorna la cantidad de asociaciones eliminadas.
+        Retorna la cantidad de desvinculaciones.
         """
+        count = 0
         a_borrar = []
         for aid, datos in self.data["asociaciones"].items():
-            if datos["persona_id"] == persona_id:
-                a_borrar.append(aid)
+            if persona_id in datos.get("personas", []):
+                datos["personas"].remove(persona_id)
+                count += 1
+                if not datos["personas"]:
+                    a_borrar.append(aid)
 
         for aid in a_borrar:
             del self.data["asociaciones"][aid]
 
-        if a_borrar:
+        if count > 0:
             self._guardar_archivo()
-        return len(a_borrar)
+        return count

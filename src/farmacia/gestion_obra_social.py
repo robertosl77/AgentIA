@@ -302,23 +302,26 @@ class GestionObraSocial:
             self._finalizar_carga(sesiones)
 
     def _finalizar_carga(self, sesiones):
-        """Crea la asociación con los datos recolectados."""
+        """Crea o vincula la asociación con los datos recolectados."""
         datos = sesiones[self.numero].os_datos
         beneficiario_id = getattr(sesiones[self.numero], "os_beneficiario_id", None)
 
-        asociacion_id = self.os_manager.crear_asociacion(
+        asociacion_id, resultado = self.os_manager.crear_o_vincular(
             persona_id=beneficiario_id,
             entidad=datos.get("entidad", ""),
             numero=datos.get("numero", ""),
             plan=datos.get("plan", "")
         )
 
-        if asociacion_id:
-            entidad = datos.get("entidad", "")
-            numero = datos.get("numero", "")
+        entidad = datos.get("entidad", "")
+        numero = datos.get("numero", "")
+
+        if resultado == "creado":
             self.sw.enviar(f"✅ Obra social *{entidad}* (Nro: {numero}) registrada correctamente.")
-        else:
-            self.sw.enviar(f"⚠️ Ya tenés registrada *{datos.get('entidad', '')}*.")
+        elif resultado == "vinculado":
+            self.sw.enviar(f"✅ Te vinculamos a la obra social *{entidad}* (Nro: {numero}) que ya estaba registrada.")
+        elif resultado == "ya_vinculado":
+            self.sw.enviar(f"⚠️ Ya estás vinculado a *{entidad}* (Nro: {numero}).")
 
         self._salir(sesiones)
 
@@ -403,16 +406,20 @@ class GestionObraSocial:
     # ── ELIMINAR ──────────────────────────────────────────────────────────────
 
     def _procesar_confirmar_eliminar(self, comando, sesiones):
-        """Procesa la confirmación de eliminación."""
+        """
+        Procesa la confirmación de eliminación.
+        Desvincula la persona de la asociación. Si queda sin personas, se elimina.
+        """
         if comando.strip() == "si":
             asociacion_id = getattr(sesiones[self.numero], "os_asociacion_id", None)
-            if asociacion_id:
+            beneficiario_id = getattr(sesiones[self.numero], "os_beneficiario_id", None)
+            if asociacion_id and beneficiario_id:
                 asociacion = self.os_manager.get_asociacion(asociacion_id)
-                self.os_manager.borrar_asociacion(asociacion_id)
+                self.os_manager.desvincular_persona(asociacion_id, beneficiario_id)
                 if asociacion:
-                    self.sw.enviar(f"✅ Obra social *{asociacion[1]['entidad']}* eliminada correctamente.")
+                    self.sw.enviar(f"✅ Obra social *{asociacion[1]['entidad']}* desvinculada correctamente.")
                 else:
-                    self.sw.enviar("✅ Obra social eliminada correctamente.")
+                    self.sw.enviar("✅ Obra social desvinculada correctamente.")
             self._salir(sesiones)
         elif comando.strip() == "no":
             self.sw.enviar("❌ Eliminación cancelada.")

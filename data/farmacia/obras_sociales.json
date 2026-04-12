@@ -54,23 +54,14 @@
     }
   ],
   "asociaciones": {
-    "9df562aa-08d4-485b-855b-668b14dc1231": {
-      "entidad": "Swiss Medical",
-      "numero": "8000000000000000000000000000000",
-      "plan": "docthos premium",
-      "persona_id": "f8dd6a68-9714-4166-947b-0e575bd0deb5"
-    },
-    "c6087e76-a6c4-47d7-afa3-1dfdef313df1": {
+    "caf0f547-b890-43f9-b743-bd57d1f341f3": {
       "entidad": "OSDE",
-      "numero": "88888888888888888888888888888888888",
+      "numero": "888888888888888888888888888888888",
       "plan": "210",
-      "persona_id": "f8dd6a68-9714-4166-947b-0e575bd0deb5"
-    },
-    "a0e42007-01d7-48bb-846e-f4def3047f0d": {
-      "entidad": "OSDE",
-      "numero": "88888888888888888888888888888888888",
-      "plan": "210",
-      "persona_id": "ea8ea1fa-4afd-49d5-b0ba-30f7b9802065"
+      "personas": [
+        "ea8ea1fa-4afd-49d5-b0ba-30f7b9802065",
+        "f8dd6a68-9714-4166-947b-0e575bd0deb5"
+      ]
     }
   }
 }
