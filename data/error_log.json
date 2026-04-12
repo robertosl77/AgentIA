@@ -1,28 +1,3 @@
 {
-  "errores": [
-    {
-      "id": 1,
-      "timestamp": "2026-04-09T23:03:25.265871",
-      "numero": "231400003358774@lid",
-      "comando": "av cordoba 1234",
-      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 60, in administro_menu\n    self.auxilios.procesar_flujo(comando, self.sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\submenu_auxilios.py\", line 76, in procesar_flujo\n    self.servicio.procesar(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\registro_servicio.py\", line 88, in procesar\n    handler(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\registro_servicio.py\", line 501, in _procesar_origen\n    resultados = self.maps.buscar(comando)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\buscador_direccion.py\", line 45, in buscar\n    return self.client.buscar_direccion(texto)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\maps_client.py\", line 27, in buscar_direccion\n    api_key = self.config.get_api_key()\n              ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\maps_config_loader.py\", line 38, in get_api_key\n    raise ValueError(f\"Variable de entorno '{nombre_variable}' no configurada.\")\nValueError: Variable de entorno 'GOOGLE_MAPS_API_KEY' no configurada.\n",
-      "resuelto": false
-    },
-    {
-      "id": 2,
-      "timestamp": "2026-04-09T23:08:40.939789",
-      "numero": "231400003358774@lid",
-      "comando": "av cordoba 123, caba",
-      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 25, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 60, in administro_menu\n    self.auxilios.procesar_flujo(comando, self.sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\submenu_auxilios.py\", line 76, in procesar_flujo\n    self.servicio.procesar(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\registro_servicio.py\", line 88, in procesar\n    handler(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\registro_servicio.py\", line 501, in _procesar_origen\n    resultados = self.maps.buscar(comando)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\buscador_direccion.py\", line 45, in buscar\n    return self.client.buscar_direccion(texto)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\maps_client.py\", line 27, in buscar_direccion\n    api_key = self.config.get_api_key()\n              ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\maps_config_loader.py\", line 38, in get_api_key\n    raise ValueError(f\"Variable de entorno '{nombre_variable}' no configurada.\")\nValueError: Variable de entorno 'GOOGLE_MAPS_API_KEY' no configurada.\n",
-      "resuelto": false
-    },
-    {
-      "id": 3,
-      "timestamp": "2026-04-09T23:13:42.233780",
-      "numero": "231400003358774@lid",
-      "comando": "av cordoba 123, caba",
-      "traceback": "Traceback (most recent call last):\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\app.py\", line 28, in webhook\n    sesiones[numero].administro_menu(sesiones, texto, pushname)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\menu_principal.py\", line 60, in administro_menu\n    self.auxilios.procesar_flujo(comando, self.sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\submenu_auxilios.py\", line 76, in procesar_flujo\n    self.servicio.procesar(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\registro_servicio.py\", line 88, in procesar\n    handler(comando, sesiones)\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\auxilios\\registro_servicio.py\", line 501, in _procesar_origen\n    resultados = self.maps.buscar(comando)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\buscador_direccion.py\", line 45, in buscar\n    return self.client.buscar_direccion(texto)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\maps_client.py\", line 27, in buscar_direccion\n    api_key = self.config.get_api_key()\n              ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\Bibliotecas\\Documents\\GitHub\\AgentIA\\src\\maps\\maps_config_loader.py\", line 38, in get_api_key\n    raise ValueError(f\"Variable de entorno '{nombre_variable}' no configurada.\")\nValueError: Variable de entorno 'GOOGLE_MAPS_API_KEY' no configurada.\n",
-      "resuelto": false
-    }
-  ]
+  "errores": []
 }

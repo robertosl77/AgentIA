@@ -473,11 +473,10 @@
             "usuario"
           ],
           "activacion": [
-            "1",
-            "horarios"
+            "1"
           ],
-          "texto": "1. Consultar Horarios",
-          "submenu": "horarios"
+          "texto": "1. 🚛 Auxilios Mecánicos",
+          "submenu": "auxilios"
         },
         {
           "id": "2",
@@ -487,10 +486,11 @@
             "usuario"
           ],
           "activacion": [
-            "2"
+            "2",
+            "farmacia"
           ],
-          "texto": "2. 🚛 Auxilios Mecánicos",
-          "submenu": "auxilios"
+          "texto": "2. 💊 Farmacia",
+          "submenu": "farmacia"
         },
         {
           "id": "3",
@@ -500,23 +500,9 @@
             "usuario"
           ],
           "activacion": [
-            "3",
-            "farmacia"
+            "3"
           ],
-          "texto": "3. 💊 Farmacia",
-          "submenu": "farmacia"
-        },
-        {
-          "id": "4",
-          "roles": [
-            "root",
-            "admin",
-            "usuario"
-          ],
-          "activacion": [
-            "4"
-          ],
-          "texto": "4. Otra opción (próximamente)",
+          "texto": "3. Otra opción (próximamente)",
           "submenu": null
         }
       ]
@@ -644,8 +630,8 @@
             "activacion": [
               "1"
             ],
-            "texto": "1. 🏥 Consultar guardias",
-            "handler": "consultar_guardias",
+            "texto": "1. 🕒 Consultar horario de atención",
+            "handler": "consultar_horarios_fijos",
             "requisitos": []
           },
           {
@@ -658,8 +644,8 @@
             "activacion": [
               "2"
             ],
-            "texto": "2. 👥 Registrar beneficiario",
-            "handler": "registrar_beneficiario",
+            "texto": "2. 🏥 Ver próximos días de guardia",
+            "handler": "consultar_guardias",
             "requisitos": []
           },
           {
@@ -672,8 +658,8 @@
             "activacion": [
               "3"
             ],
-            "texto": "3. 🔄 Cambiar beneficiario",
-            "handler": "cambiar_beneficiario",
+            "texto": "3. ⚠️ Ver cierres eventuales",
+            "handler": "consultar_cierres",
             "requisitos": []
           },
           {
@@ -686,7 +672,35 @@
             "activacion": [
               "4"
             ],
-            "texto": "4. 📋 Completar datos de {beneficiario}",
+            "texto": "4. 👥 Registrar beneficiario",
+            "handler": "registrar_beneficiario",
+            "requisitos": []
+          },
+          {
+            "id": "5",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "5"
+            ],
+            "texto": "5. 🔄 Cambiar beneficiario",
+            "handler": "cambiar_beneficiario",
+            "requisitos": []
+          },
+          {
+            "id": "6",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "6"
+            ],
+            "texto": "6. 📋 Completar datos de {beneficiario}",
             "handler": "completar_datos",
             "requisitos": []
           },

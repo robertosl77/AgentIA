@@ -12,6 +12,8 @@ class SubMenuFarmacia:
     """
     Orquestador del enlatado farmacia.
     Responsabilidades:
+        - Verificar acceso por horario (bloqueo propio del enlatado)
+        - Mostrar mensajes emergentes al entrar (guardias, cierres)
         - Resolver identidad del operador (LID → persona)
         - Si no existe persona, disparar registro nivel 1
         - Selección de beneficiario (yo / vinculados visibles)
@@ -40,8 +42,20 @@ class SubMenuFarmacia:
     def iniciar(self, sesiones):
         """
         Punto de entrada al enlatado farmacia.
-        Paso 1: verificar si hay persona vinculada al LID.
+        Paso 0: verificar acceso por horario.
+        Paso 1: mensajes emergentes.
+        Paso 2: verificar si hay persona vinculada al LID.
         """
+        # Paso 0: bloqueo por horario
+        if not self.horarios.tiene_acceso():
+            estado = self.horarios.estado_actual()
+            self.sw.enviar(f"{estado}\n\nLa farmacia no está atendiendo en este momento.")
+            return  # No activa flujo, vuelve al menú principal
+
+        # Paso 1: mensajes emergentes
+        self._enviar_mensajes_emergentes()
+
+        # Paso 2: verificar persona
         persona = self.persona_manager.buscar_por_lid(self.numero)
 
         if not persona:
@@ -53,7 +67,7 @@ class SubMenuFarmacia:
         persona_id = persona[0]
         sesiones[self.numero].farmacia_operador_id = persona_id
 
-        # Paso 2: selección de beneficiario
+        # Paso 3: selección de beneficiario
         self._seleccionar_beneficiario(persona_id, sesiones)
 
     def procesar(self, comando, sesiones):
@@ -68,6 +82,18 @@ class SubMenuFarmacia:
 
         elif estado == "menu_farmacia":
             self._procesar_menu_farmacia(comando, sesiones)
+
+    # ── MENSAJES EMERGENTES ───────────────────────────────────────────────────
+
+    def _enviar_mensajes_emergentes(self):
+        """Envía avisos de guardia próxima y cierre eventual al entrar a farmacia."""
+        msg_guardia = self.horarios.mensaje_proximas_guardias()
+        if msg_guardia:
+            self.sw.enviar(msg_guardia)
+
+        msg_cierre = self.horarios.mensaje_proximo_evento()
+        if msg_cierre:
+            self.sw.enviar(msg_cierre)
 
     # ── REGISTRO DE PERSONA ───────────────────────────────────────────────────
 
@@ -216,9 +242,23 @@ class SubMenuFarmacia:
 
     # ── HANDLERS ──────────────────────────────────────────────────────────────
 
+    def consultar_horarios_fijos(self, sesiones):
+        """Reutiliza SubMenuHorarios para mostrar horarios de atención."""
+        msg = self.horarios.submenu_horarios_fijos()
+        beneficiario_flag = self._get_flag_beneficiario(sesiones)
+        self.sw.enviar(f"{beneficiario_flag}{msg}")
+        self._mostrar_menu_farmacia(sesiones)
+
     def consultar_guardias(self, sesiones):
         """Reutiliza SubMenuHorarios para mostrar guardias."""
         msg = self.horarios.submenu_dias_de_guardia()
+        beneficiario_flag = self._get_flag_beneficiario(sesiones)
+        self.sw.enviar(f"{beneficiario_flag}{msg}")
+        self._mostrar_menu_farmacia(sesiones)
+
+    def consultar_cierres(self, sesiones):
+        """Reutiliza SubMenuHorarios para mostrar cierres eventuales."""
+        msg = self.horarios.submenu_cierres_eventuales()
         beneficiario_flag = self._get_flag_beneficiario(sesiones)
         self.sw.enviar(f"{beneficiario_flag}{msg}")
         self._mostrar_menu_farmacia(sesiones)

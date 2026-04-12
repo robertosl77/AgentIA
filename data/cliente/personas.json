@@ -385,28 +385,6 @@
         }
       ]
     },
-    "1ff59dea-5f8b-46e8-97c1-de1c37f97d9d": {
-      "tipo_documento": "DNI",
-      "numero_documento": "35000111",
-      "nombre": "jacinto",
-      "apellido": "pachimaguida",
-      "fecha_nacimiento": "01/06/1980",
-      "lids": [
-        "5491168387770@c.us"
-      ],
-      "contactos": [
-        {
-          "tipo": "telefono",
-          "valor": "1155667788",
-          "etiqueta": "personal"
-        },
-        {
-          "tipo": "email",
-          "valor": "jpachi@email.com",
-          "etiqueta": "personal"
-        }
-      ]
-    },
     "44153c47-e1aa-48df-8265-5f27f9fdcb74": {
       "tipo_documento": "DNI",
       "numero_documento": "23123456",
