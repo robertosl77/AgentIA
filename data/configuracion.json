@@ -15,9 +15,9 @@
       "msj_error": "⚠️ La fecha debe ser futura. Intentá nuevamente:"
     },
     "fecha_hoy_o_futura": {
-        "tipo": "fecha_hoy_o_futura",
-        "msj_error": "⚠️ La fecha debe ser hoy o posterior. Intentá nuevamente:"
-    },    
+      "tipo": "fecha_hoy_o_futura",
+      "msj_error": "⚠️ La fecha debe ser hoy o posterior. Intentá nuevamente:"
+    },
     "fecha_mayor_18": {
       "tipo": "edad_minima",
       "edad": 18,
@@ -43,6 +43,11 @@
       "dias": 90,
       "msj_error": "⚠️ La fecha debe ser dentro de los próximos 90 días. Intentá nuevamente:"
     },
+    "texto_maximo_20": {
+      "tipo": "longitud_maxima",
+      "parametro": 20,
+      "msj_error": "⚠️ El texto no debe superar los 20 caracteres. Intentá nuevamente:"
+    },
     "texto_maximo_50": {
       "tipo": "longitud_maxima",
       "parametro": 50,
@@ -63,6 +68,16 @@
       "parametro": 10,
       "msj_error": "⚠️ El texto debe tener al menos 10 caracteres. Intentá nuevamente:"
     },
+    "numero_documento_minimo": {
+      "tipo": "longitud_minima",
+      "parametro": 6,
+      "msj_error": "⚠️ El número de documento debe tener al menos 6 caracteres. Intentá nuevamente:"
+    },
+    "numero_documento_maximo": {
+      "tipo": "longitud_maxima",
+      "parametro": 15,
+      "msj_error": "⚠️ El número de documento no debe superar los 15 caracteres. Intentá nuevamente:"
+    },
     "fecha_formato_1": {
       "tipo": "fecha",
       "formato": "%d/%m/%Y",
@@ -74,13 +89,13 @@
       "msj_error": "⚠️ El formato de fecha y hora debe ser DD/MM/AAAA:HH:MM. Intentá nuevamente:"
     },
     "hora_formato_1": {
-      "tipo": "hora", 
-      "formato": "%H:%M", 
+      "tipo": "hora",
+      "formato": "%H:%M",
       "msj_error": "⚠️ El formato debe ser HH:MM (ej: 09:00). Intentá nuevamente:"
     },
     "hora_formato_2": {
-      "tipo": "hora", 
-      "formato": "%H:%M:%S", 
+      "tipo": "hora",
+      "formato": "%H:%M:%S",
       "msj_error": "⚠️ El formato debe ser HH:MM:SS (ej: 09:00:00). Intentá nuevamente:"
     },
     "email_formato": {
@@ -97,13 +112,23 @@
       "tipo": "patente",
       "formato": "^[A-Z]{2}[0-9]{3}[A-Z]{2}$",
       "msj_error": "⚠️ La patente no es válida. Intentá nuevamente:"
+    },
+    "numero_obra_social": {
+      "tipo": "longitud_minima",
+      "parametro": 4,
+      "msj_error": "⚠️ El número de obra social debe tener al menos 4 caracteres. Intentá nuevamente:"
+    },
+    "alias_vinculacion": {
+      "tipo": "longitud_maxima",
+      "parametro": 30,
+      "msj_error": "⚠️ El alias no debe superar los 30 caracteres. Intentá nuevamente:"
     }
   },
   "estructura_sesion": {
     "rol_defecto": "usuario",
     "duracion_horas": 1,
     "reintentos_input": 3,
-    "cliente": {
+    "cliente_old": {
       "pushname": {
         "valor": "",
         "obligatorio": false,
@@ -170,7 +195,7 @@
         "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"
       }
     },
-    "direccion": {
+    "direccion_old": {
       "alias": {
         "valor": "",
         "obligatorio": true,
@@ -235,6 +260,192 @@
         "msj_pedido": "🏠 Ingresá tu *provincia*:",
         "msj_reintento": "⚠️ La provincia ingresada no es válida. Intentá nuevamente:"
       }
+    },
+    "persona": {
+      "tipo_documento": {
+        "obligatorio": true,
+        "tipo": "catalogo",
+        "catalogo": "catalogo_tipo_documento",
+        "validadores": [],
+        "msj_pedido": "🪪 Seleccioná el *tipo de documento*:",
+        "msj_reintento": "⚠️ Opción no válida. Seleccioná una de la lista:"
+      },
+      "numero_documento": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "numero_documento_minimo",
+          "numero_documento_maximo"
+        ],
+        "msj_pedido": "🪪 Ingresá tu *número de documento*:",
+        "msj_reintento": "⚠️ El número de documento no es válido. Intentá nuevamente:"
+      },
+      "nombre": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "texto_minimo_3",
+          "texto_maximo_50"
+        ],
+        "msj_pedido": "👤 Por favor ingresá tu *nombre*:",
+        "msj_reintento": "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:"
+      },
+      "apellido": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "texto_maximo_50"
+        ],
+        "msj_pedido": "👤 Por favor ingresá tu *apellido*:",
+        "msj_reintento": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:"
+      },
+      "fecha_nacimiento": {
+        "obligatorio": true,
+        "tipo": "fecha",
+        "validadores": [
+          "fecha_formato_1",
+          "fecha_pasado"
+        ],
+        "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):",
+        "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"
+      },
+      "contactos": {
+        "tipo_contacto": {
+          "obligatorio": true,
+          "tipo": "catalogo",
+          "catalogo": "catalogo_tipo_contacto",
+          "validadores": [],
+          "msj_pedido": "📇 Seleccioná el *tipo de contacto*:",
+          "msj_reintento": "⚠️ Opción no válida. Seleccioná una de la lista:"
+        },
+        "valor": {
+          "obligatorio": true,
+          "tipo": "dinamico",
+          "validadores_por_tipo": {
+            "telefono": {
+              "tipo_base": "telefono",
+              "validadores": [],
+              "msj_pedido": "📱 Ingresá el *número de teléfono* (solo números):",
+              "msj_reintento": "⚠️ El teléfono no es válido. Ingresá solo números (mín. 8 dígitos):"
+            },
+            "email": {
+              "tipo_base": "email",
+              "validadores": [
+                "email_formato"
+              ],
+              "msj_pedido": "📧 Ingresá el *email*:",
+              "msj_reintento": "⚠️ El email no es válido. El formato debe ser ejemplo@dominio.com:"
+            }
+          }
+        },
+        "etiqueta": {
+          "obligatorio": false,
+          "tipo": "texto",
+          "validadores": [
+            "texto_maximo_20"
+          ],
+          "msj_pedido": "🏷️ Ingresá una etiqueta (ej: *personal*, *laboral*) o '-' para omitir:",
+          "msj_reintento": "⚠️ La etiqueta no debe superar los 20 caracteres. Intentá nuevamente:"
+        }
+      }
+    },
+    "direccion": {
+      "calle": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "texto_minimo_3",
+          "texto_maximo_100"
+        ],
+        "msj_pedido": "🏠 Ingresá la *calle*:",
+        "msj_reintento": "⚠️ La calle ingresada no es válida. Intentá nuevamente:"
+      },
+      "altura": {
+        "obligatorio": true,
+        "tipo": "numero",
+        "validadores": [],
+        "msj_pedido": "🏠 Ingresá el *número de altura*:",
+        "msj_reintento": "⚠️ La altura debe ser solo números. Intentá nuevamente:"
+      },
+      "piso": {
+        "obligatorio": false,
+        "tipo": "texto",
+        "validadores": [],
+        "msj_pedido": "🏠 Ingresá el *piso* (o '-' si no aplica):",
+        "msj_reintento": ""
+      },
+      "depto": {
+        "obligatorio": false,
+        "tipo": "texto",
+        "validadores": [],
+        "msj_pedido": "🏠 Ingresá el *departamento* (o '-' si no aplica):",
+        "msj_reintento": ""
+      },
+      "localidad": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "texto_minimo_3"
+        ],
+        "msj_pedido": "🏠 Ingresá la *localidad*:",
+        "msj_reintento": "⚠️ La localidad ingresada no es válida. Intentá nuevamente:"
+      },
+      "codigo_postal": {
+        "obligatorio": true,
+        "tipo": "numero",
+        "validadores": [],
+        "msj_pedido": "🏠 Ingresá el *código postal*:",
+        "msj_reintento": "⚠️ El código postal debe ser solo números. Intentá nuevamente:"
+      },
+      "provincia": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "texto_minimo_3"
+        ],
+        "msj_pedido": "🏠 Ingresá la *provincia*:",
+        "msj_reintento": "⚠️ La provincia ingresada no es válida. Intentá nuevamente:"
+      }
+    },
+    "vinculacion": {
+      "alias": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "texto_minimo_3",
+          "alias_vinculacion"
+        ],
+        "msj_pedido": "🔗 Ingresá un alias para esta persona (ej: *mamá*, *hijo*, *tía rosa*):",
+        "msj_reintento": "⚠️ El alias no es válido. Debe tener entre 3 y 30 caracteres:"
+      }
+    },
+    "obra_social": {
+      "entidad": {
+        "obligatorio": true,
+        "tipo": "catalogo",
+        "catalogo": "catalogo_obras_sociales",
+        "validadores": [],
+        "msj_pedido": "🏥 Seleccioná tu *obra social* de la lista (o escribí el nombre si no está):",
+        "msj_reintento": "⚠️ Opción no válida. Intentá nuevamente:"
+      },
+      "numero": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "numero_obra_social"
+        ],
+        "msj_pedido": "🏥 Ingresá tu *número de afiliado*:",
+        "msj_reintento": "⚠️ El número de afiliado no es válido. Intentá nuevamente:"
+      },
+      "plan": {
+        "obligatorio": false,
+        "tipo": "texto",
+        "validadores": [
+          "texto_maximo_50"
+        ],
+        "msj_pedido": "🏥 Ingresá el *plan* (o '-' si no aplica):",
+        "msj_reintento": "⚠️ El plan no es válido. Intentá nuevamente:"
+      }
     }
   },
   "mensajes": {
@@ -270,8 +481,14 @@
         },
         {
           "id": "2",
-          "roles": ["root", "admin", "usuario"],
-          "activacion": ["2"],
+          "roles": [
+            "root",
+            "admin",
+            "usuario"
+          ],
+          "activacion": [
+            "2"
+          ],
           "texto": "2. 🚛 Auxilios Mecánicos",
           "submenu": "auxilios"
         },
