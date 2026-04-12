@@ -11,7 +11,7 @@ class ObraSocialManager:
     Gestiona el CRUD de obras sociales en obras_sociales.json.
     Singleton — se carga una vez y se reutiliza.
     Responsabilidades:
-        - Gestionar catálogo de entidades (lista dinámica, crece con el uso)
+        - Gestionar catálogo de entidades (lista dinámica con destacadas)
         - Crear asociación persona ↔ obra social (con número y plan)
         - Buscar obra social por persona
         - Buscar personas por obra social
@@ -37,10 +37,15 @@ class ObraSocialManager:
         if not os.path.exists(self.PATH):
             estructura = {
                 "catalogo": [
-                    "OSDE", "Swiss Medical", "PAMI", "IOMA", "Galeno",
-                    "Medicus", "Hospital Italiano", "Accord Salud",
-                    "OSPRERA", "OSECAC", "Unión Personal", "Luis Pasteur",
-                    "Particular"
+                    {"nombre": "OSDE", "destacada": True},
+                    {"nombre": "Swiss Medical", "destacada": True},
+                    {"nombre": "PAMI", "destacada": True},
+                    {"nombre": "IOMA", "destacada": True},
+                    {"nombre": "Galeno", "destacada": True},
+                    {"nombre": "Medicus", "destacada": False},
+                    {"nombre": "Hospital Italiano", "destacada": False},
+                    {"nombre": "Accord Salud", "destacada": False},
+                    {"nombre": "Particular", "destacada": False}
                 ],
                 "asociaciones": {}
             }
@@ -59,32 +64,70 @@ class ObraSocialManager:
     # ── CATÁLOGO ──────────────────────────────────────────────────────────────
 
     def get_catalogo(self):
-        """Retorna la lista de entidades de obra social disponibles."""
+        """Retorna la lista completa del catálogo [{nombre, destacada}]."""
         return self.data.get("catalogo", [])
 
-    def agregar_al_catalogo(self, entidad):
+    def get_destacadas(self):
+        """Retorna solo los nombres de las entidades destacadas."""
+        return [e["nombre"] for e in self.get_catalogo() if e.get("destacada")]
+
+    def get_nombres_catalogo(self):
+        """Retorna todos los nombres del catálogo."""
+        return [e["nombre"] for e in self.get_catalogo()]
+
+    def agregar_al_catalogo(self, entidad, destacada=False):
         """
         Agrega una entidad nueva al catálogo si no existe.
         Comparación case-insensitive.
         Retorna True si se agregó, False si ya existía.
         """
-        catalogo = self.data.get("catalogo", [])
-        existentes_lower = [e.lower() for e in catalogo]
+        catalogo = self.get_catalogo()
+        existentes_lower = [e["nombre"].lower() for e in catalogo]
 
         if entidad.strip().lower() in existentes_lower:
             return False
 
-        catalogo.append(entidad.strip())
+        catalogo.append({"nombre": entidad.strip(), "destacada": destacada})
         self._guardar_archivo()
         return True
 
     def buscar_en_catalogo(self, texto):
         """
         Busca coincidencias parciales en el catálogo (case-insensitive).
-        Retorna lista de entidades que contienen el texto.
+        Retorna lista de nombres que contienen el texto.
         """
         texto_lower = texto.strip().lower()
-        return [e for e in self.data.get("catalogo", []) if texto_lower in e.lower()]
+        return [e["nombre"] for e in self.get_catalogo() if texto_lower in e["nombre"].lower()]
+
+    def resolver_entidad(self, comando, destacadas):
+        """
+        Resuelve la entidad seleccionada por el usuario.
+        Si es un número, busca en la lista de destacadas.
+        Si es texto, busca coincidencia en el catálogo completo.
+        Retorna (nombre_entidad, es_nueva) o (None, False) si no se resuelve.
+        """
+        # Intento por número (selección de lista destacada)
+        try:
+            indice = int(comando.strip()) - 1
+            if 0 <= indice < len(destacadas):
+                return (destacadas[indice], False)
+        except ValueError:
+            pass
+
+        # Intento por texto — buscar en catálogo completo
+        coincidencias = self.buscar_en_catalogo(comando)
+        if len(coincidencias) == 1:
+            return (coincidencias[0], False)
+        elif len(coincidencias) > 1:
+            # Múltiples coincidencias — retornar None para que el flujo pregunte
+            return (None, False)
+
+        # No hay coincidencia — entidad nueva
+        nombre_nuevo = comando.strip().title()
+        if len(nombre_nuevo) >= 3:
+            return (nombre_nuevo, True)
+
+        return (None, False)
 
     # ── CREAR ASOCIACIÓN ──────────────────────────────────────────────────────
 
@@ -95,12 +138,10 @@ class ObraSocialManager:
         Verifica que la persona no tenga ya una asociación con la misma entidad.
         Retorna el asociacion_id generado, o None si ya existe.
         """
-        # Verificamos duplicado: misma persona + misma entidad
         existente = self.buscar_por_persona_y_entidad(persona_id, entidad)
         if existente:
             return None
 
-        # Si la entidad no está en el catálogo, la agregamos
         self.agregar_al_catalogo(entidad)
 
         asociacion_id = str(uuid.uuid4())
@@ -152,10 +193,7 @@ class ObraSocialManager:
         return None
 
     def buscar_personas_por_entidad(self, entidad):
-        """
-        Retorna todas las personas asociadas a una entidad de obra social.
-        Útil para estadísticas o búsquedas inversas.
-        """
+        """Retorna todas las personas asociadas a una entidad de obra social."""
         entidad_lower = entidad.strip().lower()
         resultado = []
         for aid, datos in self.data["asociaciones"].items():

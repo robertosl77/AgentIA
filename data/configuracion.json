@@ -292,6 +292,7 @@
         "tipo": "catalogo",
         "catalogo": "catalogo_obras_sociales",
         "validadores": [],
+        "label": "Obra social",
         "msj_pedido": "🏥 Seleccioná tu *obra social* de la lista (o escribí el nombre si no está):",
         "msj_reintento": "⚠️ Opción no válida. Intentá nuevamente:"
       },
@@ -301,7 +302,8 @@
         "validadores": [
           "numero_obra_social"
         ],
-        "msj_pedido": "🏥 Ingresá tu *número de afiliado*:",
+        "label": "Nro. credencial",
+        "msj_pedido": "🪪 Ingresá tu *número de credencial/afiliado*:",
         "msj_reintento": "⚠️ El número de afiliado no es válido. Intentá nuevamente:"
       },
       "plan": {
@@ -310,7 +312,8 @@
         "validadores": [
           "texto_maximo_50"
         ],
-        "msj_pedido": "🏥 Ingresá el *plan* (o '-' si no aplica):",
+        "label": "Plan",
+        "msj_pedido": "📄 Ingresá el *plan* (o '-' si no aplica):",
         "msj_reintento": "⚠️ El plan no es válido. Intentá nuevamente:"
       }
     }
@@ -569,6 +572,20 @@
             ],
             "texto": "6. 📋 Completar datos de {beneficiario}",
             "handler": "completar_datos",
+            "requisitos": []
+          },
+          {
+            "id": "7",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "7"
+            ],
+            "texto": "7. 🏥 Administrar obra social de {beneficiario}",
+            "handler": "administrar_obra_social",
             "requisitos": []
           },
           {

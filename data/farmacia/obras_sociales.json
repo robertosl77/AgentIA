@@ -1,25 +1,76 @@
 {
   "catalogo": [
-    "OSDE",
-    "Swiss Medical",
-    "PAMI",
-    "IOMA",
-    "Galeno",
-    "Medicus",
-    "Hospital Italiano",
-    "Accord Salud",
-    "OSPRERA",
-    "OSECAC",
-    "Unión Personal",
-    "Luis Pasteur",
-    "Particular"
+    {
+      "nombre": "OSDE",
+      "destacada": true
+    },
+    {
+      "nombre": "Swiss Medical",
+      "destacada": true
+    },
+    {
+      "nombre": "PAMI",
+      "destacada": true
+    },
+    {
+      "nombre": "IOMA",
+      "destacada": true
+    },
+    {
+      "nombre": "Galeno",
+      "destacada": true
+    },
+    {
+      "nombre": "Medicus",
+      "destacada": false
+    },
+    {
+      "nombre": "Hospital Italiano",
+      "destacada": false
+    },
+    {
+      "nombre": "Accord Salud",
+      "destacada": false
+    },
+    {
+      "nombre": "OSPRERA",
+      "destacada": false
+    },
+    {
+      "nombre": "OSECAC",
+      "destacada": false
+    },
+    {
+      "nombre": "Unión Personal",
+      "destacada": false
+    },
+    {
+      "nombre": "Luis Pasteur",
+      "destacada": false
+    },
+    {
+      "nombre": "Particular",
+      "destacada": false
+    }
   ],
   "asociaciones": {
-    "a1b2c3d4-5678-9abc-def0-1234567890ab": {
+    "9df562aa-08d4-485b-855b-668b14dc1231": {
+      "entidad": "Swiss Medical",
+      "numero": "8000000000000000000000000000000",
+      "plan": "docthos premium",
+      "persona_id": "f8dd6a68-9714-4166-947b-0e575bd0deb5"
+    },
+    "c6087e76-a6c4-47d7-afa3-1dfdef313df1": {
       "entidad": "OSDE",
-      "numero": "12345678",
-      "plan": "310",
-      "persona_id": "e1a2b3c4-5678-9abc-def0-1234567890ab"
+      "numero": "88888888888888888888888888888888888",
+      "plan": "210",
+      "persona_id": "f8dd6a68-9714-4166-947b-0e575bd0deb5"
+    },
+    "a0e42007-01d7-48bb-846e-f4def3047f0d": {
+      "entidad": "OSDE",
+      "numero": "88888888888888888888888888888888888",
+      "plan": "210",
+      "persona_id": "ea8ea1fa-4afd-49d5-b0ba-30f7b9802065"
     }
   }
 }

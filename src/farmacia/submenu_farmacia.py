@@ -5,6 +5,7 @@ from src.sesiones.session_manager import SessionManager
 from src.cliente.persona_manager import PersonaManager
 from src.cliente.registro_persona import RegistroPersona
 from src.farmacia.vinculacion_manager import VinculacionManager
+from src.farmacia.gestion_obra_social import GestionObraSocial
 from src.horarios import SubMenuHorarios
 
 
@@ -30,6 +31,7 @@ class SubMenuFarmacia:
         self.persona_manager = PersonaManager()
         self.vinculacion_manager = VinculacionManager()
         self.registro_persona = RegistroPersona(numero)
+        self.gestion_os = GestionObraSocial(numero)
         self.horarios = SubMenuHorarios(numero)
 
     # ── FLUJO PRINCIPAL ───────────────────────────────────────────────────────
@@ -37,7 +39,10 @@ class SubMenuFarmacia:
     def esta_en_flujo(self, sesiones):
         """Retorna True si el usuario está en algún flujo de farmacia."""
         campo = getattr(sesiones[self.numero], "farmacia_estado", None)
-        return campo is not None
+        if campo is not None:
+            return True
+        # Verificar subflujos activos
+        return self.gestion_os.esta_en_flujo(sesiones)
 
     def iniciar(self, sesiones):
         """
@@ -72,9 +77,19 @@ class SubMenuFarmacia:
 
     def procesar(self, comando, sesiones):
         """Dispatcher según estado actual de farmacia."""
+        # Subflujo de obra social tiene prioridad
+        if self.gestion_os.esta_en_flujo(sesiones):
+            self.gestion_os.procesar(comando, sesiones)
+            # Si terminó, volver al menú farmacia
+            if not self.gestion_os.esta_en_flujo(sesiones):
+                estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
+                if estado_farmacia == "menu_farmacia":
+                    self._mostrar_menu_farmacia(sesiones)
+            return
+
         estado = getattr(sesiones[self.numero], "farmacia_estado", None)
 
-        if estado == "registro_persona":
+        if estado == "registro_persona" or estado == "post_registro_os":
             self._procesar_registro_persona(comando, sesiones)
 
         elif estado == "seleccion_beneficiario":
@@ -99,6 +114,20 @@ class SubMenuFarmacia:
 
     def _procesar_registro_persona(self, comando, sesiones):
         """Procesa el flujo de registro de persona nivel 1."""
+        # Post-registro: pregunta si quiere cargar obra social
+        if getattr(sesiones[self.numero], "farmacia_estado", None) == "post_registro_os":
+            if comando.strip() == "si":
+                persona_id = getattr(sesiones[self.numero], "farmacia_operador_id", None)
+                sesiones[self.numero].farmacia_estado = "menu_farmacia"
+                sesiones[self.numero].farmacia_beneficiario_id = persona_id
+                sesiones[self.numero].farmacia_beneficiario_alias = "mí"
+                self.gestion_os.iniciar(sesiones, persona_id)
+                return
+            else:
+                persona_id = getattr(sesiones[self.numero], "farmacia_operador_id", None)
+                self._seleccionar_beneficiario(persona_id, sesiones)
+                return
+
         resultado = self.registro_persona.procesar_registro(comando, sesiones)
 
         if resultado is None:
@@ -111,7 +140,8 @@ class SubMenuFarmacia:
 
         # resultado es persona_id — registro exitoso
         sesiones[self.numero].farmacia_operador_id = resultado
-        self._seleccionar_beneficiario(resultado, sesiones)
+        sesiones[self.numero].farmacia_estado = "post_registro_os"
+        self.sw.enviar("¿Querés registrar tu *obra social* ahora? (si/no)")
 
     # ── SELECCIÓN DE BENEFICIARIO ─────────────────────────────────────────────
 
@@ -287,6 +317,15 @@ class SubMenuFarmacia:
         beneficiario_alias = getattr(sesiones[self.numero], "farmacia_beneficiario_alias", "mí")
         self.sw.enviar(f"🚧 Completar datos de *{beneficiario_alias}* — próximamente...")
         self._mostrar_menu_farmacia(sesiones)
+
+    def administrar_obra_social(self, sesiones):
+        """Dispara el flujo de gestión de obra social para el beneficiario activo."""
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        if not beneficiario_id:
+            self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
+            self._mostrar_menu_farmacia(sesiones)
+            return
+        self.gestion_os.iniciar(sesiones, beneficiario_id)
 
     # ── HELPERS ───────────────────────────────────────────────────────────────
 
