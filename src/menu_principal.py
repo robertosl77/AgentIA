@@ -2,7 +2,7 @@
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.sesiones.session_manager import SessionManager
-from src.cliente import SubMenuCliente
+from src.cliente.persona_manager import PersonaManager
 from src.staff import SubMenuStaff
 from src.farmacia.submenu_farmacia import SubMenuFarmacia
 from src.auxilios import SubMenuAuxilios
@@ -14,7 +14,7 @@ class MenuPrincipal:
         self.config = ConfigLoader()
         self.sw = SendWPP(numero)
         self.session_manager = SessionManager()
-        self.registro = SubMenuCliente(numero)
+        self.persona_manager = PersonaManager()
         self.staff = SubMenuStaff(numero)
         self.farmacia = SubMenuFarmacia(numero)
         self.auxilios = SubMenuAuxilios(numero)
@@ -33,25 +33,7 @@ class MenuPrincipal:
 
         rol = self.session_manager.get_rol(self.numero)
 
-        # ── PRIORIDAD MÁXIMA: si está en flujo de registro, todo va ahí ──────────
-        if self.registro.esta_en_registro(self.sesiones):
-            resultado = self.registro.procesar_registro(comando, self.sesiones)
-
-            if not self.registro.esta_en_registro(self.sesiones):
-                if resultado == "ok":
-                    # ✅ Registro exitoso: volvemos al menú
-                    self.sw.enviar("✅ Datos registrados correctamente. Volviendo al menú...")
-                    self.mostrar_menu(rol)
-                else:
-                    # ❌ Registro cancelado: cerramos la sesión
-                    self.sw.enviar(
-                        "No pudimos completar el registro. Tu sesión fue cerrada. "
-                        "Cuando quieras podés volver a intentarlo. 👋"
-                    )
-                    self.sesiones[self.numero].menu = None
-                    self.sesiones[self.numero].submenu = None
-            return
-        
+        # ── FLUJOS ACTIVOS DE ENLATADOS ──────────────────────────────────────────
         if self.staff.esta_en_flujo(self.sesiones):
             self.staff.procesar_flujo(comando, self.sesiones)
             return
@@ -98,46 +80,14 @@ class MenuPrincipal:
         self.sesiones[self.numero].submenu = None
         # Precargamos el pushname si está disponible
         if pushname:
-            self.session_manager.editar_cliente(self.numero, "pushname", pushname)
+            self.session_manager.set_pushname(self.numero, pushname)
 
     def _bienvenida_y_menu(self, rol):
         """Muestra la bienvenida y el menú principal. Solo al primer contacto o sesión expirada."""
         self.sesiones[self.numero].menu = "principal"
 
         self.sw.enviar(self.mensaje_bienvenida())
-
-        if self._requiere_registro_cliente():
-            return
-
-        if self._requiere_registro_direccion():
-            return
-
         self.mostrar_menu(rol)
-
-    def _requiere_registro_cliente(self):
-        """
-        Valida si el cliente tiene datos obligatorios completos.
-        Si no los tiene, lo deriva al flujo de registro y retorna True.
-        Reutilizable en cualquier punto del flujo que requiera datos del cliente.
-        """
-        if self.registro.tiene_datos_cliente_completos():
-            return False
-
-        self.sw.enviar(
-            "📋 Para poder brindarte una mejor atención, necesitamos que completes "
-            "algunos datos antes de continuar.\n\n"
-            "Solo te tomará un momento. ¡Empecemos! 😊"
-        )
-        self.registro.iniciar_registro_cliente(self.sesiones)
-        return True
-
-    def _requiere_registro_direccion(self):
-        """
-        [INTERFAZ] Valida si el cliente tiene datos de dirección completos.
-        Si no los tiene, lo deriva al flujo de registro de dirección y retorna True.
-        Reutilizable en cualquier punto del flujo que requiera dirección del cliente.
-        """
-        pass
 
     def _get_opcion_activa(self, seleccion_anterior):
         """Busca en el menú principal la opción que corresponde a la selección anterior."""
@@ -224,19 +174,19 @@ class MenuPrincipal:
     def mensaje_bienvenida(self):
         """
         Genera el mensaje de bienvenida.
-        Prioridad: nombre real > pushname > saludo genérico.
+        Prioridad: nombre real (PersonaManager) > pushname (sesión) > saludo genérico.
         """
         nombre_negocio = self.config.data.get("nombre_negocio", "nuestro negocio")
-        nombre_cliente = self.session_manager.get_nombre_cliente(self.numero)
 
-        pushname_data = self.session_manager.get_cliente(self.numero).get("pushname", {})
-        pushname = pushname_data.get("valor", "") if isinstance(pushname_data, dict) else pushname_data
-
-        # Prioridad 1: nombre real cargado por el cliente
-        if nombre_cliente:
-            return self.config.get_bienvenida(nombre_cliente, nombre_negocio)
+        # Prioridad 1: nombre real desde PersonaManager (busca por LID)
+        persona = self.persona_manager.buscar_por_lid(self.numero)
+        if persona:
+            nombre_completo = self.persona_manager.get_nombre_completo(persona[0])
+            if nombre_completo:
+                return self.config.get_bienvenida(nombre_completo, nombre_negocio)
 
         # Prioridad 2: pushname de WhatsApp
+        pushname = self.session_manager.get_pushname(self.numero)
         if pushname:
             return self.config.get_bienvenida(pushname, nombre_negocio)
 

@@ -17,7 +17,7 @@
       "apellido": "sl",
       "fecha_nacimiento": "10/02/1977",
       "lids": [
-        "231400003358774@lid"
+        "231400003358774@lid__"
       ],
       "contactos": [
         {
@@ -406,6 +406,17 @@
           "etiqueta": "personal"
         }
       ]
+    },
+    "a04e5277-9d98-48da-ab49-8faa0a9fbb56": {
+      "tipo_documento": "DNI",
+      "numero_documento": "22777888",
+      "nombre": "roberto",
+      "apellido": "sl",
+      "fecha_nacimiento": "",
+      "lids": [
+        "231400003358774@lid"
+      ],
+      "contactos": []
     }
   }
 }

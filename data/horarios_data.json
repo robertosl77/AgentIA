@@ -40,7 +40,7 @@
         "cierre": "20:00"
       },
       "domingo": {
-        "abierto": false,
+        "abierto": true,
         "apertura": "09:00",
         "cierre": "20:00"
       }
