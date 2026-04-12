@@ -1,0 +1,16 @@
+{
+  "vinculaciones": {
+    "f1e2d3c4-5678-9abc-def0-1234567890ab": {
+      "persona_a": {
+        "persona_id": "e1a2b3c4-5678-9abc-def0-1234567890ab",
+        "alias": "hijo",
+        "visible": true
+      },
+      "persona_b": {
+        "persona_id": "b9a8c7d6-5432-1abc-def0-0987654321ab",
+        "alias": "",
+        "visible": false
+      }
+    }
+  }
+}

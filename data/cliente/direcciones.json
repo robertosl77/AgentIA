@@ -1,0 +1,25 @@
+{
+  "direcciones": {
+    "a1b2c3d4-5678-9abc-def0-1234567890ab": {
+      "calle": "Av. Rivadavia",
+      "altura": "4500",
+      "piso": "3",
+      "depto": "B",
+      "localidad": "CABA",
+      "codigo_postal": "1205",
+      "provincia": "Buenos Aires",
+      "coordenadas": {
+        "lat": -34.6118,
+        "lng": -58.4310,
+        "origen": "maps"
+      },
+      "personas": [
+        {
+          "persona_id": "e1a2b3c4-5678-9abc-def0-1234567890ab",
+          "alias": "Casa",
+          "es_principal": true
+        }
+      ]
+    }
+  }
+}

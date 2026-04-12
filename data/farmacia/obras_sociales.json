@@ -1,0 +1,25 @@
+{
+  "catalogo": [
+    "OSDE",
+    "Swiss Medical",
+    "PAMI",
+    "IOMA",
+    "Galeno",
+    "Medicus",
+    "Hospital Italiano",
+    "Accord Salud",
+    "OSPRERA",
+    "OSECAC",
+    "Unión Personal",
+    "Luis Pasteur",
+    "Particular"
+  ],
+  "asociaciones": {
+    "a1b2c3d4-5678-9abc-def0-1234567890ab": {
+      "entidad": "OSDE",
+      "numero": "12345678",
+      "plan": "310",
+      "persona_id": "e1a2b3c4-5678-9abc-def0-1234567890ab"
+    }
+  }
+}

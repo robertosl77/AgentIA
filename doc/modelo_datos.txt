@@ -1,0 +1,16 @@
+Resumen consolidado — Modelo de datos
+Archivos y ubicación
+Transversales (existentes, se modifican):
+
+data/sesiones.json — sesiones efímeras
+data/configuracion.json — configuración general del bot
+
+Enlatado Cliente (src/cliente/, data/cliente/):
+
+data/cliente/personas.json — entidad persona
+data/cliente/direcciones.json — direcciones + vinculación persona-dirección
+
+Enlatado Farmacia (src/farmacia/, data/farmacia/):
+
+data/farmacia/vinculaciones.json — vínculos entre personas
+data/farmacia/obras_sociales.json — obras sociales + vinculación persona-obra social
