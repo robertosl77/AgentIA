@@ -500,9 +500,23 @@
             "usuario"
           ],
           "activacion": [
-            "3"
+            "3",
+            "farmacia"
           ],
-          "texto": "3. Otra opción (próximamente)",
+          "texto": "3. 💊 Farmacia",
+          "submenu": "farmacia"
+        },
+        {
+          "id": "4",
+          "roles": [
+            "root",
+            "admin",
+            "usuario"
+          ],
+          "activacion": [
+            "4"
+          ],
+          "texto": "4. Otra opción (próximamente)",
           "submenu": null
         }
       ]
@@ -609,6 +623,79 @@
               "root",
               "admin",
               "supervisor"
+            ],
+            "activacion": [
+              "salir"
+            ],
+            "texto": "Escribí 'salir' para volver"
+          }
+        ]
+      },
+      "farmacia": {
+        "consulta": "💊 Farmacia{flag_beneficiario}\n\n¿Qué deseas hacer?",
+        "opciones": [
+          {
+            "id": "1",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "1"
+            ],
+            "texto": "1. 🏥 Consultar guardias",
+            "handler": "consultar_guardias",
+            "requisitos": []
+          },
+          {
+            "id": "2",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "2"
+            ],
+            "texto": "2. 👥 Registrar beneficiario",
+            "handler": "registrar_beneficiario",
+            "requisitos": []
+          },
+          {
+            "id": "3",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "3"
+            ],
+            "texto": "3. 🔄 Cambiar beneficiario",
+            "handler": "cambiar_beneficiario",
+            "requisitos": []
+          },
+          {
+            "id": "4",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "4"
+            ],
+            "texto": "4. 📋 Completar datos de {beneficiario}",
+            "handler": "completar_datos",
+            "requisitos": []
+          },
+          {
+            "id": "salir",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
             ],
             "activacion": [
               "salir"

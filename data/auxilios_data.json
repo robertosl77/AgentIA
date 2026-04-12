@@ -86,6 +86,71 @@
       "info_extra": "",
       "total": 417500,
       "id": 1
+    },
+    {
+      "timestamp": "2026-04-12T01:32:17.698260",
+      "nro_movimiento": "1234",
+      "fecha": "2026-04-12",
+      "conductor": "conductor uno",
+      "vehiculo_propio": "AAA111",
+      "vehiculo_auxiliado": {
+        "patente": "ABC123",
+        "ris": "liviano"
+      },
+      "origen": {
+        "direccion_formateada": "Tronador 444, C1427CRJ Cdad. Autónoma de Buenos Aires",
+        "coordenadas": {
+          "lat": -34.5865176,
+          "lng": -58.468880299999995
+        },
+        "place_id": "ChIJccziCgy2vJURDSN6cVrYle8",
+        "componentes": {
+          "calle": "Tronador",
+          "altura": "444",
+          "localidad": "Buenos Aires",
+          "provincia": "Ciudad Autónoma de Buenos Aires",
+          "codigo_postal": "C1427"
+        },
+        "plus_code": null,
+        "origen_input": "texto"
+      },
+      "destino": {
+        "direccion_formateada": "Perú 11, C1067 Cdad. Autónoma de Buenos Aires",
+        "coordenadas": {
+          "lat": -34.6082581,
+          "lng": -58.375044100000004
+        },
+        "place_id": "ChIJGyBJrNPKvJURSvSCD1qHJt0",
+        "componentes": {
+          "calle": "Perú",
+          "altura": "11",
+          "localidad": "Buenos Aires",
+          "provincia": "Ciudad Autónoma de Buenos Aires",
+          "codigo_postal": "C1067"
+        },
+        "plus_code": null,
+        "origen_input": "texto"
+      },
+      "tramos": [
+        {
+          "tipo_camino": "asfalto",
+          "km_original": 100,
+          "km_excedente": 85,
+          "precio_km": 835,
+          "subtotal": 70975
+        }
+      ],
+      "movida": {
+        "aplica": true,
+        "radio_km": 15,
+        "km_total": 100,
+        "km_maximo": 200,
+        "monto": 33392
+      },
+      "extras": [],
+      "info_extra": "",
+      "total": 104367,
+      "id": 2
     }
   ]
 }
