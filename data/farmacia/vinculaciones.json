@@ -1,13 +1,13 @@
 {
   "vinculaciones": {
-    "f1e2d3c4-5678-9abc-def0-1234567890ab": {
+    "73e652ff-477e-4a3d-b6e5-7a7ad8fc0b79": {
       "persona_a": {
-        "persona_id": "e1a2b3c4-5678-9abc-def0-1234567890ab",
-        "alias": "hijo",
+        "persona_id": "f49059cb-3144-4110-a821-8aa4fbcaaabf",
+        "alias": "mama",
         "visible": true
       },
       "persona_b": {
-        "persona_id": "b9a8c7d6-5432-1abc-def0-0987654321ab",
+        "persona_id": "b4a67582-efa9-4b84-ac56-e88c9bce528e",
         "alias": "",
         "visible": false
       }

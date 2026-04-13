@@ -17,12 +17,17 @@
       "apellido": "sl",
       "fecha_nacimiento": "10/02/1977",
       "lids": [
-        "231400003358774@lid__"
+        "231400003358774@lid"
       ],
       "contactos": [
         {
           "tipo": "email",
           "valor": "robertosl77@gmail.com",
+          "etiqueta": "personal"
+        },
+        {
+          "tipo": "telefono",
+          "valor": "1155558888",
           "etiqueta": "personal"
         }
       ]
@@ -427,6 +432,15 @@
       "lids": [
         "5491168387770@c.us"
       ],
+      "contactos": []
+    },
+    "b4a67582-efa9-4b84-ac56-e88c9bce528e": {
+      "tipo_documento": "DNI",
+      "numero_documento": "4777888",
+      "nombre": "rosa",
+      "apellido": "leiva",
+      "fecha_nacimiento": "",
+      "lids": [],
       "contactos": []
     }
   }

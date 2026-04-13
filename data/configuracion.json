@@ -134,6 +134,7 @@
         "tipo": "catalogo",
         "catalogo": "catalogo_tipo_documento",
         "validadores": [],
+        "label": "Tipo documento",
         "msj_pedido": "🪪 Seleccioná el *tipo de documento*:",
         "msj_reintento": "⚠️ Opción no válida. Seleccioná una de la lista:"
       },
@@ -144,6 +145,7 @@
           "numero_documento_minimo",
           "numero_documento_maximo"
         ],
+        "label": "Nro. documento",
         "msj_pedido": "🪪 Ingresá tu *número de documento*:",
         "msj_reintento": "⚠️ El número de documento no es válido. Intentá nuevamente:"
       },
@@ -154,6 +156,7 @@
           "texto_minimo_3",
           "texto_maximo_50"
         ],
+        "label": "Nombre",
         "msj_pedido": "👤 Por favor ingresá tu *nombre*:",
         "msj_reintento": "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:"
       },
@@ -163,6 +166,7 @@
         "validadores": [
           "texto_maximo_50"
         ],
+        "label": "Apellido",
         "msj_pedido": "👤 Por favor ingresá tu *apellido*:",
         "msj_reintento": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:"
       },
@@ -173,6 +177,7 @@
           "fecha_formato_1",
           "fecha_pasado"
         ],
+        "label": "Fecha nacimiento",
         "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):",
         "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"
       },
