@@ -3,19 +3,18 @@ from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.sesiones.session_manager import SessionManager
 from src.cliente.persona_manager import PersonaManager
-from src.staff import SubMenuStaff
 from src.farmacia.submenu_farmacia import SubMenuFarmacia
 from src.auxilios import SubMenuAuxilios
 
+
 class MenuPrincipal:
-    """Menú Principal del Bot — Router de enlatados"""
+    """Menu Principal del Bot — Router de enlatados"""
 
     def __init__(self, numero):
         self.config = ConfigLoader()
         self.sw = SendWPP(numero)
         self.session_manager = SessionManager()
         self.persona_manager = PersonaManager()
-        self.staff = SubMenuStaff(numero)
         self.farmacia = SubMenuFarmacia(numero)
         self.auxilios = SubMenuAuxilios(numero)
         # 
@@ -34,9 +33,6 @@ class MenuPrincipal:
         rol = self.session_manager.get_rol(self.numero)
 
         # ── FLUJOS ACTIVOS DE ENLATADOS ──────────────────────────────────────────
-        if self.staff.esta_en_flujo(self.sesiones):
-            self.staff.procesar_flujo(comando, self.sesiones)
-            return
 
         # ── FLUJO DE AUXILIOS ──
         if self.auxilios.esta_en_flujo(self.sesiones):
@@ -155,14 +151,10 @@ class MenuPrincipal:
         submenu_data = self.config.get_submenu(nombre_submenu)
         opcion = self.config.resolver_activacion(comando, submenu_data, rol)
         if opcion is None:
-            self.sw.enviar("❌ Opción no válida.")
+            self.sw.enviar("Opcion no valida.")
             return
 
-        if nombre_submenu == "staff":
-            self.staff.submenu_staff(comando, self.sesiones)
-
-        else:
-            self.sw.enviar("❌ Submenú no reconocido.")
+        self.sw.enviar("Submenu no reconocido.")
 
     # ── MENÚ Y BIENVENIDA ─────────────────────────────────────────────────────
 

@@ -1,4 +1,4 @@
-# src/staff/gestion_guardias.py
+# src/horarios/guardias_gestion.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.horarios.data_loader import DataLoader
@@ -6,22 +6,28 @@ from src.sesiones.session_manager import SessionManager
 from src.registro.validadores import Validadores
 from datetime import datetime
 
-class GestionGuardias(Validadores):
+
+class GuardiasGestion(Validadores):
     """
     Gestiona el flujo completo de guardias.
     Responsabilidades:
         - Listar guardias futuras
-        - Agregar guardia con validación
+        - Agregar guardia con validacion
         - Eliminar guardia
         - Confirmadores opcionales configurables desde datos.json
     """
 
-    def __init__(self, numero):
+    def __init__(self, numero, data_path=None):
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
-        self.datos = DataLoader()
+        self.datos = DataLoader(data_path) if data_path else DataLoader()
         self.session_manager = SessionManager()
+        self._callback_volver = None
+
+    def set_callback_volver(self, callback):
+        """Define la funcion callback para volver al menu anterior."""
+        self._callback_volver = callback
 
     # ── FLUJO PRINCIPAL ───────────────────────────────────────────────────────
 
@@ -37,7 +43,7 @@ class GestionGuardias(Validadores):
         self.sw.enviar(self._armar_menu_guardias())
 
     def procesar(self, comando, sesiones):
-        """Dispatcher interno según estado actual."""
+        """Dispatcher interno segun estado actual."""
         campo = getattr(sesiones[self.numero], "staff_campo_actual", None)
 
         if campo == "guardia_menu":
@@ -49,7 +55,7 @@ class GestionGuardias(Validadores):
         elif campo == "guardia_confirmar_elimina":
             self._procesar_confirmacion_elimina(comando, sesiones)
 
-    # ── MENÚ DE GUARDIAS ──────────────────────────────────────────────────────
+    # ── MENU DE GUARDIAS ──────────────────────────────────────────────────────
 
     def _armar_menu_guardias(self):
         fechas = self._get_guardias_futuras()
@@ -57,22 +63,22 @@ class GestionGuardias(Validadores):
         if not fechas:
             return (
                 "No hay guardias programadas.\n"
-                "Ingresá *nuevo* para agregar una\n"
+                "Ingresa *nuevo* para agregar una\n"
                 "o *cancelar* para volver:"
             )
 
         dias_es = {
-            "Monday": "Lunes", "Tuesday": "Martes", "Wednesday": "Miércoles",
-            "Thursday": "Jueves", "Friday": "Viernes", "Saturday": "Sábado", "Sunday": "Domingo"
+            "Monday": "Lunes", "Tuesday": "Martes", "Wednesday": "Miercoles",
+            "Thursday": "Jueves", "Friday": "Viernes", "Saturday": "Sabado", "Sunday": "Domingo"
         }
 
-        lineas = ["📅 *Guardias programadas:*\n"]
+        lineas = ["*Guardias programadas:*\n"]
         for i, fecha in enumerate(fechas, 1):
             f_obj = datetime.strptime(fecha, "%Y-%m-%d")
             dia = dias_es[f_obj.strftime('%A')]
             lineas.append(f"{i}. {f_obj.strftime('%d/%m/%Y')} ({dia})")
 
-        lineas.append("\nIngresá el número para eliminar una guardia,")
+        lineas.append("\nIngresa el numero para eliminar una guardia,")
         lineas.append("*nuevo* para agregar una nueva")
         lineas.append("o *cancelar* para volver:")
         return "\n".join(lineas)
@@ -83,18 +89,18 @@ class GestionGuardias(Validadores):
         futuras = [f for f in fechas if datetime.strptime(f, "%Y-%m-%d").date() > hoy]
         return sorted(futuras)
 
-    # ── SELECCIÓN ─────────────────────────────────────────────────────────────
+    # ── SELECCION ─────────────────────────────────────────────────────────────
 
     def _procesar_seleccion_guardia(self, comando, sesiones):
         if comando.strip() == "cancelar":
             sesiones[self.numero].staff_campo_actual = None
-            self._volver_menu_staff(sesiones)
+            self._volver_menu_anterior(sesiones)
             return
 
         if comando.strip().lower() == "nuevo":
             sesiones[self.numero].staff_campo_actual = "guardia_agregar"
             sesiones[self.numero].staff_reintentos = 0
-            self.sw.enviar("📅 Ingresá la fecha de la guardia (DD/MM/AAAA):")
+            self.sw.enviar("Ingresa la fecha de la guardia (DD/MM/AAAA):")
             return
 
         futuras = self._get_guardias_futuras()
@@ -103,7 +109,7 @@ class GestionGuardias(Validadores):
             if indice < 0 or indice >= len(futuras):
                 raise ValueError
         except ValueError:
-            self.sw.enviar("❌ Opción no válida.")
+            self.sw.enviar("Opcion no valida.")
             return
 
         fecha_elegida = futuras[indice]
@@ -114,9 +120,9 @@ class GestionGuardias(Validadores):
             f_obj = datetime.strptime(fecha_elegida, "%Y-%m-%d")
             sesiones[self.numero].staff_campo_actual = "guardia_confirmar_elimina"
             self.sw.enviar(
-                f"¿Confirmás que querés eliminar la guardia del "
+                f"Confirmas que queres eliminar la guardia del "
                 f"*{f_obj.strftime('%d/%m/%Y')}*?\n"
-                f"Respondé *si* o *no*:"
+                f"Responde *si* o *no*:"
             )
         else:
             self._eliminar_guardia(fecha_elegida, sesiones)
@@ -127,7 +133,7 @@ class GestionGuardias(Validadores):
         if comando.strip() == "cancelar":
             sesiones[self.numero].staff_campo_actual = None
             sesiones[self.numero].staff_reintentos = 0
-            self.sw.enviar("❌ Carga cancelada.")
+            self.sw.enviar("Carga cancelada.")
             self.iniciar(sesiones)
             return
 
@@ -145,7 +151,7 @@ class GestionGuardias(Validadores):
             # Verificamos duplicado
             if fecha_iso in self.datos.data["dias_de_guardia"]["fechas"]:
                 self.sw.enviar(
-                    f"⚠️ Ya existe una guardia para el *{comando.strip()}*. "
+                    f"Ya existe una guardia para el *{comando.strip()}*. "
                     f"No se puede registrar la misma fecha dos veces."
                 )
                 self.iniciar(sesiones)
@@ -156,9 +162,9 @@ class GestionGuardias(Validadores):
                 sesiones[self.numero].staff_dato_temporal = fecha_iso
                 sesiones[self.numero].staff_campo_actual = "guardia_confirmar_ingreso"
                 self.sw.enviar(
-                    f"¿Confirmás que querés agregar la guardia del "
+                    f"Confirmas que queres agregar la guardia del "
                     f"*{comando.strip()}*?\n"
-                    f"Respondé *si* o *no*:"
+                    f"Responde *si* o *no*:"
                 )
             else:
                 self._guardar_guardia(fecha_iso, comando.strip(), sesiones)
@@ -168,10 +174,10 @@ class GestionGuardias(Validadores):
             if reintentos_actuales >= reintentos_max:
                 sesiones[self.numero].staff_campo_actual = None
                 sesiones[self.numero].staff_reintentos = 0
-                self.sw.enviar("❌ Se canceló la carga. Volviendo al menú de guardias...")
+                self.sw.enviar("Se cancelo la carga. Volviendo al menu de guardias...")
                 self.iniciar(sesiones)
             else:
-                msj = resultado if isinstance(resultado, str) else "⚠️ Fecha inválida. Intentá nuevamente:"
+                msj = resultado if isinstance(resultado, str) else "Fecha invalida. Intenta nuevamente:"
                 self.sw.enviar(msj)
 
     def _procesar_confirmacion_ingreso(self, comando, sesiones):
@@ -182,7 +188,7 @@ class GestionGuardias(Validadores):
         elif comando.strip() == "no":
             sesiones[self.numero].staff_campo_actual = None
             sesiones[self.numero].staff_dato_temporal = None
-            self.sw.enviar("❌ Carga cancelada.")
+            self.sw.enviar("Carga cancelada.")
             self.iniciar(sesiones)
         else:
             reintentos_actuales = getattr(sesiones[self.numero], "staff_reintentos", 0) + 1
@@ -192,10 +198,10 @@ class GestionGuardias(Validadores):
                 sesiones[self.numero].staff_campo_actual = None
                 sesiones[self.numero].staff_reintentos = 0
                 sesiones[self.numero].staff_dato_temporal = None
-                self.sw.enviar("❌ Se canceló la operación.")
+                self.sw.enviar("Se cancelo la operacion.")
                 self.iniciar(sesiones)
             else:
-                self.sw.enviar("⚠️ Respondé *si* o *no*:")
+                self.sw.enviar("Responde *si* o *no*:")
 
     def _guardar_guardia(self, fecha_iso, fecha_display, sesiones):
         self.datos.data["dias_de_guardia"]["fechas"].append(fecha_iso)
@@ -203,7 +209,7 @@ class GestionGuardias(Validadores):
         sesiones[self.numero].staff_campo_actual = None
         sesiones[self.numero].staff_dato_temporal = None
         sesiones[self.numero].staff_reintentos = 0
-        self.sw.enviar(f"✅ Guardia del *{fecha_display}* registrada correctamente.")
+        self.sw.enviar(f"Guardia del *{fecha_display}* registrada correctamente.")
         self.iniciar(sesiones)
 
     # ── ELIMINAR ──────────────────────────────────────────────────────────────
@@ -215,7 +221,7 @@ class GestionGuardias(Validadores):
         elif comando.strip() == "no":
             sesiones[self.numero].staff_campo_actual = None
             sesiones[self.numero].staff_dato_temporal = None
-            self.sw.enviar("❌ Eliminación cancelada.")
+            self.sw.enviar("Eliminacion cancelada.")
             self.iniciar(sesiones)
         else:
             reintentos_actuales = getattr(sesiones[self.numero], "staff_reintentos", 0) + 1
@@ -225,10 +231,10 @@ class GestionGuardias(Validadores):
                 sesiones[self.numero].staff_campo_actual = None
                 sesiones[self.numero].staff_reintentos = 0
                 sesiones[self.numero].staff_dato_temporal = None
-                self.sw.enviar("❌ Se canceló la operación.")
+                self.sw.enviar("Se cancelo la operacion.")
                 self.iniciar(sesiones)
             else:
-                self.sw.enviar("⚠️ Respondé *si* o *no*:")
+                self.sw.enviar("Responde *si* o *no*:")
 
     def _eliminar_guardia(self, fecha_iso, sesiones):
         fechas = self.datos.data["dias_de_guardia"]["fechas"]
@@ -239,13 +245,17 @@ class GestionGuardias(Validadores):
         sesiones[self.numero].staff_campo_actual = None
         sesiones[self.numero].staff_dato_temporal = None
         sesiones[self.numero].staff_reintentos = 0
-        self.sw.enviar(f"✅ Guardia del *{f_obj.strftime('%d/%m/%Y')}* eliminada correctamente.")
+        self.sw.enviar(f"Guardia del *{f_obj.strftime('%d/%m/%Y')}* eliminada correctamente.")
         self.iniciar(sesiones)
 
     # ── HELPER ────────────────────────────────────────────────────────────────
 
-    def _volver_menu_staff(self, sesiones):
-        """Vuelve al menú de staff — solo se llama con cancelar."""
-        rol = self.session_manager.get_rol(self.numero)
-        submenu_data = self.config.get_submenu("staff")
-        self.sw.enviar(self.config.armar_menu(submenu_data, rol))
+    def _volver_menu_anterior(self, sesiones):
+        """Vuelve al menu anterior usando el callback configurado."""
+        if self._callback_volver:
+            self._callback_volver(sesiones)
+        else:
+            # Fallback: mostrar menu de staff desde farmacia
+            rol = self.session_manager.get_rol(self.numero)
+            submenu_data = self.config.get_submenu("staff")
+            self.sw.enviar(self.config.armar_menu(submenu_data, rol))

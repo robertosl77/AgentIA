@@ -329,18 +329,6 @@
       "consulta": "¿Qué deseas hacer?",
       "opciones": [
         {
-          "id": "0",
-          "roles": [
-            "root",
-            "admin"
-          ],
-          "activacion": [
-            "0"
-          ],
-          "texto": "0. ⚙️ Configuración de Staff",
-          "submenu": "staff"
-        },
-        {
           "id": "1",
           "roles": [
             "root",
@@ -493,8 +481,21 @@
         ]
       },
       "farmacia": {
-        "consulta": "💊 Farmacia{flag_beneficiario}\n\n¿Qué deseas hacer?",
+        "consulta": "Farmacia{flag_beneficiario}\n\nQue deseas hacer?",
         "opciones": [
+          {
+            "id": "0",
+            "roles": [
+              "root",
+              "admin"
+            ],
+            "activacion": [
+              "0"
+            ],
+            "texto": "0. Configuracion de Staff",
+            "handler": "panel_staff",
+            "requisitos": []
+          },
           {
             "id": "1",
             "roles": [
@@ -606,6 +607,41 @@
             "texto": "Escribí 'salir' para volver"
           }
         ]
+      }
+    }
+  },
+  "modelos": {
+    "horarios": {
+      "horarios_fijos": {
+        "validadores": ["hora_formato_1"],
+        "confirma_edicion": true,
+        "opciones_edicion_masiva": {
+          "todos_los_dias": true,
+          "solo_dias_habiles": true
+        },
+        "dias": {
+          "lunes": { "abierto": false, "apertura": "00:00", "cierre": "00:00" },
+          "martes": { "abierto": false, "apertura": "00:00", "cierre": "00:00" },
+          "miercoles": { "abierto": false, "apertura": "00:00", "cierre": "00:00" },
+          "jueves": { "abierto": false, "apertura": "00:00", "cierre": "00:00" },
+          "viernes": { "abierto": false, "apertura": "00:00", "cierre": "00:00" },
+          "sabado": { "abierto": false, "apertura": "00:00", "cierre": "00:00" },
+          "domingo": { "abierto": false, "apertura": "00:00", "cierre": "00:00" }
+        }
+      },
+      "dias_de_guardia": {
+        "validadores": ["fecha_formato_1", "fecha_futura", "fecha_limite_90"],
+        "confirma_ingreso": true,
+        "confirma_elimina": true,
+        "fechas": []
+      },
+      "cierres_eventuales": {
+        "validadores_desde": ["fecha_formato_1", "fecha_hoy_o_futura"],
+        "validadores_hasta": ["fecha_formato_1", "fecha_hoy_o_futura"],
+        "validadores_motivo": ["texto_maximo_50"],
+        "confirma_ingreso": true,
+        "confirma_elimina": true,
+        "datos": []
       }
     }
   }
