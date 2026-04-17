@@ -22,9 +22,9 @@ class MenuPrincipal:
         self.sesiones = None
         self.numero = numero
 
-    def administro_menu(self, sesiones, comando, pushname):
+    def administro_menu(self, sesiones, comando, pushname, media_base64=None, mimetype="", filename=""):
         self.sesiones = sesiones
-        print(f"📱 Número: {self.numero} | 📝 Comando: {comando} | 👤 Pushname: {pushname}")
+        print(f"📱 Número: {self.numero} | 📝 Comando: {comando} | 👤 Pushname: {pushname} | 📎 Media: {'Sí' if media_base64 else 'No'}")
 
         # Verificamos/creamos sesión en cada mensaje
         es_nueva = self.session_manager.verificar_o_crear(self.numero)
@@ -45,7 +45,7 @@ class MenuPrincipal:
 
         # ── FLUJO DE FARMACIA (incluye registro de persona y selección de beneficiario) ──
         if self.farmacia.esta_en_flujo(self.sesiones):
-            self.farmacia.procesar(comando, self.sesiones)
+            self.farmacia.procesar(comando, self.sesiones, media_base64=media_base64)
 
             # Si farmacia terminó (salió), volvemos al menú principal
             if not self.farmacia.esta_en_flujo(self.sesiones):
