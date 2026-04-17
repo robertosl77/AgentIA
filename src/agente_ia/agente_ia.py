@@ -141,7 +141,7 @@ Reglas:
         """Interpreta receta usando Google Gemini."""
         import requests
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.modelo}:generateContent"
+        url = f"https://generativelanguage.googleapis.com/v1/models/{self.modelo}:generateContent"
         headers = {"Content-Type": "application/json"}
         params = {"key": self.api_key}
 

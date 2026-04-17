@@ -2,7 +2,7 @@
   "agente_ia": {
     "proveedor": "gemini",
     "env_api_key": "GEMINI_API_KEY",
-    "modelo": "gemini-2.0-flash"
+    "modelo": "gemini-2.5-flash"
   },
   "recetas": {
     "dias_vencimiento": 30,

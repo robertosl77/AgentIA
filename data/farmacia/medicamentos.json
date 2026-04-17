@@ -1,3 +1,40 @@
 {
-  "medicamentos": {}
+  "medicamentos": {
+    "8a3cd68a-e49a-43e1-aff9-bfea7c9e7bda": {
+      "farmaco": "Metoprolol",
+      "nombre_comercial": "Betaloc",
+      "dosis": "100 mg",
+      "presentacion": "Tabletas"
+    },
+    "d00e7ee2-8a0e-4dfe-96a7-efac517a378a": {
+      "farmaco": "Dorzolamidum",
+      "nombre_comercial": "",
+      "dosis": "10 mg",
+      "presentacion": "Tabletas"
+    },
+    "ab3fedb2-35ac-450c-ae17-0d54a20e0b2c": {
+      "farmaco": "Cimetidine",
+      "nombre_comercial": "",
+      "dosis": "50 mg",
+      "presentacion": "Tabletas"
+    },
+    "21dfd92c-e611-4203-bee1-5a311a254b49": {
+      "farmaco": "Oxprelol",
+      "nombre_comercial": "",
+      "dosis": "50 mg",
+      "presentacion": "Tabletas"
+    },
+    "0c09ee9c-70bc-4c69-834d-5b40f3dbe27e": {
+      "farmaco": "Ibuprofeno",
+      "nombre_comercial": "",
+      "dosis": "400 mg",
+      "presentacion": "tabletas"
+    },
+    "6531424a-b1cc-41ca-b0e2-53efa8f2d814": {
+      "farmaco": "Ibuprofeno",
+      "nombre_comercial": "",
+      "dosis": "100 mg",
+      "presentacion": "tabs"
+    }
+  }
 }
