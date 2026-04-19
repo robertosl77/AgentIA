@@ -54,14 +54,14 @@ class AgenteIA:
         Retorna dict estructurado con los datos extraídos.
         """
         if not self.api_key:
-            return {"errores": ["API key no configurada para el agente IA."]}
+            return {"errores": ["API key no configurada para el agente IA."], "codigo_error": "sin_api_key"}
 
         # Preparar imagen en base64
         if imagen_path and not imagen_base64:
             imagen_base64 = self._archivo_a_base64(imagen_path)
 
         if not imagen_base64:
-            return {"errores": ["No se recibió imagen para interpretar."]}
+            return {"errores": ["No se recibió imagen para interpretar."], "codigo_error": "sin_imagen"}
 
         # Limpiar prefijo data:image/...;base64, si viene
         if "," in imagen_base64 and imagen_base64.startswith("data:"):
@@ -76,12 +76,12 @@ class AgenteIA:
 
         adaptador = adaptadores.get(self.proveedor)
         if not adaptador:
-            return {"errores": [f"Proveedor '{self.proveedor}' no soportado."]}
+            return {"errores": [f"Proveedor '{self.proveedor}' no soportado."], "codigo_error": "proveedor_no_soportado"}
 
         try:
             return adaptador(imagen_base64)
         except Exception as e:
-            return {"errores": [f"Error al interpretar receta: {str(e)}"]}
+            return {"errores": [f"Error al interpretar receta: {str(e)}"], "codigo_error": "error_generico"}
 
     # ── PROMPT COMPARTIDO ─────────────────────────────────────────────────────
 
@@ -141,6 +141,7 @@ Reglas:
         """Interpreta receta usando Google Gemini."""
         import requests
 
+        # url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.modelo}:generateContent"
         url = f"https://generativelanguage.googleapis.com/v1/models/{self.modelo}:generateContent"
         headers = {"Content-Type": "application/json"}
         params = {"key": self.api_key}
@@ -162,7 +163,10 @@ Reglas:
         response = requests.post(url, headers=headers, params=params, json=payload, timeout=30)
 
         if response.status_code != 200:
-            return {"errores": [f"Gemini API error: {response.status_code} - {response.text[:200]}"]}
+            return {
+                "errores": [f"Gemini API error: {response.status_code}"],
+                "codigo_error": str(response.status_code)
+            }
 
         data = response.json()
         texto = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
@@ -201,7 +205,10 @@ Reglas:
         response = requests.post(url, headers=headers, json=payload, timeout=30)
 
         if response.status_code != 200:
-            return {"errores": [f"OpenAI API error: {response.status_code} - {response.text[:200]}"]}
+            return {
+                "errores": [f"OpenAI API error: {response.status_code}"],
+                "codigo_error": str(response.status_code)
+            }
 
         data = response.json()
         texto = data.get("choices", [{}])[0].get("message", {}).get("content", "")
@@ -243,7 +250,10 @@ Reglas:
         response = requests.post(url, headers=headers, json=payload, timeout=30)
 
         if response.status_code != 200:
-            return {"errores": [f"Anthropic API error: {response.status_code} - {response.text[:200]}"]}
+            return {
+                "errores": [f"Anthropic API error: {response.status_code}"],
+                "codigo_error": str(response.status_code)
+            }
 
         data = response.json()
         texto = data.get("content", [{}])[0].get("text", "")

@@ -52,11 +52,13 @@ class RecetaManager:
     # ── CREAR ─────────────────────────────────────────────────────────────────
 
     def crear_receta(self, persona_id, obra_social_id, fecha_validez_desde,
-                     medico, diagnostico, items, operador_id, fecha_creacion=""):
+                     medico, diagnostico, items, operador_id, fecha_creacion="",
+                     credencial_validada=False):
         """
         Crea una receta nueva con sus items.
         items: [{ medicamento_id, cantidad, cantidad_solicitada, estado_item }]
         Calcula fecha_vencimiento automáticamente.
+        credencial_validada: True si la credencial de OS coincide con los registros.
         Retorna receta_id.
         """
         dias_venc = self.config.get("recetas", {}).get("dias_vencimiento", 30)
@@ -72,6 +74,7 @@ class RecetaManager:
         self.data["recetas"][receta_id] = {
             "persona_id": persona_id,
             "obra_social_id": obra_social_id,
+            "credencial_validada": credencial_validada,
             "fecha_creacion": fecha_creacion,
             "fecha_validez_desde": fecha_validez_desde,
             "fecha_vencimiento": f_vencimiento.strftime("%d/%m/%Y"),

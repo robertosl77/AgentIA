@@ -2,11 +2,50 @@
   "agente_ia": {
     "proveedor": "gemini",
     "env_api_key": "GEMINI_API_KEY",
-    "modelo": "gemini-2.5-flash"
+    "modelo": "gemini-2.5-flash",
+    "errores_http": {
+      "400": "⚠️ No pudimos leer el archivo. Por favor, asegurate de que sea una foto nítida o un PDF válido.",
+      "401": "⚠️ Tenemos un problema de configuración técnica. Por favor, intentá más tarde.",
+      "403": "⚠️ Servicio temporalmente no disponible. Reintentá en unos minutos.",
+      "429": "⏳ Estamos procesando muchas recetas. Por favor, esperá un minuto y volvé a enviarla.",
+      "500": "⚠️ El servicio de interpretación está teniendo problemas técnicos. Reintentá en un momento.",
+      "503": "⏳ El sistema está saturado. Reintentá el envío en unos instantes.",
+      "sin_api_key": "⚠️ El servicio de interpretación no está configurado. Contactá al soporte técnico.",
+      "sin_imagen": "⚠️ No se recibió ningún archivo. Enviá una *imagen o PDF* de la receta.",
+      "proveedor_no_soportado": "⚠️ El servicio de interpretación no está disponible. Contactá al soporte técnico.",
+      "error_generico": "⚠️ Ocurrió un error al interpretar la receta. Reintentá en unos momentos.",
+      "interpretacion_fallida": "⚠️ No pudimos interpretar el contenido de la receta.\nAsegurate de que la imagen sea nítida y que el documento sea legible.\n\nEnviá la imagen nuevamente o escribí *cancelar* para volver."
+    }
   },
   "recetas": {
     "dias_vencimiento": 30,
     "alerta_preventiva_dias": 20,
-    "alerta_urgente_dias": 28
+    "alerta_urgente_dias": 28,
+    "mensajes": {
+      "pedir_imagen": "📤 Enviá la *imagen o PDF* de la receta médica.\nPodés sacarle una foto o adjuntar el archivo.\n\nEscribí *cancelar* para volver.",
+      "interpretando": "🔍 Interpretando receta... un momento por favor.",
+      "sin_imagen_reintento": "⚠️ Necesito que envíes una *imagen o PDF* de la receta.",
+      "sin_imagen_cancelado": "❌ No se recibió imagen. Operación cancelada.",
+      "cantidad_faltante": "⚠️ No pude identificar la cantidad de *{medicamento}*.\n¿Cuántas cajas/envases necesitás?",
+      "cantidad_invalida": "⚠️ Ingresá un número válido mayor a 0.",
+      "dni_no_coincide": "⚠️ La receta no corresponde al beneficiario activo (*{nombre}*).\nEl DNI de la receta no coincide con los datos registrados.\n\nVerificá que estés gestionando para la persona correcta.\nOperación cancelada.",
+      "credencial_no_coincide": "⚠️ El número de credencial de la receta *no coincide* con la obra social registrada.\nCorregí los datos de tu obra social desde el menú antes de cargar la receta.\n\nOperación cancelada.",
+      "receta_vencida": "⚠️ Esta receta venció el *{fecha}*.\nNo es posible procesarla. Solicitá una nueva receta a tu médico.",
+      "seleccion_medicamentos": "📋 Medicamentos de la receta:\n\n{lista}\n\nEscribí *modificar* si deseas hacer cambios en la receta.\nEscribí *enviar* si deseas enviarle la receta a la farmacia.\nTambién podés escribir *cancelar* para volver atrás.",
+      "seleccion_medicamentos_uno": "📋 Medicamento de la receta:\n\n• {medicamento}\n\n1. ✅ Enviar a la farmacia\n2. 📊 Modificar cantidad\n\nEscribí *cancelar* para cancelar la receta.",
+      "seleccionar_para_modificar": "Ingresá el *número* del medicamento que deseas modificar:",
+      "menu_modificar_item": "¿Qué deseas hacer con *{medicamento}*?\n\n1. 🗑️ Eliminar medicamento\n2. 📊 Modificar cantidad\n\nEscribí *cancelar* para volver atrás.",
+      "nueva_cantidad": "Ingresá la nueva cantidad para *{medicamento}* (máx: {max}):",
+      "cantidad_rango_error": "⚠️ La cantidad debe ser entre 1 y {max}.",
+      "cantidad_actualizada": "✅ Cantidad actualizada a {cantidad}.",
+      "medicamento_eliminado": "✅ *{medicamento}* eliminado de la solicitud.",
+      "sin_medicamentos": "❌ No quedaron medicamentos para procesar. Receta cancelada.",
+      "confirmacion_final": "📋 *Resumen de tu solicitud:*\n\n{lista}\n\n¿Confirmás el envío a la farmacia? (*si*/*no*)",
+      "receta_cancelada": "❌ Receta cancelada.",
+      "receta_duplicada": "⚠️ Esta receta ya fue cargada anteriormente.\nNo se puede registrar la misma receta dos veces.",
+      "receta_enviada": "✅ *Receta enviada a la farmacia.*\n\n{lista}\n\n📋 Estado: *Pendiente de procesar por farmacia*",
+      "responder_si_no": "⚠️ Respondé *si* o *no*.",
+      "numero_invalido": "❌ Número no válido."
+    }
   }
 }
