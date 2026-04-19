@@ -3,51 +3,56 @@ ssl._create_default_https_context = ssl._create_unverified_context
 from flask import Flask, request, jsonify
 from src.menu_principal import MenuPrincipal
 from src.log.error_logger import ErrorLogger
-# 
-from dotenv import load_dotenv
-load_dotenv()
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB para archivos base64
 sesiones = {}
-error_logger = ErrorLogger()  # ← instancia global para persistir entre requests
+error_logger = ErrorLogger()
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
-    numero = data.get('from') # Ej: "541168387770@c.us"
+    numero = data.get('from')
     texto = data.get('body')
-    texto = texto.strip().lower() if texto else ""
     pushname = data.get('pushname', '')
+    media_base64 = data.get('media_base64')  # None si es texto puro
+    mimetype = data.get('mimetype', '')
+    filename = data.get('filename', '')
+
+    # Si hay archivo adjunto, el body puede contener basura (base64 como texto)
+    # En ese caso ignoramos el body como comando
+    if media_base64:
+        texto = ""
+    else:
+        texto = texto.strip().lower() if texto else ""
 
     if numero not in sesiones:
-        # IMPORTANTE: MenuPrincipal NO debe tener inputs en su __init__
         sesiones[numero] = MenuPrincipal(numero)
 
     try:
-        # Procesamos el comando y enviamos respuesta
-        sesiones[numero].administro_menu(sesiones, texto, pushname)
+        sesiones[numero].administro_menu(
+            sesiones, texto, pushname,
+            media_base64=media_base64,
+            mimetype=mimetype,
+            filename=filename
+        )
 
     except Exception as e:
-        # Registramos el error técnico en error_log.json
         error_logger.registrar(numero, texto, e)
 
-        # Avisamos al cliente sin exponer detalles técnicos
         try:
             sesiones[numero].sw.enviar(
                 "⚠️ Ocurrió un problema técnico. Ya fue registrado y será revisado.\n"
                 "Por favor intentá nuevamente en unos momentos."
             )
         except Exception:
-            # Si tampoco podemos mandarle el mensaje, al menos quedó en el log
             pass
 
-        # Reseteamos la sesión en memoria para que pueda reintentar limpio
         del sesiones[numero]
 
     return jsonify({"status": "ok"})
 
 if __name__ == "__main__":
-    # app.run(port=5000)
     print("🚀 Flask corriendo en http://localhost:5000")
     app.run(port=5000, debug=True, use_reloader=False)
     print("Flask ha terminado.")

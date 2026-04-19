@@ -19,6 +19,11 @@
       "patente": "ABC123",
       "ris": "liviano",
       "id": 1
+    },
+    {
+      "patente": "SBE221",
+      "ris": "liviano",
+      "id": 2
     }
   ],
   "servicios": [

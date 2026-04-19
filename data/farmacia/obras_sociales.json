@@ -60,8 +60,7 @@
       "plan": "210",
       "personas": [
         "ea8ea1fa-4afd-49d5-b0ba-30f7b9802065",
-        "f8dd6a68-9714-4166-947b-0e575bd0deb5",
-        "f49059cb-3144-4110-a821-8aa4fbcaaabf"
+        "f8dd6a68-9714-4166-947b-0e575bd0deb5"
       ]
     },
     "dc045a02-8580-46df-88aa-e3fd4e0dab28": {
@@ -70,6 +69,14 @@
       "plan": "jubilacion",
       "personas": [
         "b4a67582-efa9-4b84-ac56-e88c9bce528e"
+      ]
+    },
+    "70c90a20-3fbf-466c-a59b-f99cd9a2dfbf": {
+      "entidad": "Swiss Medical",
+      "numero": "8000061552950010007",
+      "plan": "412344e",
+      "personas": [
+        "f49059cb-3144-4110-a821-8aa4fbcaaabf"
       ]
     }
   }

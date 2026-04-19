@@ -594,6 +594,20 @@
             "requisitos": []
           },
           {
+            "id": "8",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "8"
+            ],
+            "texto": "8. 📤 Cargar receta de {beneficiario}",
+            "handler": "cargar_receta",
+            "requisitos": []
+          },
+          {
             "id": "salir",
             "roles": [
               "root",
