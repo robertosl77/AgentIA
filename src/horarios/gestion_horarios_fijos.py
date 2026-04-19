@@ -1,4 +1,4 @@
-# src/staff/gestion_horarios_fijos.py
+# src/horarios/gestion_horarios_fijos.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.horarios.data_loader import DataLoader

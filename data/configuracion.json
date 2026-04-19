@@ -329,18 +329,6 @@
       "consulta": "¿Qué deseas hacer?",
       "opciones": [
         {
-          "id": "0",
-          "roles": [
-            "root",
-            "admin"
-          ],
-          "activacion": [
-            "0"
-          ],
-          "texto": "0. ⚙️ Configuración de Staff",
-          "submenu": "staff"
-        },
-        {
           "id": "1",
           "roles": [
             "root",
@@ -495,6 +483,19 @@
       "farmacia": {
         "consulta": "💊 Farmacia{flag_beneficiario}\n\n¿Qué deseas hacer?",
         "opciones": [
+          {
+            "id": "0",
+            "roles": [
+              "root",
+              "admin"
+            ],
+            "activacion": [
+              "0"
+            ],
+            "texto": "0. ⚙️ Configuración de Staff",
+            "handler": "abrir_staff",
+            "requisitos": []
+          },
           {
             "id": "1",
             "roles": [

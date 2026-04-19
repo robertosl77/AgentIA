@@ -11,7 +11,7 @@ class AuxiliosConfigLoader:
     Contiene: estructura de objetos, catálogos, tarifas, submenú.
     """
 
-    PATH = r"data\auxilios_config.json"
+    PATH = r"data\auxilio\auxilios_config.json"
 
     def __new__(cls):
         global _instancia

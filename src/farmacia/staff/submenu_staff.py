@@ -1,15 +1,16 @@
-# src/staff/submenu_staff.py
+# src/farmacia/staff/submenu_staff.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.sesiones.session_manager import SessionManager
-from src.staff.gestion_guardias import GestionGuardias
-from src.staff.gestion_cierres_eventuales import GestionCierresEventuales
-from src.staff.gestion_horarios_fijos import GestionHorariosFijos
+from src.horarios.gestion_guardias import GestionGuardias
+from src.horarios.gestion_cierres_eventuales import GestionCierresEventuales
+from src.horarios.gestion_horarios_fijos import GestionHorariosFijos
+
 
 class SubMenuStaff:
     """
-    Orquestador del panel de staff.
-    Delega cada flujo en su clase de gestión correspondiente.
+    Orquestador del panel de staff dentro del enlatado farmacia.
+    Delega cada flujo en su clase de gestión correspondiente (src/horarios/).
     """
 
     def __init__(self, numero):
@@ -45,18 +46,18 @@ class SubMenuStaff:
 
     def esta_en_flujo(self, sesiones):
         """Retorna True si el usuario está en medio de cualquier flujo de staff."""
-        return (self.guardias.esta_en_flujo(sesiones) or 
-            self.cierres.esta_en_flujo(sesiones) or 
-            self.horarios.esta_en_flujo(sesiones))
+        return (self.guardias.esta_en_flujo(sesiones) or
+                self.cierres.esta_en_flujo(sesiones) or
+                self.horarios.esta_en_flujo(sesiones))
 
     def procesar_flujo(self, comando, sesiones):
         """Delega el comando al flujo activo."""
         if self.guardias.esta_en_flujo(sesiones):
             self.guardias.procesar(comando, sesiones)
         elif self.cierres.esta_en_flujo(sesiones):
-            self.cierres.procesar(comando, sesiones)       
+            self.cierres.procesar(comando, sesiones)
         elif self.horarios.esta_en_flujo(sesiones):
-            self.horarios.procesar(comando, sesiones)                 
+            self.horarios.procesar(comando, sesiones)
 
     # ── HANDLERS ──────────────────────────────────────────────────────────────
 

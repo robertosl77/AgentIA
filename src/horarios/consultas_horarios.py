@@ -1,12 +1,21 @@
-# src/horarios/submenu_horarios.py
+# src/horarios/consultas_horarios.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.horarios.data_loader import DataLoader
 from src.sesiones.session_manager import SessionManager
 from datetime import datetime, timedelta
 
-class SubMenuHorarios:
-    """Submenú de Horarios"""
+
+class ConsultasHorarios:
+    """
+    Proveedor de servicios de horarios.
+    Responsabilidades:
+        - Consultar horarios fijos, guardias y cierres eventuales
+        - Mensajes emergentes (próxima guardia, próximo cierre)
+        - Estado actual (abierto/cerrado)
+        - Control de acceso por horario
+    Reutilizable por cualquier enlatado.
+    """
 
     def __init__(self, numero):
         self.numero = numero
@@ -15,35 +24,7 @@ class SubMenuHorarios:
         self.datos = DataLoader()
         self.session_manager = SessionManager()
 
-    def mostrar_submenu(self, sesiones):
-        submenu = getattr(sesiones[self.numero], "submenu", None)
-        if submenu is None:
-            sesiones[self.numero].submenu = -1
-            self.submenu_binevenida()
-            return
-        else:
-            self.submenu_horarios(submenu)
-
-    def submenu_binevenida(self):
-        rol = self.session_manager.get_rol(self.numero)
-        submenu_data = self.config.get_submenu("horarios")
-        self.sw.enviar(self.config.armar_menu(submenu_data, rol))
-
-    def submenu_horarios(self, comando):
-        print("📅 Entrando al submódulo de Horarios...")
-        rol = self.session_manager.get_rol(self.numero)
-        submenu_data = self.config.get_submenu("horarios")
-        opcion = self.config.resolver_activacion(comando, submenu_data, rol)
-        if opcion is None:
-            self.sw.enviar("❌ Opción no válida.")
-            return
-        handler_nombre = opcion.get("handler")
-        if handler_nombre:
-            handler = getattr(self, handler_nombre, None)
-            if handler:
-                self.sw.enviar(handler())
-            else:
-                self.sw.enviar(f"❌ Handler '{handler_nombre}' no encontrado.")
+    # ── CONSULTAS ─────────────────────────────────────────────────────────────
 
     def submenu_horarios_fijos(self):
         horarios = self.datos.data.get("horarios_fijos", {}).get("dias", {})
@@ -135,6 +116,8 @@ class SubMenuHorarios:
             lineas.append(bloque)
         return "\n".join(lineas)
 
+    # ── MENSAJES EMERGENTES ───────────────────────────────────────────────────
+
     def mensaje_proximas_guardias(self):
         dias_es = {
             "Monday": "Lunes", "Tuesday": "Martes", "Wednesday": "Miércoles",
@@ -206,6 +189,8 @@ class SubMenuHorarios:
             return f"⚠️ Te avisamos que *desde hoy hasta el {formato_fecha(hasta)}* no atendemos por: {motivo}."
         else:
             return f"⚠️ Te avisamos que *a partir del {formato_fecha(desde)} hasta el {formato_fecha(hasta)}* no atendemos por: {motivo}."
+
+    # ── ESTADO Y ACCESO ───────────────────────────────────────────────────────
 
     def estado_actual(self):
         ahora = datetime.now()

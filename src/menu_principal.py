@@ -3,7 +3,6 @@ from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.sesiones.session_manager import SessionManager
 from src.cliente.persona_manager import PersonaManager
-from src.staff import SubMenuStaff
 from src.farmacia.submenu_farmacia import SubMenuFarmacia
 from src.auxilios import SubMenuAuxilios
 
@@ -15,7 +14,6 @@ class MenuPrincipal:
         self.sw = SendWPP(numero)
         self.session_manager = SessionManager()
         self.persona_manager = PersonaManager()
-        self.staff = SubMenuStaff(numero)
         self.farmacia = SubMenuFarmacia(numero)
         self.auxilios = SubMenuAuxilios(numero)
         # 
@@ -34,10 +32,6 @@ class MenuPrincipal:
         rol = self.session_manager.get_rol(self.numero)
 
         # ── FLUJOS ACTIVOS DE ENLATADOS ──────────────────────────────────────────
-        if self.staff.esta_en_flujo(self.sesiones):
-            self.staff.procesar_flujo(comando, self.sesiones)
-            return
-
         # ── FLUJO DE AUXILIOS ──
         if self.auxilios.esta_en_flujo(self.sesiones):
             self.auxilios.procesar_flujo(comando, self.sesiones)
@@ -159,7 +153,8 @@ class MenuPrincipal:
             return
 
         if nombre_submenu == "staff":
-            self.staff.submenu_staff(comando, self.sesiones)
+            # Staff migrado a farmacia — no debería llegar aquí
+            self.sw.enviar("⚙️ La configuración de staff está dentro del módulo Farmacia.")
 
         else:
             self.sw.enviar("❌ Submenú no reconocido.")

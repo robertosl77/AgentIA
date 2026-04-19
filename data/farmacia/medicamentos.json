@@ -83,6 +83,12 @@
       "nombre_comercial": "",
       "dosis": "10 mg",
       "presentacion": ""
+    },
+    "93ff8bde-a243-4706-9215-adc7e4e4be1d": {
+      "farmaco": "",
+      "nombre_comercial": "Oxprelol",
+      "dosis": "50 mg",
+      "presentacion": "comprimido"
     }
   }
 }
