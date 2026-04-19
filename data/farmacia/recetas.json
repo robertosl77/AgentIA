@@ -18,19 +18,19 @@
           "medicamento_id": "306b1911-388a-44f5-9141-29064d08ab25",
           "cantidad_receta": 2,
           "cantidad_solicitada": 2,
-          "estado_item": "pendiente"
+          "estado_item": "disponible"
         },
         {
           "medicamento_id": "d00e7ee2-8a0e-4dfe-96a7-efac517a378a",
           "cantidad_receta": 2,
           "cantidad_solicitada": 2,
-          "estado_item": "pendiente"
+          "estado_item": "sin_stock"
         },
         {
           "medicamento_id": "ab3fedb2-35ac-450c-ae17-0d54a20e0b2c",
           "cantidad_receta": 2,
           "cantidad_solicitada": 1,
-          "estado_item": "pendiente"
+          "estado_item": "alternativa_ofrecida"
         },
         {
           "medicamento_id": "93ff8bde-a243-4706-9215-adc7e4e4be1d",
@@ -39,14 +39,36 @@
           "estado_item": "omitido_usuario"
         }
       ],
-      "estado": "pendiente",
+      "estado": "en_gestion",
       "operador_id": "f49059cb-3144-4110-a821-8aa4fbcaaabf",
-      "notas": [],
+      "notas": [
+        {
+          "id": "fb628de8",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "estoy procesando la medicacion!",
+          "timestamp": "2026-04-19T15:32:26.199980",
+          "estado": "pendiente"
+        },
+        {
+          "id": "0f6ac8dc",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "No tenemos *Cimetidine 50 mg Tabletas* disponible. Ofrecemos como alternativa: *cucatril*. ¿Lo aceptás?",
+          "timestamp": "2026-04-19T15:34:00.744133",
+          "estado": "pendiente"
+        }
+      ],
       "historial_estados": [
         {
           "estado": "pendiente",
           "timestamp": "2026-04-19T03:53:19.353378",
           "motivo": "Receta cargada por usuario"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-19T15:30:33.799425",
+          "motivo": "Farmacia procesando"
         }
       ]
     }

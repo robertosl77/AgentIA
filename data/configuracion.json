@@ -440,7 +440,7 @@
             "activacion": [
               "1"
             ],
-            "texto": "1. Gestionar Guardias",
+            "texto": "1. 🏥 Gestionar Guardias",
             "handler": "gestionar_guardias"
           },
           {
@@ -452,7 +452,7 @@
             "activacion": [
               "2"
             ],
-            "texto": "2. Gestionar Cierre Eventual",
+            "texto": "2. 🚫 Gestionar Cierre Eventual",
             "handler": "gestionar_cierre_eventual"
           },
           {
@@ -463,8 +463,20 @@
             "activacion": [
               "3"
             ],
-            "texto": "3. Editar Horarios Fijos",
+            "texto": "3. ⏰ Editar Horarios Fijos",
             "handler": "editar_horarios_fijos"
+          },
+          {
+            "id": "4",
+            "roles": [
+              "root",
+              "admin"
+            ],
+            "activacion": [
+              "4"
+            ],
+            "texto": "4. 📋 Recetas pendientes",
+            "handler": "gestionar_recetas_pendientes"
           },
           {
             "id": "salir",

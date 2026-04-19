@@ -5,12 +5,13 @@ from src.sesiones.session_manager import SessionManager
 from src.horarios.gestion_guardias import GestionGuardias
 from src.horarios.gestion_cierres_eventuales import GestionCierresEventuales
 from src.horarios.gestion_horarios_fijos import GestionHorariosFijos
+from src.farmacia.staff.gestion_recetas_staff import GestionRecetasStaff
 
 
 class SubMenuStaff:
     """
     Orquestador del panel de staff dentro del enlatado farmacia.
-    Delega cada flujo en su clase de gestión correspondiente (src/horarios/).
+    Delega cada flujo en su clase de gestión correspondiente.
     """
 
     def __init__(self, numero):
@@ -21,6 +22,7 @@ class SubMenuStaff:
         self.guardias = GestionGuardias(numero)
         self.cierres = GestionCierresEventuales(numero)
         self.horarios = GestionHorariosFijos(numero)
+        self.recetas_staff = GestionRecetasStaff(numero)
 
     def submenu_staff(self, comando, sesiones):
         """Procesa el comando dentro del submenú de staff."""
@@ -48,7 +50,8 @@ class SubMenuStaff:
         """Retorna True si el usuario está en medio de cualquier flujo de staff."""
         return (self.guardias.esta_en_flujo(sesiones) or
                 self.cierres.esta_en_flujo(sesiones) or
-                self.horarios.esta_en_flujo(sesiones))
+                self.horarios.esta_en_flujo(sesiones) or
+                self.recetas_staff.esta_en_flujo(sesiones))
 
     def procesar_flujo(self, comando, sesiones):
         """Delega el comando al flujo activo."""
@@ -58,6 +61,8 @@ class SubMenuStaff:
             self.cierres.procesar(comando, sesiones)
         elif self.horarios.esta_en_flujo(sesiones):
             self.horarios.procesar(comando, sesiones)
+        elif self.recetas_staff.esta_en_flujo(sesiones):
+            self.recetas_staff.procesar(comando, sesiones)
 
     # ── HANDLERS ──────────────────────────────────────────────────────────────
 
@@ -69,3 +74,6 @@ class SubMenuStaff:
 
     def editar_horarios_fijos(self, sesiones):
         self.horarios.iniciar(sesiones)
+
+    def gestionar_recetas_pendientes(self, sesiones):
+        self.recetas_staff.iniciar(sesiones)
