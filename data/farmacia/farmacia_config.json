@@ -21,6 +21,119 @@
     "dias_vencimiento": 30,
     "alerta_preventiva_dias": 20,
     "alerta_urgente_dias": 28,
+    "estados_receta": {
+      "pendiente": {
+        "label": "Pendiente",
+        "icono": "⏳",
+        "outflow": ["en_gestion"],
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": false,
+        "notifica_usuario": false
+      },
+      "en_gestion": {
+        "label": "En gestión",
+        "icono": "🔄",
+        "outflow": ["requiere_autorizacion", "a_la_espera", "rechazada"],
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": true,
+        "notifica_usuario": false
+      },
+      "requiere_autorizacion": {
+        "label": "Requiere autorización",
+        "icono": "🔐",
+        "outflow": ["token_enviado", "procesando", "rechazada"],
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": false,
+        "notifica_usuario": true
+      },
+      "token_enviado": {
+        "label": "Token enviado",
+        "icono": "🔑",
+        "outflow": ["procesando", "rechazada"],
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": false,
+        "notifica_usuario": true
+      },
+      "a_la_espera": {
+        "label": "A la espera",
+        "icono": "⏸️",
+        "outflow": ["en_gestion"],
+        "requiere_motivo": true,
+        "es_final": false,
+        "automatico": false,
+        "notifica_usuario": true
+      },
+      "procesando": {
+        "label": "Procesando",
+        "icono": "⚙️",
+        "outflow": ["pendiente_retiro", "rechazada"],
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": false,
+        "notifica_usuario": false
+      },
+      "pendiente_retiro": {
+        "label": "Pendiente de retiro",
+        "icono": "📦",
+        "outflow": ["cerrada"],
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": false,
+        "notifica_usuario": true
+      },
+      "cerrada": {
+        "label": "Cerrada / Entregada",
+        "icono": "✅",
+        "outflow": [],
+        "requiere_motivo": false,
+        "es_final": true,
+        "automatico": false,
+        "notifica_usuario": true
+      },
+      "rechazada": {
+        "label": "Rechazada",
+        "icono": "❌",
+        "outflow": [],
+        "requiere_motivo": true,
+        "es_final": true,
+        "automatico": false,
+        "notifica_usuario": true
+      }
+    },
+    "estados_item": {
+      "pendiente": {
+        "label": "Pendiente",
+        "icono": "⏳"
+      },
+      "disponible": {
+        "label": "Disponible",
+        "icono": "✅"
+      },
+      "sin_stock": {
+        "label": "Sin stock",
+        "icono": "❌"
+      },
+      "alternativa_ofrecida": {
+        "label": "Alternativa ofrecida",
+        "icono": "🔄"
+      },
+      "alternativa_aceptada": {
+        "label": "Alternativa aceptada",
+        "icono": "🔄✅"
+      },
+      "rechazado_usuario": {
+        "label": "Rechazado por usuario",
+        "icono": "🚫"
+      },
+      "omitido_usuario": {
+        "label": "Omitido",
+        "icono": "⏭️"
+      }
+    },
     "mensajes": {
       "pedir_imagen": "📤 Enviá la *imagen o PDF* de la receta médica.\nPodés sacarle una foto o adjuntar el archivo.\n\nEscribí *cancelar* para volver.",
       "interpretando": "🔍 Interpretando receta... un momento por favor.",

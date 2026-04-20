@@ -125,13 +125,29 @@ class RecetaManager:
 
     # ── ESTADOS ───────────────────────────────────────────────────────────────
 
+    def _get_estados_receta(self):
+        """Retorna los estados de receta desde la config."""
+        return self.config.get("recetas", {}).get("estados_receta", {})
+
+    def _get_estados_item(self):
+        """Retorna los estados de items desde la config."""
+        return self.config.get("recetas", {}).get("estados_item", {})
+
+    def get_estado_config(self, estado_id):
+        """Retorna la config de un estado de receta (label, icono, outflow, etc.)."""
+        return self._get_estados_receta().get(estado_id, {})
+
+    def get_outflow(self, estado_id):
+        """Retorna los estados a los que puede transicionar desde el estado actual."""
+        config = self.get_estado_config(estado_id)
+        return config.get("outflow", [])
+
     def cambiar_estado(self, receta_id, nuevo_estado, motivo=""):
         """Cambia el estado de la receta y registra en historial."""
         if receta_id not in self.data["recetas"]:
             return False
 
-        estados_validos = ["pendiente", "en_gestion", "autorizada",
-                           "lista_retiro", "cerrada", "rechazada"]
+        estados_validos = list(self._get_estados_receta().keys())
         if nuevo_estado not in estados_validos:
             return False
 
@@ -154,9 +170,7 @@ class RecetaManager:
         if item_index < 0 or item_index >= len(receta["items"]):
             return False
 
-        estados_validos = ["pendiente", "disponible", "sin_stock",
-                           "alternativa_ofrecida", "alternativa_aceptada",
-                           "rechazado_usuario", "omitido_usuario"]
+        estados_validos = list(self._get_estados_item().keys())
         if nuevo_estado not in estados_validos:
             return False
 
