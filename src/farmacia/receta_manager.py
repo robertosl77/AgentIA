@@ -116,10 +116,13 @@ class RecetaManager:
         return sorted(resultado, key=lambda x: x.get("fecha_validez_desde", ""), reverse=True)
 
     def buscar_pendientes(self):
-        """Retorna todas las recetas pendientes (para la farmacia)."""
+        """Retorna recetas no finales (para la farmacia). Excluye cerrada."""
+        estados_config = self._get_estados_receta()
         resultado = []
         for rid, datos in self.data["recetas"].items():
-            if datos["estado"] in ("pendiente", "en_gestion"):
+            estado = datos.get("estado", "pendiente")
+            config = estados_config.get(estado, {})
+            if not config.get("es_final", False):
                 resultado.append({"receta_id": rid, **datos})
         return sorted(resultado, key=lambda x: x.get("fecha_validez_desde", ""))
 
@@ -141,6 +144,11 @@ class RecetaManager:
         """Retorna los estados a los que puede transicionar desde el estado actual."""
         config = self.get_estado_config(estado_id)
         return config.get("outflow", [])
+
+    def get_inflow(self, estado_id):
+        """Retorna los estados desde los que se puede llegar al estado actual."""
+        config = self.get_estado_config(estado_id)
+        return config.get("inflow", [])
 
     def cambiar_estado(self, receta_id, nuevo_estado, motivo=""):
         """Cambia el estado de la receta y registra en historial."""

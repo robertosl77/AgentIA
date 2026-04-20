@@ -13,10 +13,22 @@ from src.farmacia.obra_social_manager import ObraSocialManager
 class GestionRecetasStaff:
     """
     Flujo de gestión de recetas pendientes desde el panel de staff.
-    Estados y transiciones leídos de farmacia_config.json.
+    Estados, transiciones y opciones leídos de farmacia_config.json.
+    Opciones del detalle se arman dinámicamente según opciones_staff del estado actual.
     """
 
     CONFIG_PATH = os.path.join("data", "farmacia", "farmacia_config.json")
+
+    # Mapeo de opciones_staff → (label para menú, método handler)
+    OPCIONES_HANDLERS = {
+        "confirmar_todos":      ("✅ Confirmar todos los medicamentos como disponibles", "_confirmar_todos_disponibles"),
+        "cambiar_estado_item":  ("💊 Cambiar estado de un medicamento", "_iniciar_cambiar_estado_item"),
+        "enviar_nota":          ("💬 Enviar nota al paciente", "_iniciar_escribir_nota"),
+        "cambiar_estado_receta":("📊 Cambiar estado de la receta", "_iniciar_cambiar_estado_receta"),
+        "agendar_recordatorio": ("🔔 Agendar recordatorio", "_placeholder_agendar_recordatorio"),
+        "cerrar_y_notificar":   ("📤 Cerrar y notificar al cliente", "_placeholder_cerrar_y_notificar"),
+        "validar_token":        ("🔑 Validar token recibido", "_placeholder_validar_token"),
+    }
 
     def __init__(self, numero):
         self.numero = numero
@@ -64,6 +76,8 @@ class GestionRecetasStaff:
             self._procesar_escribir_nota(comando, sesiones)
         elif estado == "cambiar_estado_receta":
             self._procesar_cambiar_estado_receta(comando, sesiones)
+        elif estado == "confirmar_token":
+            self._procesar_confirmar_token(comando, sesiones)
 
     # ── LISTA DE RECETAS PENDIENTES ───────────────────────────────────────────
 
@@ -76,7 +90,7 @@ class GestionRecetasStaff:
             self._salir(sesiones)
             return
 
-        # Fix 3: si hay 1 sola receta, ir directo al detalle
+        # Si hay 1 sola receta, ir directo al detalle
         if len(pendientes) == 1:
             sesiones[self.numero].staff_receta_lista = pendientes
             receta = pendientes[0]
@@ -95,10 +109,11 @@ class GestionRecetasStaff:
             cant_items = len([it for it in rec.get("items", []) if it["estado_item"] != "omitido_usuario"])
             vencimiento = rec.get("fecha_vencimiento", "—")
             estado = rec.get("estado", "pendiente")
+            estado_config = self._get_estado_receta_config(estado)
 
             linea = f"{i}. {nombre} — {cant_items} medicamento(s) — Vence: {vencimiento}"
-            if estado == "en_gestion":
-                linea += " 🔄"
+            if estado != "pendiente":
+                linea += f" {estado_config.get('icono', '')}"
 
             credencial = rec.get("credencial_validada", True)
             if not credencial:
@@ -136,7 +151,7 @@ class GestionRecetasStaff:
     # ── DETALLE DE RECETA ─────────────────────────────────────────────────────
 
     def _mostrar_detalle(self, sesiones):
-        """Muestra el detalle completo de una receta."""
+        """Muestra el detalle completo de una receta con opciones dinámicas por estado."""
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
         resultado = self.receta_manager.get_receta(receta_id)
         if not resultado:
@@ -150,8 +165,7 @@ class GestionRecetasStaff:
         fecha_validez = receta.get("fecha_validez_desde", "")
         fecha_venc = receta.get("fecha_vencimiento", "—")
         estado_id = receta.get("estado", "pendiente")
-        estados_receta_config = self.farm_config.get("recetas", {}).get("estados_receta", {})
-        estado_config = estados_receta_config.get(estado_id, {})
+        estado_config = self._get_estado_receta_config(estado_id)
         estado_label = estado_config.get("label", estado_id)
         estado_icono = estado_config.get("icono", "")
         diagnostico = receta.get("diagnostico", "") or "—"
@@ -173,7 +187,6 @@ class GestionRecetasStaff:
         if medico.get("especialidad"):
             medico_str += f" ({medico['especialidad']})"
 
-        # Fix 2: fecha válida vacía — mostrar solo Vence si no hay fecha desde
         lineas = [f"📋 *Receta de {nombre}*"]
         if fecha_validez:
             lineas.append(f"📅 Válida: {fecha_validez} — Vence: {fecha_venc}")
@@ -188,7 +201,7 @@ class GestionRecetasStaff:
         lineas.append(f"👨‍⚕️ Médico: {medico_str}")
         lineas.append("")
 
-        # Items — viñeta sin número (la selección se hace en otro paso)
+        # Items — viñeta
         lineas.append("*Medicamentos:*")
         items = receta.get("items", [])
         items_visibles_idx = []
@@ -201,10 +214,10 @@ class GestionRecetasStaff:
             cant_sol = item.get("cantidad_solicitada", cant_rec)
             item_config = estados_item_config.get(item["estado_item"], {})
             icono = item_config.get("icono", "❓")
-            estado_label = item_config.get("label", item["estado_item"])
+            estado_label_item = item_config.get("label", item["estado_item"])
 
             cant_str = f"{cant_sol}" if cant_sol == cant_rec else f"{cant_sol} de {cant_rec}"
-            lineas.append(f"• {icono} {label} — Cant: {cant_str} ({estado_label})")
+            lineas.append(f"• {icono} {label} — Cant: {cant_str} ({estado_label_item})")
             items_visibles_idx.append(i)
 
         # Notas pendientes dirigidas a farmacia
@@ -212,45 +225,68 @@ class GestionRecetasStaff:
         if notas_farmacia:
             lineas.append(f"\n📬 *{len(notas_farmacia)} nota(s) pendiente(s) del paciente*")
 
-        # Opciones numeradas
+        # Opciones dinámicas según estado actual
+        opciones_staff = estado_config.get("opciones_staff", [])
+        opciones_activas = []  # lista de keys de OPCIONES_HANDLERS
         lineas.append("")
-        lineas.append("1. ✅ Confirmar todos los medicamentos como disponibles")
-        lineas.append("2. 💊 Cambiar estado de un medicamento")
-        lineas.append("3. 💬 Enviar nota al paciente")
-        lineas.append("4. 📊 Cambiar estado de la receta")
-        lineas.append("5. 🔔 Agendar recordatorio")
+
+        num = 1
+        for opcion_key in opciones_staff:
+            handler_info = self.OPCIONES_HANDLERS.get(opcion_key)
+            if handler_info:
+                label_opcion, _ = handler_info
+                lineas.append(f"{num}. {label_opcion}")
+                opciones_activas.append(opcion_key)
+                num += 1
+
         lineas.append("Escribí *cancelar* para volver:")
 
         sesiones[self.numero].staff_receta_estado = "detalle"
         sesiones[self.numero].staff_receta_items_visibles = items_visibles_idx
+        sesiones[self.numero].staff_receta_opciones_activas = opciones_activas
         self.sw.enviar("\n".join(lineas))
 
     def _procesar_detalle(self, comando, sesiones):
-        """Procesa opciones del detalle de receta."""
+        """Procesa opciones dinámicas del detalle de receta."""
         if comando.strip() == "cancelar":
-            self.iniciar(sesiones)
+            # Fix cancelar: con 1 sola receta, cancelar vuelve al menú staff
+            pendientes = self.receta_manager.buscar_pendientes()
+            if len(pendientes) <= 1:
+                self._salir(sesiones)
+            else:
+                self.iniciar(sesiones)
             return
 
-        cmd = comando.strip()
+        opciones_activas = getattr(sesiones[self.numero], "staff_receta_opciones_activas", [])
 
-        if cmd == "1":
-            self._confirmar_todos_disponibles(sesiones)
-        elif cmd == "2":
-            self._iniciar_cambiar_estado_item(sesiones)
-        elif cmd == "3":
-            self._iniciar_escribir_nota(sesiones)
-        elif cmd == "4":
-            self._iniciar_cambiar_estado_receta(sesiones)
-        elif cmd == "5":
-            self.sw.enviar("🚧 Agendar recordatorio — próximamente...")
-            self._mostrar_detalle(sesiones)
-        else:
+        try:
+            idx = int(comando.strip()) - 1
+            if idx < 0 or idx >= len(opciones_activas):
+                raise ValueError
+        except ValueError:
             self.sw.enviar("❌ Opción no válida.")
+            return
+
+        opcion_key = opciones_activas[idx]
+        handler_info = self.OPCIONES_HANDLERS.get(opcion_key)
+        if handler_info:
+            _, method_name = handler_info
+            method = getattr(self, method_name, None)
+            if method:
+                method(sesiones)
+            else:
+                self.sw.enviar(f"🚧 Función '{method_name}' — próximamente...")
+                self._mostrar_detalle(sesiones)
 
     # ── CONFIRMAR TODOS DISPONIBLES ───────────────────────────────────────────
 
     def _confirmar_todos_disponibles(self, sesiones):
-        """Marca todos los items pendientes como disponibles."""
+        """
+        Marca TODOS los items activos como disponibles.
+        Desestima notas de alternativa pendientes (placeholder).
+        Cancela recordatorios (placeholder).
+        Pregunta si requiere token de autorización.
+        """
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
         resultado = self.receta_manager.get_receta(receta_id)
         if not resultado:
@@ -261,17 +297,56 @@ class GestionRecetasStaff:
         items = receta.get("items", [])
         count = 0
         for i, item in enumerate(items):
-            if item["estado_item"] == "pendiente":
+            if item["estado_item"] in ("pendiente", "sin_stock", "alternativa_ofrecida"):
                 self.receta_manager.cambiar_estado_item(receta_id, i, "disponible")
                 count += 1
 
-        if count > 0:
-            self.sw.enviar(f"✅ {count} medicamento(s) marcado(s) como disponibles.")
-            self._verificar_todos_resueltos(receta_id, sesiones)
-        else:
-            self.sw.enviar("ℹ️ No hay medicamentos pendientes para confirmar.")
+        if count == 0:
+            self.sw.enviar("ℹ️ Todos los medicamentos ya están confirmados.")
+            self._mostrar_detalle(sesiones)
+            return
 
-        self._mostrar_detalle(sesiones)
+        self.sw.enviar(f"✅ {count} medicamento(s) confirmado(s) como disponibles.")
+
+        # TODO: desestimar notas de alternativa pendientes
+        print(f"[PLACEHOLDER] Desestimar notas de alternativa para receta {receta_id}")
+
+        # TODO: cancelar recordatorios pendientes
+        print(f"[PLACEHOLDER] Cancelar recordatorios para receta {receta_id}")
+
+        # Preguntar si requiere token
+        sesiones[self.numero].staff_receta_estado = "confirmar_token"
+        self.sw.enviar(
+            "🔐 ¿Requiere token de autorización de obra social?\n\n"
+            "1. Sí, solicitar token al paciente\n"
+            "2. No, avanzar sin token\n\n"
+            "Escribí *cancelar* para volver:"
+        )
+
+    def _procesar_confirmar_token(self, comando, sesiones):
+        """Procesa la respuesta de si requiere token o no."""
+        if comando.strip() == "cancelar":
+            self._mostrar_detalle(sesiones)
+            return
+
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+
+        if comando.strip() == "1":
+            # Requiere token → estado requiere_autorizacion
+            self.receta_manager.cambiar_estado(receta_id, "requiere_autorizacion", "Farmacia solicita token")
+            self.sw.enviar("🔐 Receta cambiada a *Requiere autorización*.")
+            # TODO: notificar al paciente que debe enviar token
+            print(f"[PLACEHOLDER] Notificar al paciente que envíe token para receta {receta_id}")
+            self._mostrar_detalle(sesiones)
+
+        elif comando.strip() == "2":
+            # No requiere token → estado procesando
+            self.receta_manager.cambiar_estado(receta_id, "procesando", "No requiere token — avance directo")
+            self.sw.enviar("⚙️ Receta cambiada a *Procesando*.")
+            self._mostrar_detalle(sesiones)
+
+        else:
+            self.sw.enviar("❌ Opción no válida. Respondé *1* o *2*.")
 
     # ── CAMBIAR ESTADO DE ITEM ────────────────────────────────────────────────
 
@@ -364,7 +439,6 @@ class GestionRecetasStaff:
     # ── OFRECER ALTERNATIVA ───────────────────────────────────────────────────
 
     def _procesar_ofrecer_alternativa(self, comando, sesiones):
-        """Procesa el nombre de la alternativa y envía nota al paciente."""
         if comando.strip() == "cancelar":
             self._mostrar_detalle(sesiones)
             return
@@ -389,7 +463,9 @@ class GestionRecetasStaff:
         )
         self.receta_manager.agregar_nota(receta_id, "farmacia", "usuario", mensaje_nota)
 
-        self.sw.enviar(f"✅ Alternativa ofrecida. Se envió nota al paciente.")
+        self.sw.enviar("✅ Alternativa ofrecida. Se envió nota al paciente.")
+        # TODO: notificar al paciente
+        print(f"[PLACEHOLDER] Notificar al paciente sobre alternativa para receta {receta_id}")
         self._mostrar_detalle(sesiones)
 
     # ── ESCRIBIR NOTA ─────────────────────────────────────────────────────────
@@ -410,12 +486,14 @@ class GestionRecetasStaff:
         self.receta_manager.agregar_nota(receta_id, "farmacia", "usuario", comando.strip())
 
         self.sw.enviar("✅ Nota enviada al paciente.")
+        # TODO: notificar al paciente
+        print(f"[PLACEHOLDER] Notificar al paciente sobre nota para receta {receta_id}")
         self._mostrar_detalle(sesiones)
 
-    # ── CAMBIAR ESTADO DE RECETA ──────────────────────────────────────────────
+    # ── CAMBIAR ESTADO DE RECETA (dinámico desde outflow) ─────────────────────
 
     def _iniciar_cambiar_estado_receta(self, sesiones):
-        """Arma menú dinámico de cambio de estado basado en outflow del estado actual."""
+        """Arma menú dinámico basado en outflow, filtrando automáticos."""
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
         resultado = self.receta_manager.get_receta(receta_id)
         if not resultado:
@@ -424,22 +502,39 @@ class GestionRecetasStaff:
 
         _, receta = resultado
         estado_actual = receta.get("estado", "pendiente")
-        outflow = self.receta_manager.get_outflow(estado_actual)
+        estado_config = self._get_estado_receta_config(estado_actual)
+        outflow = estado_config.get("outflow", [])
+        inflow = estado_config.get("inflow", [])
 
-        if not outflow:
-            self.sw.enviar("ℹ️ Esta receta ya está en un estado final y no puede cambiar.")
+        # Construir opciones: outflow no automáticos + inflow (volver atrás)
+        estados_config = self.receta_manager._get_estados_receta()
+        opciones = []
+
+        # Outflow — solo los no automáticos
+        for estado_id in outflow:
+            config = estados_config.get(estado_id, {})
+            if not config.get("automatico", False):
+                opciones.append(estado_id)
+
+        # Inflow — para poder volver atrás (siempre manual)
+        for estado_id in inflow:
+            if estado_id not in opciones:
+                opciones.append(estado_id)
+
+        if not opciones:
+            self.sw.enviar("ℹ️ No hay cambios de estado disponibles desde este punto.")
             self._mostrar_detalle(sesiones)
             return
 
-        estados_config = self.receta_manager._get_estados_receta()
         lineas = ["📊 Seleccioná el nuevo estado de la receta:\n"]
-        opciones = []
-        for i, estado_id in enumerate(outflow, 1):
+        for i, estado_id in enumerate(opciones, 1):
             config = estados_config.get(estado_id, {})
             icono = config.get("icono", "")
             label = config.get("label", estado_id)
+            # Marcar si es volver atrás
+            if estado_id in inflow and estado_id not in outflow:
+                label += " (volver atrás)"
             lineas.append(f"{i}. {icono} {label}")
-            opciones.append(estado_id)
 
         lineas.append("\nEscribí *cancelar* para volver:")
 
@@ -456,17 +551,19 @@ class GestionRecetasStaff:
         esperando_motivo = getattr(sesiones[self.numero], "staff_receta_esperando_motivo", False)
 
         if esperando_motivo:
-            # Recibimos el motivo
             receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
             nuevo_estado = getattr(sesiones[self.numero], "staff_receta_nuevo_estado", "")
             sesiones[self.numero].staff_receta_esperando_motivo = False
 
             self.receta_manager.cambiar_estado(receta_id, nuevo_estado, comando.strip())
 
-            estados_config = self.receta_manager._get_estados_receta()
-            config = estados_config.get(nuevo_estado, {})
+            config = self._get_estado_receta_config(nuevo_estado)
             label = config.get("label", nuevo_estado)
             self.sw.enviar(f"✅ Receta cambiada a estado: *{label}*")
+
+            # TODO: notificar al paciente si notifica_usuario es true
+            if config.get("notifica_usuario", False):
+                print(f"[PLACEHOLDER] Notificar al paciente: receta {receta_id} → {nuevo_estado}")
 
             if config.get("es_final", False):
                 self.iniciar(sesiones)
@@ -484,10 +581,8 @@ class GestionRecetasStaff:
 
         nuevo_estado = opciones[idx]
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
-        estados_config = self.receta_manager._get_estados_receta()
-        config = estados_config.get(nuevo_estado, {})
+        config = self._get_estado_receta_config(nuevo_estado)
 
-        # Si requiere motivo, pedirlo
         if config.get("requiere_motivo", False):
             sesiones[self.numero].staff_receta_esperando_motivo = True
             sesiones[self.numero].staff_receta_nuevo_estado = nuevo_estado
@@ -495,18 +590,53 @@ class GestionRecetasStaff:
             self.sw.enviar(f"📝 Ingresá el motivo para *{label}*:")
             return
 
-        # Cambiar directo
         self.receta_manager.cambiar_estado(receta_id, nuevo_estado, config.get("label", ""))
 
         label = config.get("label", nuevo_estado)
         self.sw.enviar(f"✅ Receta cambiada a estado: *{label}*")
+
+        if config.get("notifica_usuario", False):
+            print(f"[PLACEHOLDER] Notificar al paciente: receta {receta_id} → {nuevo_estado}")
 
         if config.get("es_final", False):
             self.iniciar(sesiones)
         else:
             self._mostrar_detalle(sesiones)
 
+    # ── PLACEHOLDERS ──────────────────────────────────────────────────────────
+
+    def _placeholder_agendar_recordatorio(self, sesiones):
+        self.sw.enviar("🚧 Agendar recordatorio — próximamente...")
+        self._mostrar_detalle(sesiones)
+
+    def _placeholder_cerrar_y_notificar(self, sesiones):
+        """Enviar resumen consolidado al cliente en vez de notificar cada cambio."""
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        self.sw.enviar("🚧 Cerrar y notificar al cliente — próximamente...")
+        print(f"[PLACEHOLDER] Cerrar y notificar resumen consolidado al cliente para receta {receta_id}")
+        self._mostrar_detalle(sesiones)
+
+    def _placeholder_validar_token(self, sesiones):
+        """Opciones de token: correcto / solicitar nuevo / no requiere."""
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        self.sw.enviar(
+            "🔑 *Validación de token:*\n\n"
+            "1. ✅ Token correcto — avanzar\n"
+            "2. 🔄 Solicitar nuevo token\n"
+            "3. ⏭️ No requiere token — avanzar\n\n"
+            "Escribí *cancelar* para volver:"
+        )
+        # TODO: implementar flujo completo de validación de token
+        print(f"[PLACEHOLDER] Validar token para receta {receta_id}")
+        # Por ahora queda como placeholder, no cambia estado
+        # Cuando se implemente, opciones 1 y 3 cambian a procesando,
+        # opción 2 vuelve a requiere_autorizacion
+
     # ── HELPERS ───────────────────────────────────────────────────────────────
+
+    def _get_estado_receta_config(self, estado_id):
+        """Retorna la config de un estado de receta desde farmacia_config."""
+        return self.farm_config.get("recetas", {}).get("estados_receta", {}).get(estado_id, {})
 
     def _verificar_todos_resueltos(self, receta_id, sesiones):
         resultado = self.receta_manager.get_receta(receta_id)
@@ -523,7 +653,7 @@ class GestionRecetasStaff:
         if todos_resueltos:
             self.sw.enviar(
                 "🔔 Todos los medicamentos están resueltos.\n"
-                "Podés cambiar el estado de la receta a *Lista para retiro*."
+                "Podés usar *Confirmar todos* o *Cambiar estado de la receta* para avanzar."
             )
 
     def _salir(self, sesiones):
@@ -538,3 +668,4 @@ class GestionRecetasStaff:
         sesiones[self.numero].staff_receta_opciones_estado = None
         sesiones[self.numero].staff_receta_esperando_motivo = False
         sesiones[self.numero].staff_receta_nuevo_estado = None
+        sesiones[self.numero].staff_receta_opciones_activas = None

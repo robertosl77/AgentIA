@@ -1,89 +1,44 @@
 {
   "recetas": {
-    "6c078196-ae58-4ce4-8626-8101fddfa6c8": {
+    "7eda4e62-8b6c-4e3d-af50-8fb2c89b7628": {
       "persona_id": "f49059cb-3144-4110-a821-8aa4fbcaaabf",
-      "obra_social_id": "",
-      "credencial_validada": false,
-      "fecha_creacion": "09/11/2012",
-      "fecha_validez_desde": "",
-      "fecha_vencimiento": "19/05/2026",
+      "obra_social_id": "70c90a20-3fbf-466c-a59b-f99cd9a2dfbf",
+      "credencial_validada": true,
+      "fecha_creacion": "12/03/2026",
+      "fecha_validez_desde": "12/04/2026",
+      "fecha_vencimiento": "12/05/2026",
       "medico": {
-        "nombre": "Dr. Steve Johnson",
-        "matricula": "",
-        "especialidad": ""
+        "nombre": "María Inés Ortiz",
+        "matricula": "111002",
+        "especialidad": "ENDOCRINOLOGIA"
       },
-      "diagnostico": "",
+      "diagnostico": "Panhipopituitarismo",
       "items": [
         {
-          "medicamento_id": "306b1911-388a-44f5-9141-29064d08ab25",
+          "medicamento_id": "292ddf79-6918-4142-ac2e-33d9771ec5bb",
           "cantidad_receta": 2,
           "cantidad_solicitada": 2,
           "estado_item": "disponible"
         },
         {
-          "medicamento_id": "d00e7ee2-8a0e-4dfe-96a7-efac517a378a",
-          "cantidad_receta": 2,
-          "cantidad_solicitada": 2,
-          "estado_item": "sin_stock"
-        },
-        {
-          "medicamento_id": "ab3fedb2-35ac-450c-ae17-0d54a20e0b2c",
-          "cantidad_receta": 2,
+          "medicamento_id": "b9a89cd0-e5ea-4427-ada9-534a827d25a2",
+          "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "alternativa_ofrecida"
-        },
-        {
-          "medicamento_id": "93ff8bde-a243-4706-9215-adc7e4e4be1d",
-          "cantidad_receta": 2,
-          "cantidad_solicitada": 0,
-          "estado_item": "omitido_usuario"
+          "estado_item": "disponible"
         }
       ],
       "estado": "en_gestion",
       "operador_id": "f49059cb-3144-4110-a821-8aa4fbcaaabf",
-      "notas": [
-        {
-          "id": "fb628de8",
-          "autor": "farmacia",
-          "dirigida_a": "usuario",
-          "mensaje": "estoy procesando la medicacion!",
-          "timestamp": "2026-04-19T15:32:26.199980",
-          "estado": "pendiente"
-        },
-        {
-          "id": "0f6ac8dc",
-          "autor": "farmacia",
-          "dirigida_a": "usuario",
-          "mensaje": "No tenemos *Cimetidine 50 mg Tabletas* disponible. Ofrecemos como alternativa: *cucatril*. ¿Lo aceptás?",
-          "timestamp": "2026-04-19T15:34:00.744133",
-          "estado": "pendiente"
-        },
-        {
-          "id": "3364cb03",
-          "autor": "farmacia",
-          "dirigida_a": "usuario",
-          "mensaje": "No tenemos *Cimetidine 50 mg Tabletas* disponible. Ofrecemos como alternativa: *cimetidine 100 mg*. ¿Lo aceptás?",
-          "timestamp": "2026-04-19T21:27:53.709244",
-          "estado": "pendiente"
-        },
-        {
-          "id": "00971e44",
-          "autor": "farmacia",
-          "dirigida_a": "usuario",
-          "mensaje": "hola estoy procesando tu receta, si podes anda anticipandome el token!",
-          "timestamp": "2026-04-19T21:45:24.430749",
-          "estado": "pendiente"
-        }
-      ],
+      "notas": [],
       "historial_estados": [
         {
           "estado": "pendiente",
-          "timestamp": "2026-04-19T03:53:19.353378",
+          "timestamp": "2026-04-20T01:28:51.072234",
           "motivo": "Receta cargada por usuario"
         },
         {
           "estado": "en_gestion",
-          "timestamp": "2026-04-19T15:30:33.799425",
+          "timestamp": "2026-04-20T01:29:05.670911",
           "motivo": "Farmacia procesando"
         }
       ]

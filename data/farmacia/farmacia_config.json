@@ -25,83 +25,141 @@
       "pendiente": {
         "label": "Pendiente",
         "icono": "⏳",
+        "inflow": [],
         "outflow": ["en_gestion"],
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": false,
-        "notifica_usuario": false
+        "automatico": true,
+        "notifica_usuario": false,
+        "opciones_staff": []
       },
       "en_gestion": {
         "label": "En gestión",
         "icono": "🔄",
+        "inflow": ["pendiente", "confirmando"],
         "outflow": ["requiere_autorizacion", "a_la_espera", "rechazada"],
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
-        "notifica_usuario": false
+        "notifica_usuario": false,
+        "opciones_staff": [
+          "confirmar_todos",
+          "cambiar_estado_item",
+          "enviar_nota",
+          "cambiar_estado_receta",
+          "agendar_recordatorio",
+          "cerrar_y_notificar"
+        ]
+      },
+      "a_la_espera": {
+        "label": "A la espera del cliente",
+        "icono": "⏸️",
+        "inflow": ["en_gestion"],
+        "outflow": ["confirmando"],
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": true,
+        "notifica_usuario": true,
+        "opciones_staff": [
+          "enviar_nota",
+          "cambiar_estado_receta",
+          "agendar_recordatorio"
+        ]
+      },
+      "confirmando": {
+        "label": "Cliente confirmando",
+        "icono": "👤",
+        "inflow": ["a_la_espera"],
+        "outflow": ["en_gestion"],
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": true,
+        "notifica_usuario": false,
+        "opciones_staff": [
+          "enviar_nota",
+          "cambiar_estado_receta"
+        ]
       },
       "requiere_autorizacion": {
         "label": "Requiere autorización",
         "icono": "🔐",
+        "inflow": ["en_gestion"],
         "outflow": ["token_enviado", "procesando", "rechazada"],
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notifica_usuario": true
+        "notifica_usuario": true,
+        "opciones_staff": [
+          "enviar_nota",
+          "cambiar_estado_receta",
+          "agendar_recordatorio"
+        ]
       },
       "token_enviado": {
         "label": "Token enviado",
         "icono": "🔑",
-        "outflow": ["procesando", "rechazada"],
+        "inflow": ["requiere_autorizacion"],
+        "outflow": ["requiere_autorizacion"],
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": false,
-        "notifica_usuario": true
-      },
-      "a_la_espera": {
-        "label": "A la espera",
-        "icono": "⏸️",
-        "outflow": ["en_gestion"],
-        "requiere_motivo": true,
-        "es_final": false,
-        "automatico": false,
-        "notifica_usuario": true
+        "automatico": true,
+        "notifica_usuario": true,
+        "opciones_staff": [
+          "validar_token",
+          "enviar_nota",
+          "cambiar_estado_receta"
+        ]
       },
       "procesando": {
         "label": "Procesando",
         "icono": "⚙️",
+        "inflow": ["requiere_autorizacion"],
         "outflow": ["pendiente_retiro", "rechazada"],
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notifica_usuario": false
+        "notifica_usuario": false,
+        "opciones_staff": [
+          "cambiar_estado_receta"
+        ]
       },
       "pendiente_retiro": {
         "label": "Pendiente de retiro",
         "icono": "📦",
+        "inflow": ["procesando"],
         "outflow": ["cerrada"],
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notifica_usuario": true
+        "notifica_usuario": true,
+        "opciones_staff": [
+          "enviar_nota",
+          "cambiar_estado_receta"
+        ]
       },
       "cerrada": {
         "label": "Cerrada / Entregada",
         "icono": "✅",
+        "inflow": ["pendiente_retiro"],
         "outflow": [],
         "requiere_motivo": false,
         "es_final": true,
         "automatico": false,
-        "notifica_usuario": true
+        "notifica_usuario": true,
+        "opciones_staff": []
       },
       "rechazada": {
         "label": "Rechazada",
         "icono": "❌",
-        "outflow": [],
+        "inflow": ["en_gestion", "procesando", "requiere_autorizacion"],
+        "outflow": ["en_gestion"],
         "requiere_motivo": true,
-        "es_final": true,
+        "es_final": false,
         "automatico": false,
-        "notifica_usuario": true
+        "notifica_usuario": true,
+        "opciones_staff": [
+          "cambiar_estado_receta"
+        ]
       }
     },
     "estados_item": {
