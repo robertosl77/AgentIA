@@ -57,6 +57,22 @@
           "mensaje": "No tenemos *Cimetidine 50 mg Tabletas* disponible. Ofrecemos como alternativa: *cucatril*. ¿Lo aceptás?",
           "timestamp": "2026-04-19T15:34:00.744133",
           "estado": "pendiente"
+        },
+        {
+          "id": "3364cb03",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "No tenemos *Cimetidine 50 mg Tabletas* disponible. Ofrecemos como alternativa: *cimetidine 100 mg*. ¿Lo aceptás?",
+          "timestamp": "2026-04-19T21:27:53.709244",
+          "estado": "pendiente"
+        },
+        {
+          "id": "00971e44",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "hola estoy procesando tu receta, si podes anda anticipandome el token!",
+          "timestamp": "2026-04-19T21:45:24.430749",
+          "estado": "pendiente"
         }
       ],
       "historial_estados": [
