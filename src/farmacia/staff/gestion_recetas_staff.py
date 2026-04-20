@@ -21,6 +21,7 @@ class GestionRecetasStaff:
 
     # Mapeo de opciones_staff → (label para menú, método handler)
     OPCIONES_HANDLERS = {
+        "avanzar":              None,  # Se arma dinámicamente con el label del camino_feliz
         "confirmar_todos":      ("✅ Confirmar todos los medicamentos como disponibles", "_confirmar_todos_disponibles"),
         "cambiar_estado_item":  ("💊 Cambiar estado de un medicamento", "_iniciar_cambiar_estado_item"),
         "enviar_nota":          ("💬 Enviar nota al paciente", "_iniciar_escribir_nota"),
@@ -227,11 +228,23 @@ class GestionRecetasStaff:
 
         # Opciones dinámicas según estado actual
         opciones_staff = estado_config.get("opciones_staff", [])
+        camino_feliz = estado_config.get("camino_feliz")
         opciones_activas = []  # lista de keys de OPCIONES_HANDLERS
         lineas.append("")
 
         num = 1
         for opcion_key in opciones_staff:
+            if opcion_key == "avanzar":
+                # Opción dinámica: avanzar al camino feliz
+                if camino_feliz:
+                    cf_config = self._get_estado_receta_config(camino_feliz)
+                    cf_label = cf_config.get("label", camino_feliz)
+                    cf_icono = cf_config.get("icono", "➡️")
+                    lineas.append(f"{num}. {cf_icono} Avanzar a {cf_label}")
+                    opciones_activas.append("avanzar")
+                    num += 1
+                continue
+
             handler_info = self.OPCIONES_HANDLERS.get(opcion_key)
             if handler_info:
                 label_opcion, _ = handler_info
@@ -268,6 +281,12 @@ class GestionRecetasStaff:
             return
 
         opcion_key = opciones_activas[idx]
+
+        # Avanzar al camino feliz
+        if opcion_key == "avanzar":
+            self._avanzar_camino_feliz(sesiones)
+            return
+
         handler_info = self.OPCIONES_HANDLERS.get(opcion_key)
         if handler_info:
             _, method_name = handler_info
@@ -286,6 +305,7 @@ class GestionRecetasStaff:
         Desestima notas de alternativa pendientes (placeholder).
         Cancela recordatorios (placeholder).
         Pregunta si requiere token de autorización.
+        Si ya están todos disponibles, salta directo a la pregunta de token.
         """
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
         resultado = self.receta_manager.get_receta(receta_id)
@@ -301,12 +321,8 @@ class GestionRecetasStaff:
                 self.receta_manager.cambiar_estado_item(receta_id, i, "disponible")
                 count += 1
 
-        if count == 0:
-            self.sw.enviar("ℹ️ Todos los medicamentos ya están confirmados.")
-            self._mostrar_detalle(sesiones)
-            return
-
-        self.sw.enviar(f"✅ {count} medicamento(s) confirmado(s) como disponibles.")
+        if count > 0:
+            self.sw.enviar(f"✅ {count} medicamento(s) confirmado(s) como disponibles.")
 
         # TODO: desestimar notas de alternativa pendientes
         print(f"[PLACEHOLDER] Desestimar notas de alternativa para receta {receta_id}")
@@ -599,6 +615,49 @@ class GestionRecetasStaff:
             print(f"[PLACEHOLDER] Notificar al paciente: receta {receta_id} → {nuevo_estado}")
 
         if config.get("es_final", False):
+            self.iniciar(sesiones)
+        else:
+            self._mostrar_detalle(sesiones)
+
+    # ── AVANZAR CAMINO FELIZ ─────────────────────────────────────────────────
+
+    def _avanzar_camino_feliz(self, sesiones):
+        """Avanza la receta al estado definido como camino_feliz."""
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        resultado = self.receta_manager.get_receta(receta_id)
+        if not resultado:
+            self._mostrar_detalle(sesiones)
+            return
+
+        _, receta = resultado
+        estado_actual = receta.get("estado", "pendiente")
+        estado_config = self._get_estado_receta_config(estado_actual)
+        camino_feliz = estado_config.get("camino_feliz")
+
+        if not camino_feliz:
+            self.sw.enviar("ℹ️ No hay avance disponible desde este estado.")
+            self._mostrar_detalle(sesiones)
+            return
+
+        cf_config = self._get_estado_receta_config(camino_feliz)
+        cf_label = cf_config.get("label", camino_feliz)
+
+        # Si requiere motivo, pedirlo
+        if cf_config.get("requiere_motivo", False):
+            sesiones[self.numero].staff_receta_estado = "cambiar_estado_receta"
+            sesiones[self.numero].staff_receta_esperando_motivo = True
+            sesiones[self.numero].staff_receta_nuevo_estado = camino_feliz
+            self.sw.enviar(f"📝 Ingresá el motivo para *{cf_label}*:")
+            return
+
+        self.receta_manager.cambiar_estado(receta_id, camino_feliz, f"Avance → {cf_label}")
+        self.sw.enviar(f"✅ Receta avanzada a: *{cf_label}*")
+
+        if cf_config.get("notifica_usuario", False):
+            # TODO: notificar al paciente
+            print(f"[PLACEHOLDER] Notificar al paciente: receta {receta_id} → {camino_feliz}")
+
+        if cf_config.get("es_final", False):
             self.iniciar(sesiones)
         else:
             self._mostrar_detalle(sesiones)
