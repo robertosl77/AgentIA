@@ -25,7 +25,13 @@ class MenuPrincipal:
         print(f"📱 Número: {self.numero} | 📝 Comando: {comando} | 👤 Pushname: {pushname} | 📎 Media: {'Sí' if media_base64 else 'No'}")
 
         # Verificamos/creamos sesión en cada mensaje
-        es_nueva = self.session_manager.verificar_o_crear(self.numero)
+        rol_detectado = 'admin' if getattr(self, 'es_owner', False) else None  # 🔥 NUEVO
+
+        es_nueva = self.session_manager.verificar_o_crear(
+            self.numero,
+            rol_detectado
+        )
+
         if es_nueva:
             self._resetear_estado_memoria(pushname)
 

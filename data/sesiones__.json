@@ -1,0 +1,180 @@
+{
+  "sesiones": {
+    "231400003358774@lid": {
+      "rol": "root",
+      "login": {
+        "timestamp": "2026-04-22T23:52:37.015456",
+        "expira": "2026-04-23T00:52:37.015456"
+      },
+      "pushname": "Roberto SL"
+    },
+    "64076784861265@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T20:56:38.646906",
+        "expira": "2026-04-03T21:56:38.646906"
+      },
+      "pushname": "Norali"
+    },
+    "199724619559011@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T20:58:18.395809",
+        "expira": "2026-04-03T21:58:18.395809"
+      },
+      "pushname": "Martin Lopez"
+    },
+    "3436628160599@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-04T22:05:04.343130",
+        "expira": "2026-04-04T23:05:04.343130"
+      },
+      "pushname": "David Draise"
+    },
+    "31456491524202@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T20:58:39.514904",
+        "expira": "2026-04-03T21:58:39.514904"
+      },
+      "pushname": "Luciano Scigliotti"
+    },
+    "246909180604423@lid": {
+      "rol": "root",
+      "login": {
+        "timestamp": "2026-04-05T18:14:51.554623",
+        "expira": "2026-04-05T19:14:51.554623"
+      },
+      "pushname": "Seba Montero"
+    },
+    "166911170113665@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:01:57.010638",
+        "expira": "2026-04-03T22:01:57.010638"
+      },
+      "pushname": "Ivan Sycz"
+    },
+    "102482348867798@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:02:12.921671",
+        "expira": "2026-04-03T22:02:12.921671"
+      },
+      "pushname": "Pablo Sevilla"
+    },
+    "93295816487069@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:02:17.603989",
+        "expira": "2026-04-03T22:02:17.603989"
+      },
+      "pushname": "Sol"
+    },
+    "186994470699163@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:02:41.573592",
+        "expira": "2026-04-03T22:02:41.573592"
+      },
+      "pushname": "Andrea Rugama"
+    },
+    "74599320518684@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:03:14.709965",
+        "expira": "2026-04-03T22:03:14.709965"
+      },
+      "pushname": "Marina"
+    },
+    "234397991178296@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:05:48.983301",
+        "expira": "2026-04-03T22:05:48.983301"
+      },
+      "pushname": "Débora"
+    },
+    "272756310544392@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:09:12.304953",
+        "expira": "2026-04-03T22:09:12.304953"
+      },
+      "pushname": "Mauricio"
+    },
+    "126516868431925@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:16:16.628418",
+        "expira": "2026-04-03T22:16:16.628418"
+      },
+      "pushname": "Eva"
+    },
+    "197955093061738@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:20:33.966219",
+        "expira": "2026-04-03T22:20:33.966219"
+      },
+      "pushname": "Marco"
+    },
+    "103156524560474@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:21:28.946074",
+        "expira": "2026-04-03T22:21:28.946074"
+      },
+      "pushname": "Sebastian Gonzalez"
+    },
+    "117909837881444@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:32:54.314956",
+        "expira": "2026-04-03T22:32:54.314956"
+      },
+      "pushname": "AGUSTINA💋"
+    },
+    "137121176276994@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T21:34:18.837155",
+        "expira": "2026-04-03T22:34:18.837155"
+      },
+      "pushname": "Gabriel Rabinovich"
+    },
+    "212897250725978@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-03T23:01:48.201447",
+        "expira": "2026-04-04T00:01:48.201447"
+      },
+      "pushname": "Matias Rodeghiero"
+    },
+    "176218246783125@lid": {
+      "rol": "usuario",
+      "login": {
+        "timestamp": "2026-04-04T15:26:42.490618",
+        "expira": "2026-04-04T16:26:42.490618"
+      },
+      "pushname": "Vanesa"
+    },
+    "5491168387770@c.us": {
+      "rol": "admin",
+      "login": {
+        "timestamp": "2026-04-23T00:39:05.804073",
+        "expira": "2026-04-23T01:39:05.804073"
+      },
+      "pushname": "Yo"
+    },
+    "125962901532858@lid": {
+      "rol": "admin",
+      "login": {
+        "timestamp": "2026-04-23T00:39:05.807069",
+        "expira": "2026-04-23T01:39:05.807069"
+      },
+      "pushname": "Yo"
+    }
+  }
+}

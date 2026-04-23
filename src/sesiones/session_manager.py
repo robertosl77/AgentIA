@@ -73,7 +73,7 @@ class SessionManager:
 
     # ── LOGIN / SESIÓN ────────────────────────────────────────────────────────
 
-    def verificar_o_crear(self, numero):
+    def verificar_o_crear(self, numero, rol=None):
         """
         Punto de entrada principal. Para cada mensaje entrante:
             - Si no existe: crea la sesión y retorna True (sesión nueva)
@@ -84,6 +84,11 @@ class SessionManager:
 
         if numero not in sesiones:
             sesiones[numero] = self._sesion_vacia()
+
+            # 🔥 NUEVO: setear rol si viene informado
+            if rol:
+                sesiones[numero]["rol"] = rol
+
             self.data["sesiones"] = sesiones
             self._guardar_archivo()
             return True
@@ -97,8 +102,12 @@ class SessionManager:
 
         if datetime.now() > expira:
             rol_actual = sesiones[numero].get("rol", "usuario")
+
             sesiones[numero] = self._sesion_vacia()
-            sesiones[numero]["rol"] = rol_actual
+
+            # 🔥 NUEVO: prioridad al rol recibido, sino mantiene el anterior
+            sesiones[numero]["rol"] = rol if rol else rol_actual
+
             self.data["sesiones"] = sesiones
             self._guardar_archivo()
             return True
