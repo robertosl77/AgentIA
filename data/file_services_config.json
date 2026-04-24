@@ -1,0 +1,30 @@
+{
+  "proveedores": {
+    "drive_principal": {
+      "tipo": "google_drive",
+      "env_credentials": "GOOGLE_DRIVE_CREDENTIALS_PATH",
+      "env_folder_id": "GOOGLE_DRIVE_FOLDER_ID"
+    },
+    "local": {
+      "tipo": "local",
+      "base_path": "data/archivos"
+    }
+  },
+  "storage": {
+    "proveedor_defecto": "local",
+    "proyectos": {
+      "farmacia": {
+        "proveedor": "drive_principal",
+        "carpeta": "recetas"
+      }
+    }
+  },
+  "imagen": {
+    "formato_salida": "jpg",
+    "calidad_jpeg": 85,
+    "pdf_pagina": 0
+  },
+  "filename": {
+    "patron": "{proyecto}_{fecha}_{uid}.{ext}"
+  }
+}

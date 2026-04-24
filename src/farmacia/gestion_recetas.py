@@ -9,6 +9,7 @@ from src.agente_ia.agente_ia import AgenteIA
 from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.receta_manager import RecetaManager
 from src.farmacia.obra_social_manager import ObraSocialManager
+from src.file_services.image_manager import ImageManager
 
 
 class GestionRecetas:
@@ -117,6 +118,7 @@ class GestionRecetas:
             return
 
         sesiones[self.numero].rec_datos["ia_resultado"] = resultado
+        sesiones[self.numero].rec_datos["imagen_base64"] = imagen_base64
         sesiones[self.numero].rec_reintentos = 0
 
         # Validar beneficiario (DNI)
@@ -508,6 +510,11 @@ class GestionRecetas:
         fecha_validez = resultado_ia.get("fecha_validez_desde", "")
         diagnostico = resultado_ia.get("diagnostico", "")
 
+        imagen_base64 = sesiones[self.numero].rec_datos.get("imagen_base64")
+        receta_url = None
+        if imagen_base64:
+            receta_url = ImageManager().procesar(imagen_base64, proyecto="farmacia")
+
         receta_id = self.receta_manager.crear_receta(
             persona_id=beneficiario_id,
             obra_social_id=os_id,
@@ -517,7 +524,8 @@ class GestionRecetas:
             items=items,
             operador_id=operador_id,
             fecha_creacion=resultado_ia.get("fecha_creacion", ""),
-            credencial_validada=bool(os_id)
+            credencial_validada=bool(os_id),
+            receta_url=receta_url
         )
 
         # Resumen
