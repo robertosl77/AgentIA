@@ -1,5 +1,13 @@
 {
   "sesiones": {
+    "231400003358774@lid": {
+      "rol": "root",
+      "login": {
+        "timestamp": "2026-04-23T22:31:05.065052",
+        "expira": "2026-04-23T23:31:05.065052"
+      },
+      "pushname": "Roberto SL"
+    },
     "5491168387770@c.us": {
       "rol": "admin",
       "login": {
@@ -15,14 +23,6 @@
         "expira": "2026-04-23T02:08:29.037181"
       },
       "pushname": "Sr Macros"
-    },
-    "231400003358774@lid": {
-      "rol": "usuario",
-      "login": {
-        "timestamp": "2026-04-23T01:08:46.738519",
-        "expira": "2026-04-23T02:08:46.738519"
-      },
-      "pushname": "Roberto SL"
     }
   }
 }

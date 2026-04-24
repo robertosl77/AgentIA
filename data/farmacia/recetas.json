@@ -1,4 +1,55 @@
 {
   "recetas": {
+    "2b330e13-7862-41df-a2f2-469b37b84e9b": {
+      "persona_id": "f49059cb-3144-4110-a821-8aa4fbcaaabf",
+      "obra_social_id": "",
+      "credencial_validada": false,
+      "fecha_creacion": "09/11/2012",
+      "fecha_validez_desde": "",
+      "fecha_vencimiento": "23/05/2026",
+      "medico": {
+        "nombre": "Dr. Steve Johnson",
+        "matricula": "",
+        "especialidad": ""
+      },
+      "diagnostico": "",
+      "items": [
+        {
+          "medicamento_id": "306b1911-388a-44f5-9141-29064d08ab25",
+          "cantidad_receta": 2,
+          "cantidad_solicitada": 2,
+          "estado_item": "pendiente"
+        },
+        {
+          "medicamento_id": "d00e7ee2-8a0e-4dfe-96a7-efac517a378a",
+          "cantidad_receta": 2,
+          "cantidad_solicitada": 2,
+          "estado_item": "pendiente"
+        },
+        {
+          "medicamento_id": "ab3fedb2-35ac-450c-ae17-0d54a20e0b2c",
+          "cantidad_receta": 2,
+          "cantidad_solicitada": 0,
+          "estado_item": "omitido_usuario"
+        },
+        {
+          "medicamento_id": "93ff8bde-a243-4706-9215-adc7e4e4be1d",
+          "cantidad_receta": 2,
+          "cantidad_solicitada": 1,
+          "estado_item": "pendiente"
+        }
+      ],
+      "estado": "pendiente",
+      "operador_id": "f49059cb-3144-4110-a821-8aa4fbcaaabf",
+      "receta_url": "data/archivos/recetas/farmacia_20260423_1394593c.jpg",
+      "notas": [],
+      "historial_estados": [
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-04-23T22:34:08.396072",
+          "motivo": "Receta cargada por usuario"
+        }
+      ]
+    }
   }
 }
