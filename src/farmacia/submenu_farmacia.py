@@ -9,6 +9,7 @@ from src.farmacia.gestion_obra_social import GestionObraSocial
 from src.farmacia.gestion_datos_persona import GestionDatosPersona
 from src.farmacia.gestion_beneficiario import GestionBeneficiario
 from src.farmacia.gestion_recetas import GestionRecetas
+from src.farmacia.gestion_recetas_cliente import GestionRecetasCliente
 from src.farmacia.staff import SubMenuStaff
 from src.horarios import ConsultasHorarios
 
@@ -39,6 +40,7 @@ class SubMenuFarmacia:
         self.gestion_datos = GestionDatosPersona(numero)
         self.gestion_beneficiario = GestionBeneficiario(numero)
         self.gestion_recetas = GestionRecetas(numero)
+        self.gestion_recetas_cliente = GestionRecetasCliente(numero)
         self.staff = SubMenuStaff(numero)
         self.horarios = ConsultasHorarios(numero)
 
@@ -54,6 +56,7 @@ class SubMenuFarmacia:
                 self.gestion_datos.esta_en_flujo(sesiones) or
                 self.gestion_beneficiario.esta_en_flujo(sesiones) or
                 self.gestion_recetas.esta_en_flujo(sesiones) or
+                self.gestion_recetas_cliente.esta_en_flujo(sesiones) or
                 self.staff.esta_en_flujo(sesiones))
 
     def iniciar(self, sesiones):
@@ -120,6 +123,15 @@ class SubMenuFarmacia:
         if self.gestion_recetas.esta_en_flujo(sesiones):
             self.gestion_recetas.procesar(comando, sesiones, imagen_base64=media_base64)
             if not self.gestion_recetas.esta_en_flujo(sesiones):
+                estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
+                if estado_farmacia == "menu_farmacia":
+                    self._mostrar_menu_farmacia(sesiones)
+            return
+
+        # Subflujo de gestión de recetas del cliente (notificaciones, ver recetas)
+        if self.gestion_recetas_cliente.esta_en_flujo(sesiones):
+            self.gestion_recetas_cliente.procesar(comando, sesiones)
+            if not self.gestion_recetas_cliente.esta_en_flujo(sesiones):
                 estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
                 if estado_farmacia == "menu_farmacia":
                     self._mostrar_menu_farmacia(sesiones)
@@ -291,9 +303,13 @@ class SubMenuFarmacia:
 
         # Armar opciones visibles con {beneficiario} resuelto
         opciones_visibles = self.config.get_opciones_visibles(submenu_data, rol)
+        cant_notif = self.gestion_recetas_cliente.contar_notificaciones(beneficiario_id)
+        notif_badge = f" ({cant_notif} notificaciones)" if cant_notif > 0 else ""
+
         lineas = [consulta, ""]
         for op in opciones_visibles:
             texto = op["texto"].replace("{beneficiario}", nombre_beneficiario)
+            texto = texto.replace("{notificaciones}", notif_badge)
             lineas.append(texto)
 
         self.sw.enviar("\n".join(lineas))
@@ -393,6 +409,15 @@ class SubMenuFarmacia:
             self._mostrar_menu_farmacia(sesiones)
             return
         self.gestion_recetas.iniciar(sesiones, beneficiario_id, operador_id)
+
+    def mis_recetas(self, sesiones):
+        """Dispara el flujo de gestión de recetas del lado del cliente."""
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        if not beneficiario_id:
+            self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
+            self._mostrar_menu_farmacia(sesiones)
+            return
+        self.gestion_recetas_cliente.iniciar(sesiones, beneficiario_id)
 
     def abrir_staff(self, sesiones):
         """Abre el sub-submenú de staff dentro de farmacia."""

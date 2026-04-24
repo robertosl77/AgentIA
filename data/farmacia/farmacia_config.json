@@ -49,8 +49,7 @@
           "cambiar_estado_item",
           "enviar_nota",
           "cambiar_estado_receta",
-          "agendar_recordatorio",
-          "cerrar_y_notificar"
+          "agendar_recordatorio"
         ]
       },
       "a_la_espera": {
@@ -230,6 +229,42 @@
       "receta_enviada": "✅ *Receta enviada a la farmacia.*\n\n{lista}\n\n📋 Estado: *Pendiente de procesar por farmacia*",
       "responder_si_no": "⚠️ Respondé *si* o *no*.",
       "numero_invalido": "❌ Número no válido."
+    },
+    "mensajes_staff": {
+      "sin_recetas_pendientes": "📋 No hay recetas pendientes de procesar.",
+      "receta_no_encontrada": "⚠️ Receta no encontrada.",
+      "numero_invalido": "❌ Número no válido.",
+      "opcion_invalida": "❌ Opción no válida.",
+      "funcion_proximamente": "🚧 Función '{nombre}' — próximamente...",
+      "todos_confirmados": "✅ {count} medicamento(s) confirmado(s) como disponibles.",
+      "todos_ya_confirmados": "ℹ️ Todos los medicamentos ya están confirmados.",
+      "pregunta_token": "🔐 ¿Requiere token de autorización de obra social?\n\n1. Sí, solicitar token al paciente\n2. No, avanzar sin token\n\nEscribí *cancelar* para volver:",
+      "token_si": "🔐 Receta cambiada a *Requiere autorización*.",
+      "token_no": "⚙️ Receta cambiada a *Procesando*.",
+      "token_opcion_invalida": "❌ Opción no válida. Respondé *1* o *2*.",
+      "seleccionar_medicamento": "¿Qué medicamento querés actualizar?\n",
+      "seleccionar_estado_item": "Seleccioná el nuevo estado:\n\n1. ✅ Disponible (hay stock)\n2. ❌ Sin stock\n3. 🔄 Ofrecer alternativa\n\nEscribí *cancelar* para volver:",
+      "item_disponible": "✅ Medicamento marcado como disponible.",
+      "item_sin_stock": "❌ Medicamento marcado como sin stock. Se notificó al paciente.",
+      "nota_sin_stock": "El medicamento *{medicamento}* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
+      "pedir_alternativa": "Escribí el nombre del medicamento alternativo\no *cancelar* para volver:",
+      "nota_alternativa": "No tenemos *{original}* disponible. Ofrecemos como alternativa: *{alternativa}*. ¿Lo aceptás?",
+      "alternativa_ofrecida": "✅ Alternativa ofrecida. Se envió nota al paciente.",
+      "pedir_nota": "💬 Escribí el mensaje que querés enviarle al paciente\no *cancelar* para volver:",
+      "nota_enviada": "✅ Nota enviada al paciente.",
+      "seleccionar_estado_receta": "📊 Seleccioná el nuevo estado de la receta:\n",
+      "sin_cambios_estado": "ℹ️ No hay cambios de estado disponibles desde este punto.",
+      "estado_cambiado": "✅ Receta cambiada a estado: *{label}*",
+      "pedir_motivo": "📝 Ingresá el motivo para *{label}*:",
+      "sin_avance": "ℹ️ No hay avance disponible desde este estado.",
+      "avance_exitoso": "✅ Receta avanzada a: *{label}*",
+      "todos_resueltos": "🔔 Todos los medicamentos están resueltos.\nPodés usar *Confirmar todos* o *Cambiar estado de la receta* para avanzar.",
+      "agendar_recordatorio": "🚧 Agendar recordatorio — próximamente...",
+      "validar_token": "🔑 *Validación de token:*\n\n1. ✅ Token correcto — avanzar\n2. 🔄 Solicitar nuevo token\n3. ⏭️ No requiere token — avanzar\n\nEscribí *cancelar* para volver:",
+      "escribi_cancelar": "Escribí *cancelar* para volver:",
+      "volver_atras_label": " (volver atrás)",
+      "nota_desestimada_auto": "Nota desestimada automáticamente: el medicamento ya fue marcado como disponible.",
+      "nota_solicitar_token": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible."
     }
   }
 }

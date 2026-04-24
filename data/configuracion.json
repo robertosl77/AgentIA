@@ -621,6 +621,20 @@
             "requisitos": []
           },
           {
+            "id": "9",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "9"
+            ],
+            "texto": "9. 📬 Mis recetas{notificaciones}",
+            "handler": "mis_recetas",
+            "requisitos": []
+          },
+          {
             "id": "salir",
             "roles": [
               "root",

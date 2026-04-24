@@ -234,6 +234,54 @@ class RecetaManager:
             if n["estado"] == "pendiente" and n["dirigida_a"] == dirigida_a
         ]
 
+    def contar_notificaciones_usuario(self, persona_id):
+        """Cuenta total de notas pendientes dirigidas al usuario en todas sus recetas activas."""
+        total = 0
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                notas = [
+                    n for n in datos.get("notas", [])
+                    if n["estado"] == "pendiente" and n["dirigida_a"] == "usuario"
+                ]
+                total += len(notas)
+        return total
+
+    def get_primera_notificacion_usuario(self, persona_id):
+        """
+        Retorna la primera nota pendiente dirigida al usuario (orden cronológico).
+        Retorna (receta_id, nota) o None.
+        """
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                for nota in datos.get("notas", []):
+                    if nota["estado"] == "pendiente" and nota["dirigida_a"] == "usuario":
+                        return (rid, nota)
+        return None
+
+    def buscar_recetas_activas(self, persona_id):
+        """Retorna recetas activas (no finales) de una persona."""
+        estados_config = self._get_estados_receta()
+        resultado = []
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                estado = datos.get("estado", "pendiente")
+                config_e = estados_config.get(estado, {})
+                if not config_e.get("es_final", False):
+                    resultado.append({"receta_id": rid, **datos})
+        return sorted(resultado, key=lambda x: x.get("fecha_vencimiento", ""))
+
+    def marcar_nota_leida(self, receta_id, nota_id):
+        """Marca una nota como leída (informativa, sin respuesta)."""
+        if receta_id not in self.data["recetas"]:
+            return False
+        for nota in self.data["recetas"][receta_id]["notas"]:
+            if nota["id"] == nota_id:
+                nota["estado"] = "leida"
+                nota["timestamp_leida"] = datetime.now().isoformat()
+                self._guardar_archivo()
+                return True
+        return False
+
     # ── VENCIMIENTO ───────────────────────────────────────────────────────────
 
     def esta_vencida(self, receta_id):
