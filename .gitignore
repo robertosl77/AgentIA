@@ -1,4 +1,5 @@
 *.pyc
 /whatsapp_server/node_modules
 /whatsapp_server/tokens
+credentials/
 .env

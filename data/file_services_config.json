@@ -14,7 +14,7 @@
     "proveedor_defecto": "local",
     "proyectos": {
       "farmacia": {
-        "proveedor": "drive_principal",
+        "proveedor": "local",
         "carpeta": "recetas"
       }
     }
