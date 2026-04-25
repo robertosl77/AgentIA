@@ -1,147 +1,65 @@
 {
   "recetas": {
-    "2b330e13-7862-41df-a2f2-469b37b84e9b": {
+    "92ab31aa-9012-40a1-b4b0-06de46b00082": {
       "persona_id": "f49059cb-3144-4110-a821-8aa4fbcaaabf",
       "obra_social_id": "",
       "credencial_validada": false,
-      "fecha_creacion": "09/11/2012",
+      "fecha_creacion": "",
       "fecha_validez_desde": "",
-      "fecha_vencimiento": "23/05/2026",
+      "fecha_vencimiento": "24/05/2026",
       "medico": {
-        "nombre": "Dr. Steve Johnson",
+        "nombre": "",
         "matricula": "",
         "especialidad": ""
       },
-      "diagnostico": "",
+      "diagnostico": "Lumbago",
       "items": [
         {
-          "medicamento_id": "306b1911-388a-44f5-9141-29064d08ab25",
+          "medicamento_id": "5ddd1fc2-2ef0-4d97-bed9-cbb0b1f75be0",
           "cantidad_receta": 2,
           "cantidad_solicitada": 2,
-          "estado_item": "disponible"
-        },
-        {
-          "medicamento_id": "d00e7ee2-8a0e-4dfe-96a7-efac517a378a",
-          "cantidad_receta": 2,
-          "cantidad_solicitada": 2,
-          "estado_item": "rechazado_usuario"
-        },
-        {
-          "medicamento_id": "ab3fedb2-35ac-450c-ae17-0d54a20e0b2c",
-          "cantidad_receta": 2,
-          "cantidad_solicitada": 0,
-          "estado_item": "omitido_usuario"
-        },
-        {
-          "medicamento_id": "93ff8bde-a243-4706-9215-adc7e4e4be1d",
-          "cantidad_receta": 2,
-          "cantidad_solicitada": 1,
-          "estado_item": "rechazado_usuario"
+          "estado_item": "sin_stock"
         }
       ],
-      "estado": "token_enviado",
+      "estado": "a_la_espera",
       "operador_id": "f49059cb-3144-4110-a821-8aa4fbcaaabf",
-      "receta_url": "data/archivos/recetas/farmacia_20260423_1394593c.jpg",
+      "receta_url": "data/archivos/recetas/farmacia_20260424_a17f3d41.jpg",
       "notas": [
         {
-          "id": "3175f658",
+          "id": "ec623900",
           "autor": "farmacia",
           "dirigida_a": "usuario",
-          "mensaje": "No tenemos *Dorzolamidum 10 mg Tabletas* disponible. Ofrecemos como alternativa: *dorzolamidum 20 mg comprimidos*. ¿Lo aceptás?",
-          "timestamp": "2026-04-24T01:46:11.843620",
+          "mensaje": "El medicamento *Reflexair 10 mg comp* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
+          "timestamp": "2026-04-24T23:12:37.621899",
           "estado": "respondida",
-          "respuesta": "rechazada",
-          "timestamp_respuesta": "2026-04-24T01:50:02.090709"
+          "respuesta": "esperar",
+          "timestamp_respuesta": "2026-04-24T23:13:31.673205"
         },
         {
-          "id": "e5228e28",
+          "id": "1a73aa8d",
           "autor": "farmacia",
           "dirigida_a": "usuario",
-          "mensaje": "El medicamento *Oxprelol 50 mg comprimido* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-04-24T01:59:31.853880",
-          "estado": "respondida",
-          "respuesta": "rechazada",
-          "timestamp_respuesta": "2026-04-24T02:09:24.926135"
-        },
-        {
-          "id": "065a1f61",
-          "autor": "farmacia",
-          "dirigida_a": "usuario",
-          "mensaje": "El medicamento *Dorzolamidum 10 mg Tabletas* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-04-24T02:09:58.705600",
-          "estado": "respondida",
-          "respuesta": "rechazada",
-          "timestamp_respuesta": "2026-04-24T02:11:10.974313"
-        },
-        {
-          "id": "171c1c0a",
-          "autor": "farmacia",
-          "dirigida_a": "usuario",
-          "mensaje": "El medicamento *Dorzolamidum 10 mg Tabletas* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-04-24T02:10:23.597121",
-          "estado": "respondida",
-          "respuesta": "rechazada",
-          "timestamp_respuesta": "2026-04-24T02:11:18.358909"
-        },
-        {
-          "id": "0bf7321d",
-          "autor": "farmacia",
-          "dirigida_a": "usuario",
-          "mensaje": "El medicamento *Oxprelol 50 mg comprimido* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-04-24T02:10:33.083662",
-          "estado": "respondida",
-          "respuesta": "rechazada",
-          "timestamp_respuesta": "2026-04-24T02:11:41.705435"
-        },
-        {
-          "id": "5054e524",
-          "autor": "farmacia",
-          "dirigida_a": "usuario",
-          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
-          "timestamp": "2026-04-24T02:21:06.775357",
-          "estado": "respondida",
-          "respuesta": "TOKEN: 999",
-          "timestamp_respuesta": "2026-04-24T02:22:31.915227"
-        },
-        {
-          "id": "3626466a",
-          "autor": "usuario",
-          "dirigida_a": "farmacia",
-          "mensaje": "Token de autorización: 999",
-          "timestamp": "2026-04-24T02:22:31.916227",
-          "estado": "pendiente"
+          "mensaje": "creo que la semana que viene entra.",
+          "timestamp": "2026-04-24T23:12:53.875382",
+          "estado": "leida",
+          "timestamp_leida": "2026-04-24T23:13:32.174547"
         }
       ],
       "historial_estados": [
         {
           "estado": "pendiente",
-          "timestamp": "2026-04-23T22:34:08.396072",
+          "timestamp": "2026-04-24T23:11:43.802840",
           "motivo": "Receta cargada por usuario"
         },
         {
           "estado": "en_gestion",
-          "timestamp": "2026-04-24T01:45:16.063834",
+          "timestamp": "2026-04-24T23:12:06.678188",
           "motivo": "Farmacia procesando"
         },
         {
-          "estado": "requiere_autorizacion",
-          "timestamp": "2026-04-24T02:16:42.228425",
-          "motivo": "Farmacia solicita token"
-        },
-        {
-          "estado": "en_gestion",
-          "timestamp": "2026-04-24T02:20:58.844710",
-          "motivo": "En gestión"
-        },
-        {
-          "estado": "requiere_autorizacion",
-          "timestamp": "2026-04-24T02:21:06.774359",
-          "motivo": "Farmacia solicita token"
-        },
-        {
-          "estado": "token_enviado",
-          "timestamp": "2026-04-24T02:22:31.915227",
-          "motivo": "Token enviado por paciente"
+          "estado": "a_la_espera",
+          "timestamp": "2026-04-24T23:12:38.099607",
+          "motivo": "Items procesados — esperando respuesta del cliente"
         }
       ]
     }

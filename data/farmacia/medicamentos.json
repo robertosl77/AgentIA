@@ -89,6 +89,12 @@
       "nombre_comercial": "Oxprelol",
       "dosis": "50 mg",
       "presentacion": "comprimido"
+    },
+    "5ddd1fc2-2ef0-4d97-bed9-cbb0b1f75be0": {
+      "farmaco": "",
+      "nombre_comercial": "Reflexair",
+      "dosis": "10 mg",
+      "presentacion": "comp"
     }
   }
 }

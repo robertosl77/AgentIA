@@ -31,7 +31,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
-        "notifica_usuario": false,
+        "notificacion_push": null,
         "opciones_staff": []
       },
       "en_gestion": {
@@ -43,7 +43,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
-        "notifica_usuario": false,
+        "notificacion_push": null,
         "opciones_staff": [
           "confirmar_todos",
           "cambiar_estado_item",
@@ -61,8 +61,10 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
-        "notifica_usuario": true,
+        "notificacion_push": "📋 Hay novedades en tu receta que requieren tu atención. Ingresá al menú *Mis recetas* para revisar.",
         "opciones_staff": [
+          "confirmar_todos",
+          "cambiar_estado_item",
           "enviar_nota",
           "cambiar_estado_receta",
           "agendar_recordatorio"
@@ -77,7 +79,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
-        "notifica_usuario": false,
+        "notificacion_push": null,
         "opciones_staff": [
           "enviar_nota",
           "cambiar_estado_receta"
@@ -92,7 +94,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notifica_usuario": true,
+        "notificacion_push": "🔐 La farmacia necesita un *token de autorización* de tu obra social. Ingresá al menú *Mis recetas* para enviarlo.",
         "opciones_staff": [
           "avanzar",
           "enviar_nota",
@@ -109,7 +111,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
-        "notifica_usuario": true,
+        "notificacion_push": null,
         "opciones_staff": [
           "validar_token",
           "enviar_nota",
@@ -125,7 +127,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notifica_usuario": false,
+        "notificacion_push": null,
         "opciones_staff": [
           "avanzar",
           "cambiar_estado_receta"
@@ -140,7 +142,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notifica_usuario": true,
+        "notificacion_push": "✅ Tu medicación está lista para retirar en la farmacia.",
         "opciones_staff": [
           "avanzar",
           "enviar_nota",
@@ -156,7 +158,7 @@
         "requiere_motivo": false,
         "es_final": true,
         "automatico": false,
-        "notifica_usuario": true,
+        "notificacion_push": "📋 Tu receta fue entregada. ¡Gracias por confiar en nosotros!",
         "opciones_staff": []
       },
       "rechazada": {
@@ -168,7 +170,7 @@
         "requiere_motivo": true,
         "es_final": false,
         "automatico": false,
-        "notifica_usuario": true,
+        "notificacion_push": "❌ Tu receta fue rechazada por la farmacia. Ingresá al menú *Mis recetas* para más información.",
         "opciones_staff": [
           "cambiar_estado_receta"
         ]
@@ -245,7 +247,7 @@
       "seleccionar_medicamento": "¿Qué medicamento querés actualizar?\n",
       "seleccionar_estado_item": "Seleccioná el nuevo estado:\n\n1. ✅ Disponible (hay stock)\n2. ❌ Sin stock\n3. 🔄 Ofrecer alternativa\n\nEscribí *cancelar* para volver:",
       "item_disponible": "✅ Medicamento marcado como disponible.",
-      "item_sin_stock": "❌ Medicamento marcado como sin stock. Se notificó al paciente.",
+      "item_sin_stock": "❌ Medicamento marcado como sin stock.",
       "nota_sin_stock": "El medicamento *{medicamento}* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
       "pedir_alternativa": "Escribí el nombre del medicamento alternativo\no *cancelar* para volver:",
       "nota_alternativa": "No tenemos *{original}* disponible. Ofrecemos como alternativa: *{alternativa}*. ¿Lo aceptás?",
@@ -264,7 +266,16 @@
       "escribi_cancelar": "Escribí *cancelar* para volver:",
       "volver_atras_label": " (volver atrás)",
       "nota_desestimada_auto": "Nota desestimada automáticamente: el medicamento ya fue marcado como disponible.",
-      "nota_solicitar_token": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible."
+      "nota_solicitar_token": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+      "cambio_automatico_a_la_espera": "⏸️ La receta pasó a *A la espera del cliente*. Se notificará al paciente."
+    },
+    "opciones_staff_labels": {
+      "confirmar_todos": "✅ Confirmar todos los medicamentos como disponibles",
+      "cambiar_estado_item": "💊 Cambiar estado de un medicamento",
+      "enviar_nota": "💬 Enviar nota al paciente",
+      "cambiar_estado_receta": "📊 Cambiar estado de la receta",
+      "agendar_recordatorio": "🔔 Agendar recordatorio",
+      "validar_token": "🔑 Validar token recibido"
     }
   }
 }
