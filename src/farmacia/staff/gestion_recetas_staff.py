@@ -657,21 +657,41 @@ class GestionRecetasStaff:
 
     def _enviar_notificacion_push(self, receta_id, estado_id):
         """
-        Si el estado tiene notificacion_push configurada, envía mensaje al WhatsApp del cliente.
-        Por ahora placeholder con print — cuando se implemente el envío real,
-        se usa self.sw con el número del cliente.
+        Si el estado tiene notificacion_push configurada, envía mensaje real
+        al WhatsApp del cliente usando SendWPP.
+        Resuelve el LID del cliente desde persona_id de la receta.
         """
         config = self._get_estado_receta_config(estado_id)
         mensaje = config.get("notificacion_push")
-        if mensaje:
-            # TODO: enviar al WhatsApp del cliente (no del farmacéutico)
-            # Necesita resolver el número del cliente desde persona_id de la receta
-            resultado = self.receta_manager.get_receta(receta_id)
-            if resultado:
-                _, receta = resultado
-                persona_id = receta.get("persona_id", "")
-                print(f"[NOTIFICACION_PUSH] → Cliente {persona_id} | Receta {receta_id} | Estado: {estado_id}")
-                print(f"[NOTIFICACION_PUSH] Mensaje: {mensaje}")
+        if not mensaje:
+            return
+
+        resultado = self.receta_manager.get_receta(receta_id)
+        if not resultado:
+            return
+
+        _, receta = resultado
+        persona_id = receta.get("persona_id", "")
+        if not persona_id:
+            return
+
+        # Obtener LIDs del cliente
+        persona_data = self.persona_manager.get_persona(persona_id)
+        if not persona_data:
+            return
+
+        _, persona = persona_data
+        lids = persona.get("lids", [])
+        if not lids:
+            print(f"[NOTIFICACION_PUSH] Sin LID para persona {persona_id} — no se puede enviar")
+            return
+
+        # Enviar a todos los LIDs del cliente (puede tener varios dispositivos)
+        from src.send_wpp import SendWPP
+        for lid in lids:
+            sw_cliente = SendWPP(lid)
+            sw_cliente.enviar(mensaje)
+            print(f"[NOTIFICACION_PUSH] Enviado a {lid} | Estado: {estado_id}")
 
     def _evaluar_estado_post_cambio_item(self, receta_id, sesiones):
         """

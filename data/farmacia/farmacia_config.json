@@ -61,7 +61,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
-        "notificacion_push": "📋 Hay novedades en tu receta que requieren tu atención. Ingresá al menú *Mis recetas* para revisar.",
+        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n📋 Hay novedades en tu receta que requieren tu atención.\nIngresá al menú *Mis recetas* para revisar.",
         "opciones_staff": [
           "confirmar_todos",
           "cambiar_estado_item",
@@ -94,7 +94,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notificacion_push": "🔐 La farmacia necesita un *token de autorización* de tu obra social. Ingresá al menú *Mis recetas* para enviarlo.",
+        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n🔐 La farmacia necesita un *token de autorización* de tu obra social.\nIngresá al menú *Mis recetas* para enviarlo.",
         "opciones_staff": [
           "avanzar",
           "enviar_nota",
@@ -142,7 +142,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notificacion_push": "✅ Tu medicación está lista para retirar en la farmacia.",
+        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n✅ Tu medicación está lista para retirar en la farmacia.",
         "opciones_staff": [
           "avanzar",
           "enviar_nota",
@@ -158,7 +158,7 @@
         "requiere_motivo": false,
         "es_final": true,
         "automatico": false,
-        "notificacion_push": "📋 Tu receta fue entregada. ¡Gracias por confiar en nosotros!",
+        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n📋 Tu receta fue entregada. ¡Gracias por confiar en nosotros!",
         "opciones_staff": []
       },
       "rechazada": {
@@ -170,7 +170,7 @@
         "requiere_motivo": true,
         "es_final": false,
         "automatico": false,
-        "notificacion_push": "❌ Tu receta fue rechazada por la farmacia. Ingresá al menú *Mis recetas* para más información.",
+        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n❌ Tu receta fue rechazada por la farmacia.\nIngresá al menú *Mis recetas* para más información.",
         "opciones_staff": [
           "cambiar_estado_receta"
         ]

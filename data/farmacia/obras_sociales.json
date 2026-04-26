@@ -54,29 +54,20 @@
     }
   ],
   "asociaciones": {
-    "caf0f547-b890-43f9-b743-bd57d1f341f3": {
-      "entidad": "OSDE",
-      "numero": "888888888888888888888888888888888",
-      "plan": "210",
-      "personas": [
-        "ea8ea1fa-4afd-49d5-b0ba-30f7b9802065",
-        "f8dd6a68-9714-4166-947b-0e575bd0deb5"
-      ]
-    },
-    "dc045a02-8580-46df-88aa-e3fd4e0dab28": {
-      "entidad": "PAMI",
-      "numero": "444444444444444444444",
-      "plan": "jubilacion",
-      "personas": [
-        "b4a67582-efa9-4b84-ac56-e88c9bce528e"
-      ]
-    },
     "70c90a20-3fbf-466c-a59b-f99cd9a2dfbf": {
       "entidad": "Swiss Medical",
       "numero": "8000061552950010007",
       "plan": "412344e",
       "personas": [
         "f49059cb-3144-4110-a821-8aa4fbcaaabf"
+      ]
+    },
+    "c519a1f4-eb6d-4662-9fe8-2adcd4d061ce": {
+      "entidad": "PAMI",
+      "numero": "150117989109",
+      "plan": "5-0080",
+      "personas": [
+        "5b10ebd0-4c34-44aa-87c5-3af2db825329"
       ]
     }
   }

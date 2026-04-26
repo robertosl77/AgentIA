@@ -95,6 +95,12 @@
       "nombre_comercial": "Reflexair",
       "dosis": "10 mg",
       "presentacion": "comp"
+    },
+    "9ca0d53c-5790-4858-b0a6-8d7634574d13": {
+      "farmaco": "AMITRIPTILINA",
+      "nombre_comercial": "TRYPTANOL 25",
+      "dosis": "25 mg",
+      "presentacion": "comp. x 30"
     }
   }
 }
