@@ -28,7 +28,7 @@ class PersonaManager:
 
     def __init__(self):
         if not hasattr(self, 'data'):
-            self.PATH = data_path("cliente", "personas.json")
+            self.PATH = data_path("persona", "personas.json")
             self.data = self._cargar_archivo()
 
     # ── PERSISTENCIA ──────────────────────────────────────────────────────────
@@ -218,6 +218,26 @@ class PersonaManager:
         if persona_id not in self.data["personas"]:
             return []
         return self.data["personas"][persona_id].get("contactos", [])
+
+    # ── TIPO PERSONA ──────────────────────────────────────────────────────────
+
+    def buscar_por_tipo_persona(self, tipo):
+        """Retorna lista de (persona_id, datos) para personas con el tipo dado."""
+        return [
+            (pid, datos)
+            for pid, datos in self.data["personas"].items()
+            if tipo in datos.get("tipo_persona", [])
+        ]
+
+    def agregar_tipo_persona(self, persona_id, tipo):
+        """Agrega un tipo_persona a la persona si no lo tiene ya. Retorna True si se agregó."""
+        if persona_id not in self.data["personas"]:
+            return False
+        tipos = self.data["personas"][persona_id].setdefault("tipo_persona", [])
+        if tipo not in tipos:
+            tipos.append(tipo)
+            self._guardar_archivo()
+        return True
 
     # ── NOMBRE PARA BIENVENIDA ────────────────────────────────────────────────
 

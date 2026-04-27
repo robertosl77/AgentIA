@@ -7,6 +7,7 @@ from src.auxilios.auxilios_data_loader import AuxiliosDataLoader
 from src.auxilios.calculo_tarifas import CalculoTarifas
 from src.registro.validadores import Validadores
 from src.maps.buscador_direccion import BuscadorDireccion
+from src.cliente.persona_manager import PersonaManager
 from datetime import datetime
 
 class RegistroServicio(Validadores):
@@ -33,6 +34,7 @@ class RegistroServicio(Validadores):
         self.config_global = ConfigLoader()
         self.config = AuxiliosConfigLoader()
         self.datos = AuxiliosDataLoader()
+        self.personas = PersonaManager()
         self.tarifas = CalculoTarifas()
         self.maps = BuscadorDireccion()
 
@@ -152,7 +154,7 @@ class RegistroServicio(Validadores):
             self._ir_a_vpropio(sesiones)
             return
 
-        conductores = self.datos.get_conductores()
+        conductores = self.personas.buscar_por_tipo_persona("auxilio_conductor")
 
         if len(conductores) == 0:
             sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_carga_nombre"
@@ -164,15 +166,17 @@ class RegistroServicio(Validadores):
                 f"{msj_nombre}"
             )
         elif len(conductores) == 1:
-            conductor = conductores[0]
-            sesiones[self.numero].auxilios_dato_temporal["conductor"] = conductor.get("nombre", "")
-            self.sw.enviar(f"👤 Conductor: *{conductor.get('nombre', '')}*")
+            pid, conductor_datos = conductores[0]
+            nombre_display = f"{conductor_datos.get('nombre', '')} {conductor_datos.get('apellido', '')}".strip().title()
+            sesiones[self.numero].auxilios_dato_temporal["conductor"] = nombre_display
+            self.sw.enviar(f"👤 Conductor: *{nombre_display}*")
             self._ir_a_vpropio(sesiones)
         else:
             sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_seleccion"
             lineas = ["👤 Seleccioná el conductor:\n"]
-            for i, c in enumerate(conductores, 1):
-                lineas.append(f"{i}. {c.get('nombre', '')}")
+            for i, (pid, c) in enumerate(conductores, 1):
+                nombre_display = f"{c.get('nombre', '')} {c.get('apellido', '')}".strip().title()
+                lineas.append(f"{i}. {nombre_display}")
             self.sw.enviar("\n".join(lineas))
 
     def _procesar_conductor_seleccion(self, comando, sesiones):
@@ -180,7 +184,7 @@ class RegistroServicio(Validadores):
             self._cancelar(sesiones)
             return
 
-        conductores = self.datos.get_conductores()
+        conductores = self.personas.buscar_por_tipo_persona("auxilio_conductor")
         try:
             indice = int(comando.strip()) - 1
             if indice < 0 or indice >= len(conductores):
@@ -189,8 +193,9 @@ class RegistroServicio(Validadores):
             self.sw.enviar("❌ Opción no válida.")
             return
 
-        conductor = conductores[indice]
-        sesiones[self.numero].auxilios_dato_temporal["conductor"] = conductor.get("nombre", "")
+        pid, conductor_datos = conductores[indice]
+        nombre_display = f"{conductor_datos.get('nombre', '')} {conductor_datos.get('apellido', '')}".strip().title()
+        sesiones[self.numero].auxilios_dato_temporal["conductor"] = nombre_display
         self._ir_a_vpropio(sesiones)
 
     def _procesar_conductor_campo(self, comando, sesiones):
@@ -256,9 +261,21 @@ class RegistroServicio(Validadores):
     def _finalizar_carga_conductor(self, sesiones):
         """Guarda el conductor cargado inline y continúa."""
         temp = sesiones[self.numero].auxilios_dato_temporal.pop("_conductor_temp", {})
-        self.datos.agregar_conductor(temp)
-        sesiones[self.numero].auxilios_dato_temporal["conductor"] = temp.get("nombre", "")
-        self.sw.enviar(f"✅ Conductor *{temp.get('nombre', '')}* registrado.")
+        nombre = temp.get("nombre", "")
+        dni = temp.get("dni", "")
+        telefono = temp.get("telefono", "")
+        contactos = [{"tipo": "telefono", "valor": telefono, "etiqueta": ""}] if telefono else []
+        persona_id = self.personas.crear_persona(
+            tipo_documento="DNI",
+            numero_documento=dni,
+            nombre=nombre,
+            apellido="",
+            contactos=contactos
+        )
+        if persona_id:
+            self.personas.agregar_tipo_persona(persona_id, "auxilio_conductor")
+        sesiones[self.numero].auxilios_dato_temporal["conductor"] = nombre
+        self.sw.enviar(f"✅ Conductor *{nombre}* registrado.")
         self._ir_a_vpropio(sesiones)
 
     # ── 4. VEHÍCULO PROPIO ────────────────────────────────────────────────────

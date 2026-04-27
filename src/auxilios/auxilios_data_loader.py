@@ -9,7 +9,7 @@ class AuxiliosDataLoader:
     """
     Carga y gestiona datos operativos del módulo de auxilios desde auxilios_data.json.
     Singleton — se carga una vez y se reutiliza.
-    Contiene: conductores, vehículos propios, vehículos auxiliados, servicios.
+    Contiene: vehículos propios, vehículos auxiliados, servicios.
     """
 
     def __new__(cls):
@@ -26,7 +26,6 @@ class AuxiliosDataLoader:
     def _cargar_archivo(self):
         if not os.path.exists(self.PATH):
             estructura = {
-                "conductores": [],
                 "vehiculos_propios": [],
                 "vehiculos_auxiliados": [],
                 "servicios": []
@@ -41,34 +40,6 @@ class AuxiliosDataLoader:
         """Persiste el estado actual en auxilios_data.json."""
         with open(self.PATH, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=2, ensure_ascii=False)
-
-    # ── CONDUCTORES ───────────────────────────────────────────────────────────
-
-    def get_conductores(self):
-        """Retorna la lista de conductores."""
-        return self.data.get("conductores", [])
-
-    def get_conductor_por_id(self, conductor_id):
-        """Busca un conductor por su ID."""
-        for c in self.get_conductores():
-            if c.get("id") == conductor_id:
-                return c
-        return None
-
-    def agregar_conductor(self, datos):
-        """Agrega un conductor y persiste."""
-        conductores = self.get_conductores()
-        nuevo_id = max([c.get("id", 0) for c in conductores], default=0) + 1
-        datos["id"] = nuevo_id
-        conductores.append(datos)
-        self.guardar()
-        return nuevo_id
-
-    def eliminar_conductor(self, conductor_id):
-        """Elimina un conductor por ID y persiste."""
-        conductores = self.get_conductores()
-        self.data["conductores"] = [c for c in conductores if c.get("id") != conductor_id]
-        self.guardar()
 
     # ── VEHÍCULOS PROPIOS ─────────────────────────────────────────────────────
 

@@ -55,7 +55,7 @@
     "confirma_ingreso": true,
     "confirma_elimina": true,
     "fechas": [
-      "2026-05-01"
+      "2026-05-02"
     ]
   },
   "cierres_eventuales": {
@@ -74,8 +74,8 @@
     "confirma_elimina": true,
     "datos": [
       {
-        "desde": "2026-05-03",
-        "hasta": "2026-05-08",
+        "desde": "2026-05-04",
+        "hasta": "2026-05-09",
         "motivo": "cierre de prueba"
       }
     ]

@@ -2,7 +2,7 @@
 from src.send_wpp import SendWPP
 from src.sesiones.session_manager import SessionManager
 from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
-from src.auxilios.auxilios_data_loader import AuxiliosDataLoader
+from src.cliente.persona_manager import PersonaManager
 from src.registro.validadores import Validadores
 
 class GestionConductores(Validadores):
@@ -19,7 +19,7 @@ class GestionConductores(Validadores):
         self.sw = SendWPP(numero)
         self.session_manager = SessionManager()
         self.config = AuxiliosConfigLoader()
-        self.datos = AuxiliosDataLoader()
+        self.personas = PersonaManager()
 
     # ── FLUJO PRINCIPAL ───────────────────────────────────────────────────────
 
@@ -48,7 +48,7 @@ class GestionConductores(Validadores):
     # ── MENÚ ──────────────────────────────────────────────────────────────────
 
     def _armar_menu_conductores(self):
-        conductores = self.datos.get_conductores()
+        conductores = self.personas.buscar_por_tipo_persona("auxilio_conductor")
 
         if not conductores:
             return (
@@ -58,8 +58,9 @@ class GestionConductores(Validadores):
             )
 
         lineas = ["👤 *Conductores registrados:*\n"]
-        for i, c in enumerate(conductores, 1):
-            lineas.append(f"{i}. {c.get('nombre', '')} - DNI: {c.get('dni', '')}")
+        for i, (pid, c) in enumerate(conductores, 1):
+            nombre = f"{c.get('nombre', '')} {c.get('apellido', '')}".strip().title()
+            lineas.append(f"{i}. {nombre} - DNI: {c.get('numero_documento', '')}")
 
         lineas.append("\nIngresá el número para eliminar un conductor,")
         lineas.append("*nuevo* para agregar uno nuevo")
@@ -78,7 +79,7 @@ class GestionConductores(Validadores):
             self._iniciar_agregar(sesiones)
             return
 
-        conductores = self.datos.get_conductores()
+        conductores = self.personas.buscar_por_tipo_persona("auxilio_conductor")
         try:
             indice = int(comando.strip()) - 1
             if indice < 0 or indice >= len(conductores):
@@ -87,12 +88,13 @@ class GestionConductores(Validadores):
             self.sw.enviar("❌ Opción no válida.")
             return
 
-        conductor = conductores[indice]
-        sesiones[self.numero].auxilios_dato_temporal = conductor
+        conductor_id, conductor_datos = conductores[indice]
+        nombre = f"{conductor_datos.get('nombre', '')} {conductor_datos.get('apellido', '')}".strip().title()
+        sesiones[self.numero].auxilios_dato_temporal = {"_persona_id": conductor_id, "_nombre": nombre}
         sesiones[self.numero].auxilios_campo_actual = "conductor_confirmar_elimina"
         self.sw.enviar(
             f"¿Confirmás que querés eliminar al conductor "
-            f"*{conductor.get('nombre', '')}*?\n"
+            f"*{nombre}*?\n"
             f"Respondé *si* o *no*:"
         )
 
@@ -182,11 +184,23 @@ class GestionConductores(Validadores):
         else:
             # Todos los campos completos → guardar
             datos = sesiones[self.numero].auxilios_dato_temporal
-            self.datos.agregar_conductor(datos)
+            nombre = datos.get("nombre", "")
+            dni = datos.get("dni", "")
+            telefono = datos.get("telefono", "")
+            contactos = [{"tipo": "telefono", "valor": telefono, "etiqueta": ""}] if telefono else []
+            persona_id = self.personas.crear_persona(
+                tipo_documento="DNI",
+                numero_documento=dni,
+                nombre=nombre,
+                apellido="",
+                contactos=contactos
+            )
+            if persona_id:
+                self.personas.agregar_tipo_persona(persona_id, "auxilio_conductor")
             sesiones[self.numero].auxilios_campo_actual = None
             sesiones[self.numero].auxilios_dato_temporal = {}
             sesiones[self.numero].auxilios_reintentos = 0
-            self.sw.enviar(f"✅ Conductor *{datos.get('nombre', '')}* registrado correctamente.")
+            self.sw.enviar(f"✅ Conductor *{nombre}* registrado correctamente.")
             self.iniciar(sesiones)
 
     # ── ELIMINAR ──────────────────────────────────────────────────────────────
@@ -194,10 +208,11 @@ class GestionConductores(Validadores):
     def _procesar_confirmacion_elimina(self, comando, sesiones):
         if comando.strip() == "si":
             conductor = sesiones[self.numero].auxilios_dato_temporal
-            self.datos.eliminar_conductor(conductor.get("id"))
+            self.personas.borrar_persona(conductor.get("_persona_id"))
+            nombre = conductor.get("_nombre", "")
             sesiones[self.numero].auxilios_campo_actual = None
             sesiones[self.numero].auxilios_dato_temporal = {}
-            self.sw.enviar(f"✅ Conductor *{conductor.get('nombre', '')}* eliminado correctamente.")
+            self.sw.enviar(f"✅ Conductor *{nombre}* eliminado correctamente.")
             self.iniciar(sesiones)
         elif comando.strip() == "no":
             sesiones[self.numero].auxilios_campo_actual = None

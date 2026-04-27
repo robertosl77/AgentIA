@@ -1,0 +1,47 @@
+{
+  "catalogo_tipo_persona": [
+    "farmacia_cliente",
+    "auxilio_conductor"
+  ],
+  "catalogo_tipo_documento": [
+    "DNI",
+    "Pasaporte",
+    "CI",
+    "LE"
+  ],
+  "catalogo_tipo_contacto": [
+    "telefono",
+    "email"
+  ],
+  "personas": {
+    "03f3f947-7b23-4d0c-83e4-6328a559bc22": {
+      "tipo_documento": "DNI",
+      "numero_documento": "25784362",
+      "nombre": "roberto",
+      "apellido": "s",
+      "fecha_nacimiento": "",
+      "lids": [
+        "231400003358774@lid"
+      ],
+      "contactos": []
+    },
+    "49a0bc2c-aa9d-4946-94da-bdc5beee21cb": {
+      "tipo_documento": "DNI",
+      "numero_documento": "22888777",
+      "nombre": "sebastian monteros",
+      "apellido": "",
+      "fecha_nacimiento": "",
+      "lids": [],
+      "contactos": [
+        {
+          "tipo": "telefono",
+          "valor": "1155558888",
+          "etiqueta": ""
+        }
+      ],
+      "tipo_persona": [
+        "auxilio_conductor"
+      ]
+    }
+  }
+}

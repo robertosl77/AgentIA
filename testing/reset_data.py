@@ -53,15 +53,31 @@ def reset_vinculaciones():
 
 
 def reset_personas():
-    path = get_tenant_path("cliente", "personas.json")
+    """Limpia personas de tipo farmacia_cliente (preserva conductores y catálogos)."""
+    path = get_tenant_path("persona", "personas.json")
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
-    data["personas"] = {}
+    data["personas"] = {
+        pid: p for pid, p in data["personas"].items()
+        if "farmacia_cliente" not in p.get("tipo_persona", [])
+    }
+    guardar(path, data)
+
+
+def reset_conductores():
+    """Limpia personas de tipo auxilio_conductor (preserva farmacia_cliente y catálogos)."""
+    path = get_tenant_path("persona", "personas.json")
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    data["personas"] = {
+        pid: p for pid, p in data["personas"].items()
+        if "auxilio_conductor" not in p.get("tipo_persona", [])
+    }
     guardar(path, data)
 
 
 def reset_direcciones():
-    guardar(get_tenant_path("cliente", "direcciones.json"), {"direcciones": {}})
+    guardar(get_tenant_path("persona", "direcciones.json"), {"direcciones": {}})
 
 
 def reset_error_log():
@@ -70,7 +86,6 @@ def reset_error_log():
 
 def reset_auxilios_data():
     guardar(get_tenant_path("auxilio", "auxilios_data.json"), {
-        "conductores": [],
         "vehiculos_propios": [],
         "vehiculos_auxiliados": [],
         "servicios": []
@@ -113,15 +128,25 @@ def reset_archivos_recetas():
 
 if __name__ == "__main__":
     print("🔄 Reseteando datos del tenant...\n")
+
+    print("── común ────────────────────────────────")
     reset_sesiones()
+    reset_error_log()
+
+    print("── farmacia ─────────────────────────────")
     reset_recetas()
     reset_medicamentos()
     reset_obras_sociales()
     reset_vinculaciones()
-    reset_personas()
-    reset_direcciones()
-    reset_error_log()
-    reset_auxilios_data()
     reset_horarios_data()
     reset_archivos_recetas()
+
+    print("── auxilio ──────────────────────────────")
+    reset_auxilios_data()
+    reset_conductores()
+
+    print("── persona ──────────────────────────────")
+    reset_personas()
+    reset_direcciones()
+
     print("\n✅ Reset completo.")

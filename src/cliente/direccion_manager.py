@@ -27,7 +27,7 @@ class DireccionManager:
 
     def __init__(self):
         if not hasattr(self, 'data'):
-            self.PATH = data_path("cliente", "direcciones.json")
+            self.PATH = data_path("persona", "direcciones.json")
             self.data = self._cargar_archivo()
 
     # ── PERSISTENCIA ──────────────────────────────────────────────────────────

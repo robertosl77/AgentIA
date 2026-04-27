@@ -1,12 +1,4 @@
 {
-  "conductores": [
-    {
-      "nombre": "sebastian monteros",
-      "telefono": "11555777",
-      "dni": "25333777",
-      "id": 1
-    }
-  ],
   "vehiculos_propios": [
     {
       "patente": "AAA111",
@@ -23,9 +15,9 @@
   ],
   "servicios": [
     {
-      "timestamp": "2026-04-26T23:39:54.994611",
+      "timestamp": "2026-04-27T00:21:01.107887",
       "nro_movimiento": "123",
-      "fecha": "2026-04-26",
+      "fecha": "2026-04-27",
       "conductor": "sebastian monteros",
       "vehiculo_propio": "AAA111",
       "vehiculo_auxiliado": {
