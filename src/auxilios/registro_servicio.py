@@ -8,6 +8,7 @@ from src.auxilios.calculo_tarifas import CalculoTarifas
 from src.registro.validadores import Validadores
 from src.maps.buscador_direccion import BuscadorDireccion
 from src.cliente.persona_manager import PersonaManager
+from src.auxilios.vehiculo_manager import VehiculoManager
 from datetime import datetime
 
 class RegistroServicio(Validadores):
@@ -35,6 +36,7 @@ class RegistroServicio(Validadores):
         self.config = AuxiliosConfigLoader()
         self.datos = AuxiliosDataLoader()
         self.personas = PersonaManager()
+        self.vehiculos = VehiculoManager()
         self.tarifas = CalculoTarifas()
         self.maps = BuscadorDireccion()
 
@@ -285,7 +287,7 @@ class RegistroServicio(Validadores):
             self._ir_a_patente_auxiliado(sesiones)
             return
 
-        vehiculos = self.datos.get_vehiculos_propios()
+        vehiculos = self.vehiculos.get_por_tipo("auxilio_propio")
 
         if len(vehiculos) == 0:
             sesiones[self.numero].auxilios_campo_actual = "servicio_vpropio_carga_patente"
@@ -297,7 +299,7 @@ class RegistroServicio(Validadores):
                 f"{msj_patente}"
             )
         elif len(vehiculos) == 1:
-            v = vehiculos[0]
+            vid, v = vehiculos[0]
             alias = v.get("alias", "")
             patente = v.get("patente", "")
             label = f"{patente} ({alias})" if alias else patente
@@ -307,7 +309,7 @@ class RegistroServicio(Validadores):
         else:
             sesiones[self.numero].auxilios_campo_actual = "servicio_vpropio_seleccion"
             lineas = ["🚛 Seleccioná el vehículo propio:\n"]
-            for i, v in enumerate(vehiculos, 1):
+            for i, (vid, v) in enumerate(vehiculos, 1):
                 alias = v.get("alias", "")
                 patente = v.get("patente", "")
                 label = f"{patente} ({alias})" if alias else patente
@@ -319,7 +321,7 @@ class RegistroServicio(Validadores):
             self._cancelar(sesiones)
             return
 
-        vehiculos = self.datos.get_vehiculos_propios()
+        vehiculos = self.vehiculos.get_por_tipo("auxilio_propio")
         try:
             indice = int(comando.strip()) - 1
             if indice < 0 or indice >= len(vehiculos):
@@ -328,7 +330,7 @@ class RegistroServicio(Validadores):
             self.sw.enviar("❌ Opción no válida.")
             return
 
-        v = vehiculos[indice]
+        vid, v = vehiculos[indice]
         sesiones[self.numero].auxilios_dato_temporal["vehiculo_propio"] = v.get("patente", "")
         self._ir_a_patente_auxiliado(sesiones)
 
@@ -355,7 +357,7 @@ class RegistroServicio(Validadores):
         elif campo_actual == "servicio_vpropio_carga_alias":
             temp = sesiones[self.numero].auxilios_dato_temporal.get("_vpropio_temp", {})
             temp["alias"] = "" if comando.strip() == "-" else comando.strip()
-            self.datos.agregar_vehiculo_propio(temp)
+            self.vehiculos.agregar("auxilio_propio", temp)
 
             alias = temp.get("alias", "")
             patente = temp.get("patente", "")
@@ -385,10 +387,11 @@ class RegistroServicio(Validadores):
             return
 
         patente = comando.strip().upper()
-        existente = self.datos.buscar_vehiculo_auxiliado(patente)
+        existente = self.vehiculos.buscar_por_patente(patente, tipo="auxilio_auxiliado")
 
         if existente:
-            ris = existente.get("ris", "")
+            vid, existente_datos = existente
+            ris = existente_datos.get("ris", "")
             sesiones[self.numero].auxilios_dato_temporal["vehiculo_auxiliado"] = {
                 "patente": patente,
                 "ris": ris
@@ -398,6 +401,10 @@ class RegistroServicio(Validadores):
             self._ir_a_recorrido(sesiones)
         else:
             sesiones[self.numero].auxilios_dato_temporal["vehiculo_auxiliado"] = {"patente": patente}
+            # Si la patente existe bajo otro tipo, guardamos su ID para no duplicar el registro
+            existente_otro = self.vehiculos.buscar_por_patente(patente)
+            if existente_otro:
+                sesiones[self.numero].auxilios_dato_temporal["_vehiculo_auxiliado_id"] = existente_otro[0]
             self._ir_a_ris(sesiones)
 
     # ── 5b. RIS (solo si vehículo auxiliado nuevo) ────────────────────────────
@@ -424,8 +431,13 @@ class RegistroServicio(Validadores):
         va = sesiones[self.numero].auxilios_dato_temporal["vehiculo_auxiliado"]
         va["ris"] = ris
 
-        # Guardar vehículo auxiliado nuevo en el catálogo
-        self.datos.agregar_vehiculo_auxiliado({"patente": va["patente"], "ris": ris})
+        # Si la patente ya existe bajo otro tipo, agregar auxilio_auxiliado al registro existente
+        vehiculo_id_existente = sesiones[self.numero].auxilios_dato_temporal.pop("_vehiculo_auxiliado_id", None)
+        if vehiculo_id_existente:
+            self.vehiculos.agregar_tipo(vehiculo_id_existente, "auxilio_auxiliado")
+            self.vehiculos.actualizar_campo(vehiculo_id_existente, "ris", ris)
+        else:
+            self.vehiculos.agregar("auxilio_auxiliado", {"patente": va["patente"], "ris": ris})
 
         self._ir_a_recorrido(sesiones)
 

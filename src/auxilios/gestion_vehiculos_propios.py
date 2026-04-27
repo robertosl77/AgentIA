@@ -2,7 +2,7 @@
 from src.send_wpp import SendWPP
 from src.sesiones.session_manager import SessionManager
 from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
-from src.auxilios.auxilios_data_loader import AuxiliosDataLoader
+from src.auxilios.vehiculo_manager import VehiculoManager
 from src.registro.validadores import Validadores
 
 class GestionVehiculosPropios(Validadores):
@@ -19,7 +19,7 @@ class GestionVehiculosPropios(Validadores):
         self.sw = SendWPP(numero)
         self.session_manager = SessionManager()
         self.config = AuxiliosConfigLoader()
-        self.datos = AuxiliosDataLoader()
+        self.vehiculos = VehiculoManager()
 
     # ── FLUJO PRINCIPAL ───────────────────────────────────────────────────────
 
@@ -48,7 +48,7 @@ class GestionVehiculosPropios(Validadores):
     # ── MENÚ ──────────────────────────────────────────────────────────────────
 
     def _armar_menu_vehiculos(self):
-        vehiculos = self.datos.get_vehiculos_propios()
+        vehiculos = self.vehiculos.get_por_tipo("auxilio_propio")
 
         if not vehiculos:
             return (
@@ -58,7 +58,7 @@ class GestionVehiculosPropios(Validadores):
             )
 
         lineas = ["🚛 *Vehículos propios registrados:*\n"]
-        for i, v in enumerate(vehiculos, 1):
+        for i, (vid, v) in enumerate(vehiculos, 1):
             alias = v.get("alias", "")
             patente = v.get("patente", "")
             label = f"{patente} ({alias})" if alias else patente
@@ -81,7 +81,7 @@ class GestionVehiculosPropios(Validadores):
             self._iniciar_agregar(sesiones)
             return
 
-        vehiculos = self.datos.get_vehiculos_propios()
+        vehiculos = self.vehiculos.get_por_tipo("auxilio_propio")
         try:
             indice = int(comando.strip()) - 1
             if indice < 0 or indice >= len(vehiculos):
@@ -90,13 +90,12 @@ class GestionVehiculosPropios(Validadores):
             self.sw.enviar("❌ Opción no válida.")
             return
 
-        vehiculo = vehiculos[indice]
-        sesiones[self.numero].auxilios_dato_temporal = vehiculo
-        sesiones[self.numero].auxilios_campo_actual = "vpropio_confirmar_elimina"
-
-        alias = vehiculo.get("alias", "")
-        patente = vehiculo.get("patente", "")
+        vehiculo_id, vehiculo_datos = vehiculos[indice]
+        alias = vehiculo_datos.get("alias", "")
+        patente = vehiculo_datos.get("patente", "")
         label = f"{patente} ({alias})" if alias else patente
+        sesiones[self.numero].auxilios_dato_temporal = {"_vehiculo_id": vehiculo_id, "_label": label}
+        sesiones[self.numero].auxilios_campo_actual = "vpropio_confirmar_elimina"
         self.sw.enviar(
             f"¿Confirmás que querés eliminar el vehículo "
             f"*{label}*?\n"
@@ -146,23 +145,15 @@ class GestionVehiculosPropios(Validadores):
         es_obligatorio = config_campo.get("obligatorio", True)
         reintentos = getattr(sesiones[self.numero], "auxilios_reintentos", 0)
 
-        # Campos no obligatorios: aceptamos guión como vacío
         if not es_obligatorio and comando.strip() == "-":
             return self._guardar_campo_y_continuar(campo, "", sesiones)
 
-        # Verificar patente duplicada
         if campo == "patente":
-            existente = None
-            for v in self.datos.get_vehiculos_propios():
-                if v.get("patente", "").upper() == comando.strip().upper():
-                    existente = v
-                    break
-            if existente:
+            if self.vehiculos.buscar_por_patente(comando.strip(), tipo="auxilio_propio"):
                 self.sw.enviar(f"⚠️ Ya existe un vehículo con la patente *{comando.strip().upper()}*.")
                 self.iniciar(sesiones)
                 return
 
-        # Validación
         from src.config_loader import ConfigLoader
         config_global = ConfigLoader()
         config_validadores = config_global.data.get("validadores", {})
@@ -200,7 +191,7 @@ class GestionVehiculosPropios(Validadores):
             self.sw.enviar(config_siguiente.get("msj_pedido", f"Ingresá {siguiente}:"))
         else:
             datos = sesiones[self.numero].auxilios_dato_temporal
-            self.datos.agregar_vehiculo_propio(datos)
+            self.vehiculos.agregar("auxilio_propio", datos)
             sesiones[self.numero].auxilios_campo_actual = None
             sesiones[self.numero].auxilios_dato_temporal = {}
             sesiones[self.numero].auxilios_reintentos = 0
@@ -216,13 +207,10 @@ class GestionVehiculosPropios(Validadores):
     def _procesar_confirmacion_elimina(self, comando, sesiones):
         if comando.strip() == "si":
             vehiculo = sesiones[self.numero].auxilios_dato_temporal
-            self.datos.eliminar_vehiculo_propio(vehiculo.get("id"))
+            self.vehiculos.borrar(vehiculo.get("_vehiculo_id"))
+            label = vehiculo.get("_label", "")
             sesiones[self.numero].auxilios_campo_actual = None
             sesiones[self.numero].auxilios_dato_temporal = {}
-
-            alias = vehiculo.get("alias", "")
-            patente = vehiculo.get("patente", "")
-            label = f"{patente} ({alias})" if alias else patente
             self.sw.enviar(f"✅ Vehículo *{label}* eliminado correctamente.")
             self.iniciar(sesiones)
         elif comando.strip() == "no":

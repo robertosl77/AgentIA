@@ -1,28 +1,14 @@
 {
-  "vehiculos_propios": [
-    {
-      "patente": "AAA111",
-      "alias": "ford f100",
-      "id": 1
-    }
-  ],
-  "vehiculos_auxiliados": [
-    {
-      "patente": "ABC123",
-      "ris": "liviano",
-      "id": 1
-    }
-  ],
   "servicios": [
     {
-      "timestamp": "2026-04-27T00:21:01.107887",
+      "timestamp": "2026-04-27T01:17:14.614173",
       "nro_movimiento": "123",
       "fecha": "2026-04-27",
-      "conductor": "sebastian monteros",
+      "conductor": "Carlitos",
       "vehiculo_propio": "AAA111",
       "vehiculo_auxiliado": {
-        "patente": "ABC123",
-        "ris": "liviano"
+        "patente": "BBB222",
+        "ris": "semi_pesado"
       },
       "origen": "Salliquelo",
       "destino": "Tres Lomas",
@@ -31,8 +17,8 @@
           "tipo_camino": "asfalto",
           "km_original": 99,
           "km_excedente": 84,
-          "precio_km": 835,
-          "subtotal": 70140
+          "precio_km": 924,
+          "subtotal": 77616
         }
       ],
       "movida": {
@@ -40,11 +26,11 @@
         "radio_km": 15,
         "km_total": 99,
         "km_maximo": 200,
-        "monto": 33392
+        "monto": 37566
       },
       "extras": [],
       "info_extra": "",
-      "total": 103532,
+      "total": 115182,
       "id": 1
     }
   ]

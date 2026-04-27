@@ -84,12 +84,16 @@ def reset_error_log():
     guardar(get_tenant_path("error_log.json"), {"errores": []})
 
 
-def reset_auxilios_data():
-    guardar(get_tenant_path("auxilio", "auxilios_data.json"), {
-        "vehiculos_propios": [],
-        "vehiculos_auxiliados": [],
-        "servicios": []
-    })
+def reset_servicios_data():
+    guardar(get_tenant_path("auxilio", "servicios_data.json"), {"servicios": []})
+
+
+def reset_vehiculos():
+    path = get_tenant_path("persona", "vehiculos.json")
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    data["vehiculos"] = {}
+    guardar(path, data)
 
 
 def reset_horarios_data():
@@ -142,8 +146,9 @@ if __name__ == "__main__":
     reset_archivos_recetas()
 
     print("── auxilio ──────────────────────────────")
-    reset_auxilios_data()
+    reset_servicios_data()
     reset_conductores()
+    reset_vehiculos()
 
     print("── persona ──────────────────────────────")
     reset_personas()
