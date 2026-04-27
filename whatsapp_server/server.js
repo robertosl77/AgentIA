@@ -146,6 +146,12 @@ wppconnect.create({
 
     // ESCUCHA DE MI A MI (SELF CHAT REAL)
     client.onAnyMessage(async (message) => {
+        // --------------------------------------------------------------
+        console.log('All message fields:');
+        Object.keys(message).forEach(key => {
+            console.log(`${key}:`, message[key]);
+        });
+        // -------------------------------------------------------------
 
         console.log('OWNER_WID:', OWNER_WID);
         console.log('OWNER_LID:', OWNER_LID);

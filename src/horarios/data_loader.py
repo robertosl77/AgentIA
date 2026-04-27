@@ -1,17 +1,16 @@
 # src/data_loader.py
 import json
 import os
+from src.tenant import data_path
 
 _instancia = None
 
 class DataLoader:
     """
-    Carga y gestiona datos operativos desde datos_operativos.json.
+    Carga y gestiona horarios desde horarios_data.json.
     Singleton — se carga una vez y se reutiliza.
     A diferencia de ConfigLoader, estos datos se modifican en runtime.
     """
-
-    PATH = os.path.join("data", "farmacia", "datos_operativos.json")
 
     def __new__(cls):
         global _instancia
@@ -21,6 +20,7 @@ class DataLoader:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("farmacia", "horarios_data.json")
             self.data = self._cargar_archivo()
 
     def _cargar_archivo(self):
@@ -30,6 +30,6 @@ class DataLoader:
             return json.load(f)
 
     def guardar(self):
-        """Persiste el estado actual en datos_operativos.json."""
+        """Persiste el estado actual en horarios_data.json."""
         with open(self.PATH, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=2, ensure_ascii=False)

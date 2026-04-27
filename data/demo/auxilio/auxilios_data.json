@@ -1,0 +1,59 @@
+{
+  "conductores": [
+    {
+      "nombre": "sebastian monteros",
+      "telefono": "11555777",
+      "dni": "25333777",
+      "id": 1
+    }
+  ],
+  "vehiculos_propios": [
+    {
+      "patente": "AAA111",
+      "alias": "ford f100",
+      "id": 1
+    }
+  ],
+  "vehiculos_auxiliados": [
+    {
+      "patente": "ABC123",
+      "ris": "liviano",
+      "id": 1
+    }
+  ],
+  "servicios": [
+    {
+      "timestamp": "2026-04-26T23:39:54.994611",
+      "nro_movimiento": "123",
+      "fecha": "2026-04-26",
+      "conductor": "sebastian monteros",
+      "vehiculo_propio": "AAA111",
+      "vehiculo_auxiliado": {
+        "patente": "ABC123",
+        "ris": "liviano"
+      },
+      "origen": "Salliquelo",
+      "destino": "Tres Lomas",
+      "tramos": [
+        {
+          "tipo_camino": "asfalto",
+          "km_original": 99,
+          "km_excedente": 84,
+          "precio_km": 835,
+          "subtotal": 70140
+        }
+      ],
+      "movida": {
+        "aplica": true,
+        "radio_km": 15,
+        "km_total": 99,
+        "km_maximo": 200,
+        "monto": 33392
+      },
+      "extras": [],
+      "info_extra": "",
+      "total": 103532,
+      "id": 1
+    }
+  ]
+}

@@ -10,13 +10,14 @@ from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.obra_social_manager import ObraSocialManager
 
 
+from src.tenant import data_path
+
+
 class GestionRecetasStaff:
     """
     Flujo de gestión de recetas pendientes desde el panel de staff.
     Estados, transiciones, opciones y mensajes leídos de farmacia_config.json.
     """
-
-    CONFIG_PATH = os.path.join("data", "farmacia", "farmacia_config.json")
 
     OPCIONES_HANDLERS = {
         "avanzar":              None,
@@ -29,6 +30,7 @@ class GestionRecetasStaff:
     }
 
     def __init__(self, numero):
+        self.CONFIG_PATH = data_path("farmacia", "farmacia_config.json")
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()

@@ -10,6 +10,9 @@ from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.obra_social_manager import ObraSocialManager
 
 
+from src.tenant import data_path
+
+
 class GestionRecetasCliente:
     """
     Flujo de gestión de recetas desde el lado del cliente.
@@ -25,9 +28,8 @@ class GestionRecetasCliente:
         - Token: ingresar token
     """
 
-    CONFIG_PATH = os.path.join("data", "farmacia", "farmacia_config.json")
-
     def __init__(self, numero):
+        self.CONFIG_PATH = data_path("farmacia", "farmacia_config.json")
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()

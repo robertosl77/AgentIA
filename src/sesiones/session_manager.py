@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from src.config_loader import ConfigLoader
+from src.tenant import data_path
 
 _instancia = None
 
@@ -18,7 +19,6 @@ class SessionManager:
     """
 
     DURACION_SESION_HORAS = 1
-    PATH = os.path.join("data", "sesiones.json")
 
     def __new__(cls):
         global _instancia
@@ -28,6 +28,7 @@ class SessionManager:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("sesiones.json")
             self.config = ConfigLoader()
             self.data = self._cargar_archivo()
 

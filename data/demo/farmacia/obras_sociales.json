@@ -53,22 +53,5 @@
       "destacada": false
     }
   ],
-  "asociaciones": {
-    "70c90a20-3fbf-466c-a59b-f99cd9a2dfbf": {
-      "entidad": "Swiss Medical",
-      "numero": "8000061552950010007",
-      "plan": "412344e",
-      "personas": [
-        "f49059cb-3144-4110-a821-8aa4fbcaaabf"
-      ]
-    },
-    "c519a1f4-eb6d-4662-9fe8-2adcd4d061ce": {
-      "entidad": "PAMI",
-      "numero": "150117989109",
-      "plan": "5-0080",
-      "personas": [
-        "5b10ebd0-4c34-44aa-87c5-3af2db825329"
-      ]
-    }
-  }
+  "asociaciones": {}
 }

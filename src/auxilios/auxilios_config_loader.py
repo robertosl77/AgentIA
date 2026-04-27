@@ -1,6 +1,7 @@
 # src/auxilios/auxilios_config_loader.py
 import json
 import os
+from src.tenant import data_path
 
 _instancia = None
 
@@ -11,8 +12,6 @@ class AuxiliosConfigLoader:
     Contiene: estructura de objetos, catálogos, tarifas, submenú.
     """
 
-    PATH = r"data\auxilio\auxilios_config.json"
-
     def __new__(cls):
         global _instancia
         if _instancia is None:
@@ -21,6 +20,7 @@ class AuxiliosConfigLoader:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("auxilio", "auxilios_config.json")
             self.data = self._cargar_archivo()
 
     def _cargar_archivo(self):

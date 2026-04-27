@@ -3,6 +3,7 @@ import json
 import os
 import uuid
 from datetime import datetime, timedelta
+from src.tenant import data_path
 
 _instancia = None
 
@@ -13,9 +14,6 @@ class RecetaManager:
     Singleton — se carga una vez y se reutiliza.
     """
 
-    PATH = os.path.join("data", "farmacia", "recetas.json")
-    CONFIG_PATH = os.path.join("data", "farmacia", "farmacia_config.json")
-
     def __new__(cls):
         global _instancia
         if _instancia is None:
@@ -24,6 +22,8 @@ class RecetaManager:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("farmacia", "recetas.json")
+            self.CONFIG_PATH = data_path("farmacia", "farmacia_config.json")
             self.data = self._cargar_archivo()
             self.config = self._cargar_config()
 

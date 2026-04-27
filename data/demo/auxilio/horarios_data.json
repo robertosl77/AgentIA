@@ -1,0 +1,9 @@
+{
+  "horarios_fijos": {},
+  "dias_de_guardia": {
+    "fechas": []
+  },
+  "cierres_eventuales": {
+    "datos": []
+  }
+}

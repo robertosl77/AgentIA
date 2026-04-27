@@ -1,13 +1,5 @@
 {
   "sesiones": {
-    "231400003358774@lid": {
-      "rol": "root",
-      "login": {
-        "timestamp": "2026-04-26T01:08:07.033913",
-        "expira": "2026-04-26T02:08:07.033913"
-      },
-      "pushname": "Roberto SL"
-    },
     "5491168387770@c.us": {
       "rol": "admin",
       "login": {

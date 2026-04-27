@@ -2,6 +2,7 @@
 import json
 import os
 import uuid
+from src.tenant import data_path
 
 _instancia = None
 
@@ -19,8 +20,6 @@ class VinculacionManager:
         - Eliminar vínculo
     """
 
-    PATH = os.path.join("data", "farmacia", "vinculaciones.json")
-
     def __new__(cls):
         global _instancia
         if _instancia is None:
@@ -29,6 +28,7 @@ class VinculacionManager:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("farmacia", "vinculaciones.json")
             self.data = self._cargar_archivo()
 
     # ── PERSISTENCIA ──────────────────────────────────────────────────────────

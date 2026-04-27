@@ -4,6 +4,7 @@ import json
 import os
 import uuid
 from datetime import datetime
+from src.tenant import data_path
 
 
 class ImageManager:
@@ -18,9 +19,8 @@ class ImageManager:
     El proveedor activo se define en data/file_services_config.json.
     """
 
-    CONFIG_PATH = os.path.join("data", "file_services_config.json")
-
     def __init__(self):
+        self.CONFIG_PATH = data_path("file_services_config.json")
         self.config = self._cargar_config()
         self._cache_proveedores = {}
 
@@ -59,7 +59,7 @@ class ImageManager:
             proveedor = GoogleDriveProvider(credentials_path, folder_id)
         else:
             from src.file_services.storage.local_provider import LocalProvider
-            base_path = definicion.get("base_path", "data/archivos")
+            base_path = data_path(definicion.get("base_path", "archivos"))
             proveedor = LocalProvider(base_path)
 
         self._cache_proveedores[nombre_proveedor] = proveedor

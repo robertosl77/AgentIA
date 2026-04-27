@@ -2,6 +2,7 @@
 import json
 import os
 import uuid
+from src.tenant import data_path
 
 _instancia = None
 
@@ -18,8 +19,6 @@ class DireccionManager:
         - Actualizar coordenadas (integración con Maps)
     """
 
-    PATH = os.path.join("data", "cliente", "direcciones.json")
-
     def __new__(cls):
         global _instancia
         if _instancia is None:
@@ -28,6 +27,7 @@ class DireccionManager:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("cliente", "direcciones.json")
             self.data = self._cargar_archivo()
 
     # ── PERSISTENCIA ──────────────────────────────────────────────────────────

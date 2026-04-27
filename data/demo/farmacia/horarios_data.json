@@ -55,12 +55,7 @@
     "confirma_ingreso": true,
     "confirma_elimina": true,
     "fechas": [
-      "2026-03-28",
-      "2026-04-03",
-      "2026-04-11",
-      "2026-04-18",
-      "2026-05-05",
-      "2026-04-21"
+      "2026-05-01"
     ]
   },
   "cierres_eventuales": {
@@ -79,24 +74,9 @@
     "confirma_elimina": true,
     "datos": [
       {
-        "desde": "2026-04-02",
-        "hasta": "2026-04-05",
-        "motivo": "Vacaciones de semana santa"
-      },
-      {
-        "desde": "2026-06-15",
-        "hasta": "2026-06-20",
-        "motivo": "Reformas en el local"
-      },
-      {
-        "desde": "2026-05-01",
-        "hasta": "2026-05-01",
-        "motivo": "feriado dia del trabajador"
-      },
-      {
-        "desde": "2026-04-23",
-        "hasta": "2026-04-24",
-        "motivo": "viaje programado"
+        "desde": "2026-05-03",
+        "hasta": "2026-05-08",
+        "motivo": "cierre de prueba"
       }
     ]
   }

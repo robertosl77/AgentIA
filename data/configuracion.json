@@ -1,4 +1,5 @@
 {
+  "tenant_id": "demo",
   "nombre_negocio": "Proyecto ChatBot",
   "configuracion_bot": {
     "bloquear_fuera_de_horario": true,
@@ -181,7 +182,17 @@
         "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):",
         "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"
       },
+      "telefono_wpp": {
+        "obligatorio": false,
+        "tipo": "telefono",
+        "validadores": [],
+        "label": "Teléfono WhatsApp",
+        "verificacion": "otp_wpp",
+        "msj_pedido": "📱 Para acceder al portal web necesitamos verificar tu número de WhatsApp. Ingresalo sin el + (ej: 5491112345678):",
+        "msj_reintento": "⚠️ El número no es válido. Ingresá solo números (mín. 8 dígitos):"
+      },
       "contactos": {
+        "obligatorio": false,
         "tipo_contacto": {
           "obligatorio": true,
           "tipo": "catalogo",

@@ -7,7 +7,7 @@
     },
     "local": {
       "tipo": "local",
-      "base_path": "data/archivos"
+      "base_path": "archivos"
     }
   },
   "storage": {

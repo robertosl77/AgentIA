@@ -10,6 +10,7 @@ from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.receta_manager import RecetaManager
 from src.farmacia.obra_social_manager import ObraSocialManager
 from src.file_services.image_manager import ImageManager
+from src.tenant import data_path
 
 
 class GestionRecetas:
@@ -18,9 +19,8 @@ class GestionRecetas:
     Todos los mensajes se leen de farmacia_config.json.
     """
 
-    CONFIG_PATH = os.path.join("data", "farmacia", "farmacia_config.json")
-
     def __init__(self, numero):
+        self.CONFIG_PATH = data_path("farmacia", "farmacia_config.json")
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
