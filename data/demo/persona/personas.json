@@ -14,34 +14,16 @@
     "email"
   ],
   "personas": {
-    "03f3f947-7b23-4d0c-83e4-6328a559bc22": {
+    "c37b22de-662c-403e-a1a8-a8a199dab36b": {
       "tipo_documento": "DNI",
       "numero_documento": "25784362",
       "nombre": "roberto",
-      "apellido": "s",
+      "apellido": "sl",
       "fecha_nacimiento": "",
       "lids": [
         "231400003358774@lid"
       ],
       "contactos": []
-    },
-    "7e9f1ff5-6a46-4604-b6ee-0c7da82fb88f": {
-      "tipo_documento": "DNI",
-      "numero_documento": "222222222",
-      "nombre": "carlitos",
-      "apellido": "",
-      "fecha_nacimiento": "",
-      "lids": [],
-      "contactos": [
-        {
-          "tipo": "telefono",
-          "valor": "11111111111",
-          "etiqueta": ""
-        }
-      ],
-      "tipo_persona": [
-        "auxilio_conductor"
-      ]
     }
   }
 }

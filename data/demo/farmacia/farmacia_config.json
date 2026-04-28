@@ -1,4 +1,109 @@
 {
+  "estructura_sesion": {
+    "persona": {
+      "tipo_documento": {
+        "obligatorio": true,
+        "tipo": "catalogo",
+        "catalogo": "catalogo_tipo_documento",
+        "validadores": [],
+        "label": "Tipo documento",
+        "msj_pedido": "🪪 Seleccioná el *tipo de documento*:",
+        "msj_reintento": "⚠️ Opción no válida. Seleccioná una de la lista:"
+      },
+      "numero_documento": {
+        "obligatorio": true,
+        "tipo": "numero",
+        "validadores": [
+          "numero_documento_minimo",
+          "numero_documento_maximo"
+        ],
+        "label": "Nro. documento",
+        "msj_pedido": "🪪 Ingresá tu *número de documento*:",
+        "msj_reintento": "⚠️ El número de documento no es válido. Intentá nuevamente:"
+      },
+      "nombre": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "texto_minimo_3",
+          "texto_maximo_50"
+        ],
+        "label": "Nombre",
+        "msj_pedido": "👤 Por favor ingresá tu *nombre*:",
+        "msj_reintento": "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:"
+      },
+      "apellido": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": [
+          "texto_maximo_50"
+        ],
+        "label": "Apellido",
+        "msj_pedido": "👤 Por favor ingresá tu *apellido*:",
+        "msj_reintento": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:"
+      },
+      "fecha_nacimiento": {
+        "obligatorio": true,
+        "tipo": "fecha",
+        "validadores": [
+          "fecha_formato_1",
+          "fecha_pasado"
+        ],
+        "label": "Fecha nacimiento",
+        "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):",
+        "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"
+      },
+      "telefono_wpp": {
+        "obligatorio": false,
+        "tipo": "telefono",
+        "validadores": [],
+        "label": "Teléfono WhatsApp",
+        "verificacion": "otp_wpp",
+        "msj_pedido": "📱 Para acceder al portal web necesitamos verificar tu número de WhatsApp. Ingresalo sin el + (ej: 5491112345678):",
+        "msj_reintento": "⚠️ El número no es válido. Ingresá solo números (mín. 8 dígitos):"
+      },
+      "contactos": {
+        "obligatorio": false,
+        "tipo_contacto": {
+          "obligatorio": true,
+          "tipo": "catalogo",
+          "catalogo": "catalogo_tipo_contacto",
+          "validadores": [],
+          "msj_pedido": "📇 Seleccioná el *tipo de contacto*:",
+          "msj_reintento": "⚠️ Opción no válida. Seleccioná una de la lista:"
+        },
+        "valor": {
+          "obligatorio": true,
+          "tipo": "dinamico",
+          "validadores_por_tipo": {
+            "telefono": {
+              "tipo_base": "telefono",
+              "validadores": [],
+              "msj_pedido": "📱 Ingresá el *número de teléfono* (solo números):",
+              "msj_reintento": "⚠️ El teléfono no es válido. Ingresá solo números (mín. 8 dígitos):"
+            },
+            "email": {
+              "tipo_base": "email",
+              "validadores": [
+                "email_formato"
+              ],
+              "msj_pedido": "📧 Ingresá el *email*:",
+              "msj_reintento": "⚠️ El email no es válido. El formato debe ser ejemplo@dominio.com:"
+            }
+          }
+        },
+        "etiqueta": {
+          "obligatorio": false,
+          "tipo": "texto",
+          "validadores": [
+            "texto_maximo_20"
+          ],
+          "msj_pedido": "🏷️ Ingresá una etiqueta (ej: *personal*, *laboral*) o '-' para omitir:",
+          "msj_reintento": "⚠️ La etiqueta no debe superar los 20 caracteres. Intentá nuevamente:"
+        }
+      }
+    }
+  },
   "agente_ia": {
     "proveedor": "gemini",
     "env_api_key": "GEMINI_API_KEY",

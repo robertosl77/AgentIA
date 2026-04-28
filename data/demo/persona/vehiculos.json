@@ -3,22 +3,5 @@
     "auxilio_propio",
     "auxilio_auxiliado"
   ],
-  "vehiculos": {
-    "51c0f91e-8523-4715-9291-ed7d06edaea5": {
-      "tipos": [
-        "auxilio_propio"
-      ],
-      "patente": "AAA111",
-      "alias": "ford f100 2010"
-    },
-    "28380703-5231-404e-ae25-1dd6b897e3a0": {
-      "tipos": [
-        "auxilio_propio",
-        "auxilio_auxiliado"
-      ],
-      "patente": "BBB222",
-      "alias": "amarok 2012",
-      "ris": "semi_pesado"
-    }
-  }
+  "vehiculos": {}
 }

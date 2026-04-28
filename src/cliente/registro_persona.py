@@ -1,6 +1,7 @@
 # src/cliente/registro_persona.py
 from src.cliente.persona_manager import PersonaManager
 from src.config_loader import ConfigLoader
+from src.farmacia.farmacia_config_loader import FarmaciaConfigLoader
 from src.send_wpp import SendWPP
 
 
@@ -26,12 +27,13 @@ class RegistroPersona:
         self.sw = SendWPP(numero)
         self.persona_manager = PersonaManager()
         self.config = ConfigLoader()
+        self.farmacia_config = FarmaciaConfigLoader()
 
     # ── CONFIGURACIÓN ─────────────────────────────────────────────────────────
 
     def _get_config_campo(self, campo):
-        """Lee la configuración de un campo desde estructura_sesion.persona."""
-        return self.config.data.get("estructura_sesion", {}).get("persona", {}).get(campo, {})
+        """Lee la configuración de un campo desde farmacia_config.json (estructura_sesion.persona)."""
+        return self.farmacia_config.get_estructura_persona().get(campo, {})
 
     def _get_config_validadores(self):
         """Retorna el catálogo de validadores desde configuracion.json."""

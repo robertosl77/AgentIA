@@ -1,37 +1,3 @@
 {
-  "servicios": [
-    {
-      "timestamp": "2026-04-27T01:17:14.614173",
-      "nro_movimiento": "123",
-      "fecha": "2026-04-27",
-      "conductor": "Carlitos",
-      "vehiculo_propio": "AAA111",
-      "vehiculo_auxiliado": {
-        "patente": "BBB222",
-        "ris": "semi_pesado"
-      },
-      "origen": "Salliquelo",
-      "destino": "Tres Lomas",
-      "tramos": [
-        {
-          "tipo_camino": "asfalto",
-          "km_original": 99,
-          "km_excedente": 84,
-          "precio_km": 924,
-          "subtotal": 77616
-        }
-      ],
-      "movida": {
-        "aplica": true,
-        "radio_km": 15,
-        "km_total": 99,
-        "km_maximo": 200,
-        "monto": 37566
-      },
-      "extras": [],
-      "info_extra": "",
-      "total": 115182,
-      "id": 1
-    }
-  ]
+  "servicios": []
 }
