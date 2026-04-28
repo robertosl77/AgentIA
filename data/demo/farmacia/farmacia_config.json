@@ -243,6 +243,7 @@
     "dias_vencimiento": 30,
     "alerta_preventiva_dias": 20,
     "alerta_urgente_dias": 28,
+    "max_reintentos_token": 3,
     "estados_receta": {
       "pendiente": {
         "label": "Pendiente",
@@ -310,15 +311,14 @@
       "requiere_autorizacion": {
         "label": "Requiere autorización",
         "icono": "🔐",
-        "inflow": ["en_gestion"],
-        "outflow": ["token_enviado", "procesando", "rechazada"],
-        "camino_feliz": "procesando",
+        "inflow": ["en_gestion", "error_token"],
+        "outflow": ["token_enviado", "rechazada"],
+        "camino_feliz": null,
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n🔐 La farmacia necesita un *token de autorización* de tu obra social.\nIngresá al menú *Mis recetas* para enviarlo.",
         "opciones_staff": [
-          "avanzar",
           "enviar_nota",
           "cambiar_estado_receta",
           "agendar_recordatorio"
@@ -328,13 +328,14 @@
         "label": "Token enviado",
         "icono": "🔑",
         "inflow": ["requiere_autorizacion"],
-        "outflow": ["requiere_autorizacion"],
-        "camino_feliz": "requiere_autorizacion",
+        "outflow": ["procesando"],
+        "camino_feliz": "procesando",
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
         "notificacion_push": null,
         "opciones_staff": [
+          "avanzar",
           "validar_token",
           "enviar_nota",
           "cambiar_estado_receta"
@@ -343,8 +344,8 @@
       "procesando": {
         "label": "Procesando",
         "icono": "⚙️",
-        "inflow": ["requiere_autorizacion"],
-        "outflow": ["pendiente_retiro", "rechazada"],
+        "inflow": ["token_enviado", "en_gestion"],
+        "outflow": ["pendiente_retiro", "error_token", "rechazada"],
         "camino_feliz": "pendiente_retiro",
         "requiere_motivo": false,
         "es_final": false,
@@ -352,6 +353,22 @@
         "notificacion_push": null,
         "opciones_staff": [
           "avanzar",
+          "cambiar_estado_receta"
+        ]
+      },
+      "error_token": {
+        "label": "Error de token",
+        "icono": "⚠️",
+        "inflow": ["procesando"],
+        "outflow": ["requiere_autorizacion", "rechazada"],
+        "camino_feliz": "requiere_autorizacion",
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": false,
+        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n⚠️ El token de autorización presentó un problema.\nIngresá al menú *Mis recetas* para reenviarlo.",
+        "opciones_staff": [
+          "avanzar",
+          "enviar_nota",
           "cambiar_estado_receta"
         ]
       },
@@ -386,7 +403,7 @@
       "rechazada": {
         "label": "Rechazada",
         "icono": "❌",
-        "inflow": ["en_gestion", "procesando", "requiere_autorizacion"],
+        "inflow": ["en_gestion", "procesando", "requiere_autorizacion", "error_token"],
         "outflow": ["en_gestion"],
         "camino_feliz": null,
         "requiere_motivo": true,
@@ -489,7 +506,9 @@
       "volver_atras_label": " (volver atrás)",
       "nota_desestimada_auto": "Nota desestimada automáticamente: el medicamento ya fue marcado como disponible.",
       "nota_solicitar_token": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
-      "cambio_automatico_a_la_espera": "⏸️ La receta pasó a *A la espera del cliente*. Se notificará al paciente."
+      "cambio_automatico_a_la_espera": "⏸️ La receta pasó a *A la espera del cliente*. Se notificará al paciente.",
+      "reintento_token": "🔄 Reintento {reintento}/{max}. Se notificará al paciente para que reenvíe el token.",
+      "reintentos_agotados": "❌ Se alcanzó el máximo de reintentos de token ({max}). Solo podés rechazar la receta desde *Cambiar estado*."
     },
     "opciones_staff_labels": {
       "confirmar_todos": "✅ Confirmar todos los medicamentos como disponibles",

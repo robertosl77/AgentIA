@@ -621,6 +621,26 @@ class GestionRecetasStaff:
             self.sw.enviar(self._msg("pregunta_token"))
             return
 
+        # Desde error_token, reintento limitado → vuelve a requiere_autorizacion (C)
+        if estado_actual == "error_token":
+            max_reintentos = self.farm_config.get("recetas", {}).get("max_reintentos_token", 3)
+            historial = receta.get("historial_estados", [])
+            reintentos = sum(1 for h in historial if h["estado"] == "error_token")
+
+            if reintentos >= max_reintentos:
+                self.sw.enviar(self._msg("reintentos_agotados", max=max_reintentos))
+                self._mostrar_detalle(sesiones)
+                return
+
+            self.receta_manager.cambiar_estado(
+                receta_id, "requiere_autorizacion",
+                f"Reintento {reintentos}/{max_reintentos} — solicitud de nuevo token"
+            )
+            self.sw.enviar(self._msg("reintento_token", reintento=reintentos, max=max_reintentos))
+            self._enviar_notificacion_push(receta_id, "error_token")
+            self._mostrar_detalle(sesiones)
+            return
+
         cf_config = self._get_estado_receta_config(camino_feliz)
         cf_label = cf_config.get("label", camino_feliz)
 
