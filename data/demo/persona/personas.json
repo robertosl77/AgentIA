@@ -30,6 +30,24 @@
           "tipo": "trabajo"
         }
       ]
+    },
+    "847ee139-2bcd-4b65-ab48-a6c490e1543e": {
+      "tipo_documento": "DNI",
+      "numero_documento": "22555777",
+      "nombre": "sebastian monteros",
+      "apellido": "",
+      "fecha_nacimiento": "",
+      "lids": [],
+      "contactos": [
+        {
+          "tipo": "telefono",
+          "valor": "1155556666",
+          "etiqueta": ""
+        }
+      ],
+      "tipo_persona": [
+        "auxilio_conductor"
+      ]
     }
   }
 }

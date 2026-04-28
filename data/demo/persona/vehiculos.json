@@ -3,5 +3,27 @@
     "auxilio_propio",
     "auxilio_auxiliado"
   ],
-  "vehiculos": {}
+  "vehiculos": {
+    "ee169186-0d1b-4587-b165-b8122b7eaf38": {
+      "tipos": [
+        "auxilio_propio"
+      ],
+      "patente": "AAA111",
+      "alias": "ford f 100 2009"
+    },
+    "f69d1b0f-23fe-4617-9bc0-88a07b7c1681": {
+      "tipos": [
+        "auxilio_auxiliado"
+      ],
+      "patente": "SBE221",
+      "ris": "liviano"
+    },
+    "b0dddb3a-f223-4123-affd-eab2e2288781": {
+      "tipos": [
+        "auxilio_auxiliado"
+      ],
+      "patente": "BBB222",
+      "ris": "liviano"
+    }
+  }
 }

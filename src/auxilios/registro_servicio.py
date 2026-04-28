@@ -8,6 +8,7 @@ from src.auxilios.calculo_tarifas import CalculoTarifas
 from src.registro.validadores import Validadores
 from src.maps.buscador_direccion import BuscadorDireccion
 from src.cliente.persona_manager import PersonaManager
+from src.cliente.direccion_manager import DireccionManager
 from src.auxilios.vehiculo_manager import VehiculoManager
 from datetime import datetime
 
@@ -36,6 +37,7 @@ class RegistroServicio(Validadores):
         self.config = AuxiliosConfigLoader()
         self.datos = AuxiliosDataLoader()
         self.personas = PersonaManager()
+        self.direccion_manager = DireccionManager()
         self.vehiculos = VehiculoManager()
         self.tarifas = CalculoTarifas()
         self.maps = BuscadorDireccion()
@@ -910,6 +912,16 @@ class RegistroServicio(Validadores):
         datos = sesiones[self.numero].auxilios_dato_temporal
         calculo = datos.pop("_calculo", {})
 
+        # Si origen/destino vienen de Maps (dict con place_id), normalizar a direccion_id.
+        # Si es string (punto frecuente como "Salliquelo"), dejar como está.
+        origen = datos.get("origen", "")
+        if isinstance(origen, dict) and origen.get("place_id"):
+            origen = {"direccion_id": self.direccion_manager.guardar_desde_maps(origen)}
+
+        destino = datos.get("destino", "")
+        if isinstance(destino, dict) and destino.get("place_id"):
+            destino = {"direccion_id": self.direccion_manager.guardar_desde_maps(destino)}
+
         servicio = {
             "timestamp": datetime.now().isoformat(),
             "nro_movimiento": datos.get("nro_movimiento", ""),
@@ -917,8 +929,8 @@ class RegistroServicio(Validadores):
             "conductor": datos.get("conductor", ""),
             "vehiculo_propio": datos.get("vehiculo_propio", ""),
             "vehiculo_auxiliado": datos.get("vehiculo_auxiliado", {}),
-            "origen": datos.get("origen", ""),
-            "destino": datos.get("destino", ""),
+            "origen": origen,
+            "destino": destino,
             "tramos": calculo.get("tramos", {}).get("detalle", []),
             "movida": calculo.get("movida", {}),
             "extras": calculo.get("extras", {}).get("detalle", []),
@@ -937,8 +949,11 @@ class RegistroServicio(Validadores):
     # ── HELPERS ───────────────────────────────────────────────────────────────
 
     def _display_direccion(self, direccion):
-        """Retorna string de display para origen/destino (puede ser string o dict de Maps)."""
+        """Retorna string de display para origen/destino (string, dict Maps, o {direccion_id})."""
         if isinstance(direccion, dict):
+            if "direccion_id" in direccion:
+                result = self.direccion_manager.get(direccion["direccion_id"])
+                return result[1].get("direccion_formateada", "") if result else ""
             return direccion.get("direccion_formateada", "")
         return direccion
 

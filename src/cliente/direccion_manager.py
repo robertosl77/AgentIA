@@ -80,6 +80,31 @@ class DireccionManager:
                 return (did, datos)
         return None
 
+    # ── DESDE MAPS ────────────────────────────────────────────────────────────
+
+    def guardar_desde_maps(self, maps_result):
+        """
+        Aplana un resultado de BuscadorDireccion a campos normalizados,
+        deduplica y guarda si no existe. Retorna el direccion_id.
+        """
+        comp = maps_result.get("componentes", {})
+        campos = {
+            "direccion_formateada": maps_result.get("direccion_formateada", ""),
+            "calle":          comp.get("calle", ""),
+            "altura":         comp.get("altura", ""),
+            "entre_calle_1":  "",
+            "entre_calle_2":  "",
+            "piso":           "",
+            "depto":          "",
+            "localidad":      comp.get("localidad", ""),
+            "codigo_postal":  comp.get("codigo_postal", ""),
+            "provincia":      comp.get("provincia", ""),
+            "place_id":       maps_result.get("place_id", ""),
+            "coordenadas":    maps_result.get("coordenadas", {"lat": None, "lng": None, "origen": "maps"}),
+        }
+        existente = self.buscar_exacta(campos)
+        return existente[0] if existente else self.agregar(campos)
+
     # ── CREAR ─────────────────────────────────────────────────────────────────
 
     def agregar(self, campos):

@@ -6,6 +6,23 @@
     "envio"
   ],
   "direcciones": {
+    "95a05a8f-bf93-425b-bf83-91873884c367": {
+      "direccion_formateada": "Tronador 662, C1427CRN Cdad. Autónoma de Buenos Aires",
+      "calle": "tronador",
+      "altura": "662",
+      "entre_calle_1": "",
+      "entre_calle_2": "",
+      "piso": "",
+      "depto": "",
+      "localidad": "buenos aires",
+      "codigo_postal": "C1427",
+      "provincia": "ciudad autónoma de buenos aires",
+      "place_id": "EkFUcm9uYWRvciA2NjIsIEMxNDI3Q1JOIENkYWQuIEF1dMOzbm9tYSBkZSBCdWVub3MgQWlyZXMsIEFyZ2VudGluYSIxEi8KFAoSCen6SaELtryVESe1GoHy3LzyEJYFKhQKEgmD6ImTY7a8lRGD-gnJ4a34hA",
+      "coordenadas": {
+        "lat": -34.5846781,
+        "lng": -58.4670419
+      }
+    },
     "c09759f8-ff8f-421d-b569-0934bf6f284d": {
       "direccion_formateada": "Tronador 661, C1427CRM Cdad. Autónoma de Buenos Aires",
       "calle": "tronador",
