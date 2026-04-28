@@ -41,6 +41,7 @@ def reset_medicamentos():
 
 
 def reset_obras_sociales():
+    """Limpia TODAS las asociaciones de obras sociales (uso manual/independiente)."""
     path = get_tenant_path("farmacia", "obras_sociales.json")
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
@@ -49,23 +50,91 @@ def reset_obras_sociales():
 
 
 def reset_vinculaciones():
+    """Limpia TODAS las vinculaciones (uso manual/independiente)."""
     guardar(get_tenant_path("farmacia", "vinculaciones.json"), {"vinculaciones": {}})
 
 
 def reset_personas():
-    """Limpia personas de tipo farmacia_cliente (preserva conductores y catálogos)."""
-    path = get_tenant_path("persona", "personas.json")
-    with open(path, encoding="utf-8") as f:
-        data = json.load(f)
-    data["personas"] = {
-        pid: p for pid, p in data["personas"].items()
-        if "farmacia_cliente" not in p.get("tipo_persona", [])
+    """
+    Limpia personas de rol usuario en cascada.
+    Preserva personas cuyos lids tengan rol root/admin/supervisor en sesiones.json.
+    Cascade sobre: direcciones físicas, vinculaciones, obras sociales.
+    """
+    # 1. Lids con rol privilegiado
+    sesiones_path = get_tenant_path("sesiones.json")
+    with open(sesiones_path, encoding="utf-8") as f:
+        sesiones = json.load(f).get("sesiones", {})
+    lids_privilegiados = {
+        lid for lid, s in sesiones.items()
+        if s.get("rol") in {"root", "admin", "supervisor"}
     }
-    guardar(path, data)
+
+    # 2. Clasificar personas
+    personas_path = get_tenant_path("persona", "personas.json")
+    with open(personas_path, encoding="utf-8") as f:
+        personas_data = json.load(f)
+
+    ids_conservar = set()
+    ids_borrar = set()
+    for pid, p in personas_data["personas"].items():
+        if set(p.get("lids", [])) & lids_privilegiados:
+            ids_conservar.add(pid)
+        else:
+            ids_borrar.add(pid)
+
+    if not ids_borrar:
+        print("✅ personas.json — nada que borrar")
+        return
+
+    # 3. Cascade direcciones: conservar solo las que referencian personas que quedan
+    dir_ids_conservar = {
+        d["direccion_id"]
+        for pid in ids_conservar
+        for d in personas_data["personas"][pid].get("direcciones", [])
+    }
+    dir_path = get_tenant_path("persona", "direcciones.json")
+    with open(dir_path, encoding="utf-8") as f:
+        dir_data = json.load(f)
+    dir_data["direcciones"] = {
+        did: datos for did, datos in dir_data["direcciones"].items()
+        if did in dir_ids_conservar
+    }
+    guardar(dir_path, dir_data)
+
+    # 4. Cascade vinculaciones: borrar las que involucran personas borradas
+    vinc_path = get_tenant_path("farmacia", "vinculaciones.json")
+    with open(vinc_path, encoding="utf-8") as f:
+        vinc_data = json.load(f)
+    vinc_data["vinculaciones"] = {
+        vid: v for vid, v in vinc_data["vinculaciones"].items()
+        if v["persona_a"]["persona_id"] not in ids_borrar
+        and v["persona_b"]["persona_id"] not in ids_borrar
+    }
+    guardar(vinc_path, vinc_data)
+
+    # 5. Cascade obras sociales: desligar personas borradas; eliminar asociacion si queda vacía
+    os_path = get_tenant_path("farmacia", "obras_sociales.json")
+    with open(os_path, encoding="utf-8") as f:
+        os_data = json.load(f)
+    nuevas_asoc = {}
+    for aid, asoc in os_data.get("asociaciones", {}).items():
+        restantes = [p for p in asoc.get("personas", []) if p not in ids_borrar]
+        if restantes:
+            asoc["personas"] = restantes
+            nuevas_asoc[aid] = asoc
+    os_data["asociaciones"] = nuevas_asoc
+    guardar(os_path, os_data)
+
+    # 6. Borrar personas
+    personas_data["personas"] = {
+        pid: p for pid, p in personas_data["personas"].items()
+        if pid in ids_conservar
+    }
+    guardar(personas_path, personas_data)
 
 
 def reset_conductores():
-    """Limpia personas de tipo auxilio_conductor (preserva farmacia_cliente y catálogos)."""
+    """Limpia solo personas de tipo auxilio_conductor (uso manual/independiente)."""
     path = get_tenant_path("persona", "personas.json")
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
@@ -77,6 +146,7 @@ def reset_conductores():
 
 
 def reset_direcciones():
+    """Limpia TODAS las direcciones físicas (uso manual/independiente)."""
     path = get_tenant_path("persona", "direcciones.json")
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
@@ -144,18 +214,14 @@ if __name__ == "__main__":
     print("── farmacia ─────────────────────────────")
     reset_recetas()
     reset_medicamentos()
-    reset_obras_sociales()
-    reset_vinculaciones()
     reset_horarios_data()
     reset_archivos_recetas()
 
     print("── auxilio ──────────────────────────────")
     reset_servicios_data()
-    reset_conductores()
     reset_vehiculos()
 
-    print("── persona ──────────────────────────────")
+    print("── persona (con cascade) ────────────────")
     reset_personas()
-    reset_direcciones()
 
     print("\n✅ Reset completo.")

@@ -10,7 +10,7 @@ class FarmaciaConfigLoader:
     """
     Carga la configuración del módulo farmacia desde farmacia_config.json.
     Singleton — se carga una vez y se reutiliza.
-    Contiene: estructura_sesion.persona, agente_ia, recetas.
+    Contiene: estructura_persona (persona, direccion, vinculacion, obra_social), agente_ia, recetas.
     """
 
     def __new__(cls):
@@ -30,15 +30,22 @@ class FarmaciaConfigLoader:
         with open(self.PATH, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    # ── ESTRUCTURA SESION ─────────────────────────────────────────────────────
+    # ── ESTRUCTURA PERSONA ────────────────────────────────────────────────────
+
+    def _estructura(self):
+        return self.data.get("estructura_persona", {})
 
     def get_estructura_persona(self):
-        """Retorna la config de campos de persona (registro/edición de beneficiario)."""
-        return self.data.get("estructura_sesion", {}).get("persona", {})
+        return self._estructura().get("persona", {})
 
     def get_estructura_direccion(self):
-        """Retorna la config de campos de dirección."""
-        return self.data.get("estructura_sesion", {}).get("direccion", {})
+        return self._estructura().get("direccion", {})
+
+    def get_estructura_vinculacion(self):
+        return self._estructura().get("vinculacion", {})
+
+    def get_estructura_obra_social(self):
+        return self._estructura().get("obra_social", {})
 
     # ── AGENTE IA ─────────────────────────────────────────────────────────────
 

@@ -128,50 +128,7 @@
   "estructura_sesion": {
     "rol_defecto": "usuario",
     "duracion_horas": 1,
-    "reintentos_input": 3,
-    "vinculacion": {
-      "alias": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3",
-          "alias_vinculacion"
-        ],
-        "msj_pedido": "🔗 Ingresá un alias para esta persona (ej: *mamá*, *hijo*, *tía rosa*):",
-        "msj_reintento": "⚠️ El alias no es válido. Debe tener entre 3 y 30 caracteres:"
-      }
-    },
-    "obra_social": {
-      "entidad": {
-        "obligatorio": true,
-        "tipo": "catalogo",
-        "catalogo": "catalogo_obras_sociales",
-        "validadores": [],
-        "label": "Obra social",
-        "msj_pedido": "🏥 Seleccioná tu *obra social* de la lista (o escribí el nombre si no está):",
-        "msj_reintento": "⚠️ Opción no válida. Intentá nuevamente:"
-      },
-      "numero": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "numero_obra_social"
-        ],
-        "label": "Nro. credencial",
-        "msj_pedido": "🪪 Ingresá tu *número de credencial/afiliado*:",
-        "msj_reintento": "⚠️ El número de afiliado no es válido. Intentá nuevamente:"
-      },
-      "plan": {
-        "obligatorio": false,
-        "tipo": "texto",
-        "validadores": [
-          "texto_maximo_50"
-        ],
-        "label": "Plan",
-        "msj_pedido": "📄 Ingresá el *plan* (o '-' si no aplica):",
-        "msj_reintento": "⚠️ El plan no es válido. Intentá nuevamente:"
-      }
-    }
+    "reintentos_input": 3
   },
   "mensajes": {
     "bienvenida": "👋 ¡Hola {pushname}! Bienvenido a {nombre_negocio}.",

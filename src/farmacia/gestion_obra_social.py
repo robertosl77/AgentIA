@@ -1,14 +1,15 @@
 # src/farmacia/gestion_obra_social.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
+from src.farmacia.farmacia_config_loader import FarmaciaConfigLoader
 from src.farmacia.obra_social_manager import ObraSocialManager
 
 
 class GestionObraSocial:
     """
     Flujo conversacional dinámico para administrar obras sociales del beneficiario.
-    Los campos, orden, validadores y mensajes se leen de configuracion.json
-    (estructura_sesion.obra_social). Agregar un campo al JSON lo incorpora
+    Los campos, orden, validadores y mensajes se leen de farmacia_config.json
+    (estructura_persona.obra_social). Agregar un campo al JSON lo incorpora
     automáticamente tanto en la carga como en la actualización.
     """
 
@@ -18,13 +19,13 @@ class GestionObraSocial:
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
+        self.farmacia_config = FarmaciaConfigLoader()
         self.os_manager = ObraSocialManager()
 
     # ── CONFIGURACIÓN DINÁMICA ────────────────────────────────────────────────
 
     def _get_campos(self):
-        """Retorna el dict ordenado de campos desde configuracion.json."""
-        return self.config.data.get("estructura_sesion", {}).get(self.SECCION, {})
+        return self.farmacia_config.get_estructura_obra_social()
 
     def _get_campos_ordenados(self):
         """Retorna la lista de nombres de campo en orden."""
