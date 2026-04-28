@@ -30,6 +30,15 @@
           "tipo": "trabajo"
         }
       ]
+    },
+    "c9a8a4a4-c6f6-4e37-9235-2bc96e97cd98": {
+      "tipo_documento": "DNI",
+      "numero_documento": "4701054",
+      "nombre": "rosa",
+      "apellido": "l",
+      "fecha_nacimiento": "",
+      "lids": [],
+      "contactos": []
     }
   }
 }

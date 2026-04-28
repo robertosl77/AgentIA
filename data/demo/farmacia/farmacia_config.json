@@ -29,7 +29,7 @@
           "texto_maximo_50"
         ],
         "label": "Nombre",
-        "msj_pedido": "👤 Por favor ingresá tu *nombre de pila*:",
+        "msj_pedido": "👤 Por favor ingresá el *nombre de pila*:",
         "msj_reintento": "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:"
       },
       "apellido": {
@@ -39,7 +39,7 @@
           "texto_maximo_50"
         ],
         "label": "Apellido",
-        "msj_pedido": "👤 Por favor ingresá tu *apellido*:",
+        "msj_pedido": "👤 Por favor ingresá el *apellido*:",
         "msj_reintento": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:"
       },
       "fecha_nacimiento": {
