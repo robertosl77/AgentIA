@@ -36,6 +36,10 @@ class FarmaciaConfigLoader:
         """Retorna la config de campos de persona (registro/edición de beneficiario)."""
         return self.data.get("estructura_sesion", {}).get("persona", {})
 
+    def get_estructura_direccion(self):
+        """Retorna la config de campos de dirección."""
+        return self.data.get("estructura_sesion", {}).get("direccion", {})
+
     # ── AGENTE IA ─────────────────────────────────────────────────────────────
 
     def get_agente_ia(self):
@@ -60,3 +64,8 @@ class FarmaciaConfigLoader:
 
     def get_opciones_staff_labels(self):
         return self.get_recetas().get("opciones_staff_labels", {})
+
+    # ── GESTIÓN DIRECCIÓN ─────────────────────────────────────────────────────
+
+    def get_mensajes_gestion_direccion(self):
+        return self.data.get("gestion_direccion", {}).get("mensajes", {})

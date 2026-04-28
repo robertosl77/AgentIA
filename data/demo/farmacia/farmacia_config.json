@@ -1,5 +1,79 @@
 {
   "estructura_sesion": {
+    "direccion": {
+      "calle": {
+        "obligatorio": true,
+        "tipo": "libre",
+        "validadores": ["texto_minimo_3", "texto_maximo_100"],
+        "label": "Calle",
+        "msj_pedido": "🏠 Ingresá la *calle* (ej: Av. Corrientes, 25 de Mayo):",
+        "msj_reintento": "⚠️ La calle ingresada no es válida. Intentá nuevamente:"
+      },
+      "altura": {
+        "obligatorio": true,
+        "tipo": "numero",
+        "validadores": [],
+        "label": "Altura",
+        "msj_pedido": "🏠 Ingresá el *número de altura*:",
+        "msj_reintento": "⚠️ La altura debe ser solo números. Intentá nuevamente:"
+      },
+      "entre_calle_1": {
+        "obligatorio": false,
+        "tipo": "libre",
+        "validadores": [],
+        "label": "Entre calle",
+        "msj_pedido": "🏠 Ingresá la *primera entre calle de referencia* (o '-' para omitir):",
+        "msj_reintento": ""
+      },
+      "entre_calle_2": {
+        "obligatorio": false,
+        "tipo": "libre",
+        "validadores": [],
+        "label": "Y calle",
+        "msj_pedido": "🏠 Ingresá la *segunda entre calle de referencia* (o '-' para omitir):",
+        "msj_reintento": ""
+      },
+      "piso": {
+        "obligatorio": false,
+        "tipo": "libre",
+        "validadores": [],
+        "label": "Piso",
+        "msj_pedido": "🏠 Ingresá el *piso* (o '-' para omitir):",
+        "msj_reintento": ""
+      },
+      "depto": {
+        "obligatorio": false,
+        "tipo": "libre",
+        "validadores": [],
+        "label": "Depto",
+        "msj_pedido": "🏠 Ingresá el *departamento* (o '-' para omitir):",
+        "msj_reintento": ""
+      },
+      "localidad": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": ["texto_minimo_3"],
+        "label": "Localidad",
+        "msj_pedido": "🏠 Ingresá la *localidad*:",
+        "msj_reintento": "⚠️ La localidad ingresada no es válida. Intentá nuevamente:"
+      },
+      "codigo_postal": {
+        "obligatorio": true,
+        "tipo": "numero",
+        "validadores": [],
+        "label": "Código postal",
+        "msj_pedido": "🏠 Ingresá el *código postal*:",
+        "msj_reintento": "⚠️ El código postal debe ser solo números. Intentá nuevamente:"
+      },
+      "provincia": {
+        "obligatorio": true,
+        "tipo": "texto",
+        "validadores": ["texto_minimo_3"],
+        "label": "Provincia",
+        "msj_pedido": "🏠 Ingresá la *provincia*:",
+        "msj_reintento": "⚠️ La provincia ingresada no es válida. Intentá nuevamente:"
+      }
+    },
     "persona": {
       "tipo_documento": {
         "obligatorio": true,
@@ -381,6 +455,27 @@
       "cambiar_estado_receta": "📊 Cambiar estado de la receta",
       "agendar_recordatorio": "🔔 Agendar recordatorio",
       "validar_token": "🔑 Validar token recibido"
+    }
+  },
+  "gestion_direccion": {
+    "mensajes": {
+      "titulo_lista": "🏠 *Direcciones registradas:*\n",
+      "sin_direcciones": "  Sin direcciones registradas.",
+      "opcion_agregar": "\n1. ➕ Agregar dirección",
+      "opcion_eliminar": "2. 🗑️ Eliminar dirección",
+      "escribi_cancelar": "Escribí *cancelar* para volver:",
+      "opcion_invalida": "❌ Opción no válida.",
+      "seleccionar_tipo": "📍 Seleccioná el *tipo de dirección*:\n",
+      "operacion_cancelada": "❌ Se canceló la operación.",
+      "tipo_invalido": "⚠️ Opción no válida. Elegí un número de la lista:",
+      "sin_resultados_cancelado": "❌ No se encontró la dirección. Operación cancelada.",
+      "direccion_registrada": "✅ Dirección registrada: *{label}* [{tipo}]",
+      "titulo_eliminar": "🗑️ ¿Qué dirección querés eliminar?\n",
+      "numero_invalido": "❌ Número no válido. Elegí uno de la lista:",
+      "confirmar_eliminar": "¿Confirmás que querés eliminar la dirección [{tipo}] *{label}*?\nRespondé *si* o *no*:",
+      "direccion_eliminada": "✅ Dirección eliminada correctamente.",
+      "eliminacion_cancelada": "❌ Eliminación cancelada.",
+      "responder_si_no": "⚠️ Respondé *si* o *no*:"
     }
   }
 }

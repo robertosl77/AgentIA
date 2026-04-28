@@ -129,64 +129,6 @@
     "rol_defecto": "usuario",
     "duracion_horas": 1,
     "reintentos_input": 3,
-    "direccion": {
-      "calle": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3",
-          "texto_maximo_100"
-        ],
-        "msj_pedido": "🏠 Ingresá la *calle*:",
-        "msj_reintento": "⚠️ La calle ingresada no es válida. Intentá nuevamente:"
-      },
-      "altura": {
-        "obligatorio": true,
-        "tipo": "numero",
-        "validadores": [],
-        "msj_pedido": "🏠 Ingresá el *número de altura*:",
-        "msj_reintento": "⚠️ La altura debe ser solo números. Intentá nuevamente:"
-      },
-      "piso": {
-        "obligatorio": false,
-        "tipo": "texto",
-        "validadores": [],
-        "msj_pedido": "🏠 Ingresá el *piso* (o '-' si no aplica):",
-        "msj_reintento": ""
-      },
-      "depto": {
-        "obligatorio": false,
-        "tipo": "texto",
-        "validadores": [],
-        "msj_pedido": "🏠 Ingresá el *departamento* (o '-' si no aplica):",
-        "msj_reintento": ""
-      },
-      "localidad": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3"
-        ],
-        "msj_pedido": "🏠 Ingresá la *localidad*:",
-        "msj_reintento": "⚠️ La localidad ingresada no es válida. Intentá nuevamente:"
-      },
-      "codigo_postal": {
-        "obligatorio": true,
-        "tipo": "numero",
-        "validadores": [],
-        "msj_pedido": "🏠 Ingresá el *código postal*:",
-        "msj_reintento": "⚠️ El código postal debe ser solo números. Intentá nuevamente:"
-      },
-      "provincia": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3"
-        ],
-        "msj_pedido": "🏠 Ingresá la *provincia*:",
-        "msj_reintento": "⚠️ La provincia ingresada no es válida. Intentá nuevamente:"
-      }
-    },
     "vinculacion": {
       "alias": {
         "obligatorio": true,
@@ -510,8 +452,8 @@
             "activacion": [
               "7"
             ],
-            "texto": "7. 🏥 Administrar obra social de {beneficiario}",
-            "handler": "administrar_obra_social",
+            "texto": "7. 🏠 Gestionar direcciones de {beneficiario}",
+            "handler": "gestionar_direccion",
             "requisitos": []
           },
           {
@@ -524,8 +466,8 @@
             "activacion": [
               "8"
             ],
-            "texto": "8. 📤 Cargar receta de {beneficiario}",
-            "handler": "cargar_receta",
+            "texto": "8. 🏥 Administrar obra social de {beneficiario}",
+            "handler": "administrar_obra_social",
             "requisitos": []
           },
           {
@@ -538,7 +480,21 @@
             "activacion": [
               "9"
             ],
-            "texto": "9. 📬 Mis recetas{notificaciones}",
+            "texto": "9. 📤 Cargar receta de {beneficiario}",
+            "handler": "cargar_receta",
+            "requisitos": []
+          },
+          {
+            "id": "10",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "10"
+            ],
+            "texto": "10. 📬 Mis recetas{notificaciones}",
             "handler": "mis_recetas",
             "requisitos": []
           },

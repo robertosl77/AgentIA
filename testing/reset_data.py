@@ -77,7 +77,11 @@ def reset_conductores():
 
 
 def reset_direcciones():
-    guardar(get_tenant_path("persona", "direcciones.json"), {"direcciones": {}})
+    path = get_tenant_path("persona", "direcciones.json")
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    data["direcciones"] = {}
+    guardar(path, data)
 
 
 def reset_error_log():

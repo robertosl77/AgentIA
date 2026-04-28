@@ -23,7 +23,13 @@
       "lids": [
         "231400003358774@lid"
       ],
-      "contactos": []
+      "contactos": [],
+      "direcciones": [
+        {
+          "direccion_id": "c09759f8-ff8f-421d-b569-0934bf6f284d",
+          "tipo": "trabajo"
+        }
+      ]
     }
   }
 }

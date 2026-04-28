@@ -7,6 +7,7 @@ from src.cliente.registro_persona import RegistroPersona
 from src.farmacia.vinculacion_manager import VinculacionManager
 from src.farmacia.gestion_obra_social import GestionObraSocial
 from src.farmacia.gestion_datos_persona import GestionDatosPersona
+from src.farmacia.gestion_direccion import GestionDireccion
 from src.farmacia.gestion_beneficiario import GestionBeneficiario
 from src.farmacia.gestion_recetas import GestionRecetas
 from src.farmacia.gestion_recetas_cliente import GestionRecetasCliente
@@ -38,6 +39,7 @@ class SubMenuFarmacia:
         self.registro_persona = RegistroPersona(numero)
         self.gestion_os = GestionObraSocial(numero)
         self.gestion_datos = GestionDatosPersona(numero)
+        self.gestion_dir = GestionDireccion(numero)
         self.gestion_beneficiario = GestionBeneficiario(numero)
         self.gestion_recetas = GestionRecetas(numero)
         self.gestion_recetas_cliente = GestionRecetasCliente(numero)
@@ -54,6 +56,7 @@ class SubMenuFarmacia:
         # Verificar subflujos activos
         return (self.gestion_os.esta_en_flujo(sesiones) or
                 self.gestion_datos.esta_en_flujo(sesiones) or
+                self.gestion_dir.esta_en_flujo(sesiones) or
                 self.gestion_beneficiario.esta_en_flujo(sesiones) or
                 self.gestion_recetas.esta_en_flujo(sesiones) or
                 self.gestion_recetas_cliente.esta_en_flujo(sesiones) or
@@ -105,6 +108,15 @@ class SubMenuFarmacia:
         if self.gestion_datos.esta_en_flujo(sesiones):
             self.gestion_datos.procesar(comando, sesiones)
             if not self.gestion_datos.esta_en_flujo(sesiones):
+                estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
+                if estado_farmacia == "menu_farmacia":
+                    self._mostrar_menu_farmacia(sesiones)
+            return
+
+        # Subflujo de gestión de direcciones
+        if self.gestion_dir.esta_en_flujo(sesiones):
+            self.gestion_dir.procesar(comando, sesiones)
+            if not self.gestion_dir.esta_en_flujo(sesiones):
                 estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
                 if estado_farmacia == "menu_farmacia":
                     self._mostrar_menu_farmacia(sesiones)
@@ -390,6 +402,15 @@ class SubMenuFarmacia:
             self._mostrar_menu_farmacia(sesiones)
             return
         self.gestion_datos.iniciar(sesiones, beneficiario_id)
+
+    def gestionar_direccion(self, sesiones):
+        """Dispara el flujo de gestión de direcciones para el beneficiario activo."""
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        if not beneficiario_id:
+            self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
+            self._mostrar_menu_farmacia(sesiones)
+            return
+        self.gestion_dir.iniciar(sesiones, beneficiario_id)
 
     def administrar_obra_social(self, sesiones):
         """Dispara el flujo de gestión de obra social para el beneficiario activo."""
