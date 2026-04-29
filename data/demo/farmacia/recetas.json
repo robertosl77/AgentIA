@@ -18,16 +18,16 @@
           "medicamento_id": "a1506dec-77d4-4213-8d21-a4fd6d741f82",
           "cantidad_receta": 2,
           "cantidad_solicitada": 2,
-          "estado_item": "disponible"
+          "estado_item": "pendiente"
         },
         {
           "medicamento_id": "36527e61-a6d6-4d4a-a2c0-6cd7dcfb8de5",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "disponible"
+          "estado_item": "pendiente"
         }
       ],
-      "estado": "procesando",
+      "estado": "pendiente",
       "operador_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
       "receta_url": "data/demo/archivos/recetas/farmacia_20260428_ae30826b.jpg",
       "notas": [
@@ -57,6 +57,15 @@
           "mensaje": "Token de autorización: 888",
           "timestamp": "2026-04-28T20:54:56.044372",
           "estado": "pendiente"
+        },
+        {
+          "id": "42da8eef",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-04-28T22:11:00.065977",
+          "estado": "leida",
+          "timestamp_leida": "2026-04-28T22:12:07.873862"
         }
       ],
       "historial_estados": [
@@ -104,6 +113,36 @@
           "estado": "procesando",
           "timestamp": "2026-04-28T20:56:40.265799",
           "motivo": "Avance → Procesando"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T21:09:38.400645",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-04-28T21:09:57.011238",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T22:10:38.821611",
+          "motivo": "Farmacia procesando"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-04-28T22:11:00.063972",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T22:11:32.938983",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-04-28T22:11:43.262509",
+          "motivo": "Pendiente"
         }
       ]
     }

@@ -549,6 +549,7 @@ class GestionRecetasStaff:
             sesiones[self.numero].staff_receta_esperando_motivo = False
 
             self.receta_manager.cambiar_estado(receta_id, nuevo_estado, comando.strip())
+            self._reset_items_si_corresponde(receta_id, nuevo_estado)
 
             config = self._get_estado_receta_config(nuevo_estado)
             label = config.get("label", nuevo_estado)
@@ -582,6 +583,7 @@ class GestionRecetasStaff:
             return
 
         self.receta_manager.cambiar_estado(receta_id, nuevo_estado, config.get("label", ""))
+        self._reset_items_si_corresponde(receta_id, nuevo_estado)
 
         label = config.get("label", nuevo_estado)
         self.sw.enviar(self._msg("estado_cambiado", label=label))
@@ -800,6 +802,12 @@ class GestionRecetasStaff:
                         receta_id, nota["id"],
                         self._msg("nota_desestimada_auto")
                     )
+
+    def _reset_items_si_corresponde(self, receta_id, nuevo_estado):
+        """Resetea ítems a 'pendiente' si el estado destino lo requiere según config."""
+        config = self._get_estado_receta_config(nuevo_estado)
+        if config.get("reset_items_al_entrar", False):
+            self.receta_manager.reset_items(receta_id, "pendiente")
 
     def _salir(self, sesiones):
         sesiones[self.numero].staff_receta_estado = None

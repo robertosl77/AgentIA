@@ -254,6 +254,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": true,
+        "reset_items_al_entrar": true,
         "notificacion_push": null,
         "opciones_staff": []
       },

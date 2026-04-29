@@ -282,6 +282,15 @@ class RecetaManager:
                 return True
         return False
 
+    def reset_items(self, receta_id, estado_item="pendiente"):
+        """Resetea todos los items no omitidos al estado dado."""
+        if receta_id not in self.data["recetas"]:
+            return
+        for item in self.data["recetas"][receta_id]["items"]:
+            if item["estado_item"] != "omitido_usuario":
+                item["estado_item"] = estado_item
+        self._guardar_archivo()
+
     # ── VENCIMIENTO ───────────────────────────────────────────────────────────
 
     def esta_vencida(self, receta_id):
