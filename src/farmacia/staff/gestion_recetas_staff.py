@@ -836,7 +836,7 @@ class GestionRecetasStaff:
         config_previo = self._get_estado_receta_config(estado_previo)
         if nuevo_estado not in config_previo.get("inflow", []):
             return
-        self.receta_manager.desestimar_todas_notas_usuario(receta_id)
+        self.receta_manager.desestimar_todas_notas(receta_id)
         msg = self.farm_config.get("recetas", {}).get("notificacion_push_rollback")
         if not msg:
             return

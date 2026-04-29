@@ -27,7 +27,7 @@
           "estado_item": "pendiente"
         }
       ],
-      "estado": "pendiente",
+      "estado": "en_gestion",
       "operador_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
       "receta_url": "data/demo/archivos/recetas/farmacia_20260428_ae30826b.jpg",
       "notas": [
@@ -56,7 +56,9 @@
           "dirigida_a": "farmacia",
           "mensaje": "Token de autorización: 888",
           "timestamp": "2026-04-28T20:54:56.044372",
-          "estado": "pendiente"
+          "estado": "respondida",
+          "respuesta": "Desestimada automáticamente por retroceso de estado.",
+          "timestamp_respuesta": "2026-04-28T23:29:42.612536"
         },
         {
           "id": "42da8eef",
@@ -95,6 +97,16 @@
           "estado": "respondida",
           "respuesta": "Desestimada automáticamente por retroceso de estado.",
           "timestamp_respuesta": "2026-04-28T23:06:03.376538"
+        },
+        {
+          "id": "9d7711ac",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-04-28T23:29:24.353185",
+          "estado": "respondida",
+          "respuesta": "Desestimada automáticamente por retroceso de estado.",
+          "timestamp_respuesta": "2026-04-28T23:29:42.612536"
         }
       ],
       "historial_estados": [
@@ -222,6 +234,31 @@
           "estado": "pendiente",
           "timestamp": "2026-04-28T23:06:17.025360",
           "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T23:29:17.024867",
+          "motivo": "Farmacia procesando"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-04-28T23:29:24.352168",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T23:29:42.610535",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-04-28T23:30:03.057784",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T23:30:23.163443",
+          "motivo": "Avance → En gestión"
         }
       ]
     }

@@ -282,12 +282,12 @@ class RecetaManager:
                 return True
         return False
 
-    def desestimar_todas_notas_usuario(self, receta_id):
-        """Desestima todas las notas pendientes dirigidas al usuario."""
+    def desestimar_todas_notas(self, receta_id):
+        """Desestima todas las notas pendientes de la receta (ambas direcciones)."""
         if receta_id not in self.data["recetas"]:
             return
         for nota in self.data["recetas"][receta_id]["notas"]:
-            if nota["estado"] == "pendiente" and nota["dirigida_a"] == "usuario":
+            if nota["estado"] == "pendiente":
                 nota["estado"] = "respondida"
                 nota["respuesta"] = "Desestimada automáticamente por retroceso de estado."
                 nota["timestamp_respuesta"] = datetime.now().isoformat()
