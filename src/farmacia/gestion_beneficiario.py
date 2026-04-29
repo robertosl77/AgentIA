@@ -1,6 +1,7 @@
 # src/farmacia/gestion_beneficiario.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
+from src.farmacia.farmacia_config_loader import FarmaciaConfigLoader
 from src.cliente.persona_manager import PersonaManager
 from src.cliente.registro_persona import RegistroPersona
 from src.farmacia.vinculacion_manager import VinculacionManager
@@ -23,6 +24,7 @@ class GestionBeneficiario:
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
+        self.farmacia_config = FarmaciaConfigLoader()
         self.persona_manager = PersonaManager()
         self.vinculacion_manager = VinculacionManager()
         self.gestion_os = GestionObraSocial(numero)
@@ -30,8 +32,7 @@ class GestionBeneficiario:
     # ── CONFIGURACIÓN ─────────────────────────────────────────────────────────
 
     def _get_config_alias(self):
-        """Retorna la config del campo alias desde estructura_sesion.vinculacion."""
-        return self.config.data.get("estructura_sesion", {}).get("vinculacion", {}).get("alias", {})
+        return self.farmacia_config.get_estructura_vinculacion().get("alias", {})
 
     def _get_config_validadores(self):
         return self.config.data.get("validadores", {})

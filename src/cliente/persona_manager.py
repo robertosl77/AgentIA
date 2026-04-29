@@ -2,6 +2,7 @@
 import json
 import os
 import uuid
+from src.tenant import data_path
 
 _instancia = None
 
@@ -19,8 +20,6 @@ class PersonaManager:
         - Acceder a catálogos de tipo_documento y tipo_contacto
     """
 
-    PATH = os.path.join("data", "cliente", "personas.json")
-
     def __new__(cls):
         global _instancia
         if _instancia is None:
@@ -29,6 +28,7 @@ class PersonaManager:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("persona", "personas.json")
             self.data = self._cargar_archivo()
 
     # ── PERSISTENCIA ──────────────────────────────────────────────────────────
@@ -218,6 +218,62 @@ class PersonaManager:
         if persona_id not in self.data["personas"]:
             return []
         return self.data["personas"][persona_id].get("contactos", [])
+
+    # ── TIPO PERSONA ──────────────────────────────────────────────────────────
+
+    def buscar_por_tipo_persona(self, tipo):
+        """Retorna lista de (persona_id, datos) para personas con el tipo dado."""
+        return [
+            (pid, datos)
+            for pid, datos in self.data["personas"].items()
+            if tipo in datos.get("tipo_persona", [])
+        ]
+
+    def agregar_tipo_persona(self, persona_id, tipo):
+        """Agrega un tipo_persona a la persona si no lo tiene ya. Retorna True si se agregó."""
+        if persona_id not in self.data["personas"]:
+            return False
+        tipos = self.data["personas"][persona_id].setdefault("tipo_persona", [])
+        if tipo not in tipos:
+            tipos.append(tipo)
+            self._guardar_archivo()
+        return True
+
+    # ── DIRECCIONES ───────────────────────────────────────────────────────────
+
+    def agregar_direccion(self, persona_id, direccion_id, tipo):
+        """
+        Agrega vínculo {direccion_id, tipo} a la persona.
+        Verifica que no exista ya el mismo par (direccion_id, tipo).
+        Retorna True si se agregó, False si ya existe o persona no encontrada.
+        """
+        if persona_id not in self.data["personas"]:
+            return False
+        direcciones = self.data["personas"][persona_id].setdefault("direcciones", [])
+        for d in direcciones:
+            if d["direccion_id"] == direccion_id and d["tipo"] == tipo:
+                return False
+        direcciones.append({"direccion_id": direccion_id, "tipo": tipo})
+        self._guardar_archivo()
+        return True
+
+    def get_direcciones(self, persona_id):
+        """Retorna la lista de {direccion_id, tipo} de la persona, o lista vacía."""
+        if persona_id not in self.data["personas"]:
+            return []
+        return self.data["personas"][persona_id].get("direcciones", [])
+
+    def quitar_direccion(self, persona_id, direccion_id, tipo):
+        """Elimina el vínculo (direccion_id, tipo) de la persona. Retorna True si se quitó."""
+        if persona_id not in self.data["personas"]:
+            return False
+        direcciones = self.data["personas"][persona_id].get("direcciones", [])
+        for i, d in enumerate(direcciones):
+            if d["direccion_id"] == direccion_id and d["tipo"] == tipo:
+                direcciones.pop(i)
+                self._guardar_archivo()
+                return True
+        return False
 
     # ── NOMBRE PARA BIENVENIDA ────────────────────────────────────────────────
 

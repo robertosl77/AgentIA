@@ -1,0 +1,111 @@
+{
+  "recetas": {
+    "d45891e7-8eac-4d6b-b962-aa495149f5a8": {
+      "persona_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+      "obra_social_id": "a71bd8d5-d225-4995-9553-6c8dd45f10ab",
+      "credencial_validada": true,
+      "fecha_creacion": "12/03/2026",
+      "fecha_validez_desde": "12/04/2026",
+      "fecha_vencimiento": "12/05/2026",
+      "medico": {
+        "nombre": "María Inés Ortiz",
+        "matricula": "111002",
+        "especialidad": "ENDOCRINOLOGIA"
+      },
+      "diagnostico": "Panhipopituitarismo",
+      "items": [
+        {
+          "medicamento_id": "a1506dec-77d4-4213-8d21-a4fd6d741f82",
+          "cantidad_receta": 2,
+          "cantidad_solicitada": 2,
+          "estado_item": "disponible"
+        },
+        {
+          "medicamento_id": "36527e61-a6d6-4d4a-a2c0-6cd7dcfb8de5",
+          "cantidad_receta": 1,
+          "cantidad_solicitada": 1,
+          "estado_item": "disponible"
+        }
+      ],
+      "estado": "procesando",
+      "operador_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+      "receta_url": "data/demo/archivos/recetas/farmacia_20260428_ae30826b.jpg",
+      "notas": [
+        {
+          "id": "99adca51",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-04-28T19:56:12.638815",
+          "estado": "respondida",
+          "respuesta": "TOKEN: 888",
+          "timestamp_respuesta": "2026-04-28T20:54:56.041367"
+        },
+        {
+          "id": "3d369db5",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-04-28T20:53:19.761498",
+          "estado": "leida",
+          "timestamp_leida": "2026-04-28T20:54:56.540365"
+        },
+        {
+          "id": "8de5f425",
+          "autor": "usuario",
+          "dirigida_a": "farmacia",
+          "mensaje": "Token de autorización: 888",
+          "timestamp": "2026-04-28T20:54:56.044372",
+          "estado": "pendiente"
+        }
+      ],
+      "historial_estados": [
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-04-28T19:55:19.037429",
+          "motivo": "Receta cargada por usuario"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T19:55:29.177646",
+          "motivo": "Farmacia procesando"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-04-28T19:56:12.637816",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T20:52:30.795328",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-04-28T20:52:44.069445",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T20:53:02.852334",
+          "motivo": "Farmacia procesando"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-04-28T20:53:19.758486",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "token_enviado",
+          "timestamp": "2026-04-28T20:54:56.042367",
+          "motivo": "Token enviado por paciente"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-04-28T20:56:40.265799",
+          "motivo": "Avance → Procesando"
+        }
+      ]
+    }
+  }
+}

@@ -2,6 +2,7 @@
 import json
 import os
 import base64
+from src.tenant import data_path
 
 
 class AgenteIA:
@@ -25,9 +26,8 @@ class AgenteIA:
     }
     """
 
-    CONFIG_PATH = os.path.join("data", "farmacia", "farmacia_config.json")
-
     def __init__(self):
+        self.CONFIG_PATH = data_path("farmacia", "farmacia_config.json")
         self.config = self._cargar_config()
         self.proveedor = self.config.get("agente_ia", {}).get("proveedor", "gemini")
         self.modelo = self.config.get("agente_ia", {}).get("modelo", "gemini-2.0-flash")

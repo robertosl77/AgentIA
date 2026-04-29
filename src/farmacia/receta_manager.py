@@ -3,6 +3,7 @@ import json
 import os
 import uuid
 from datetime import datetime, timedelta
+from src.tenant import data_path
 
 _instancia = None
 
@@ -13,9 +14,6 @@ class RecetaManager:
     Singleton — se carga una vez y se reutiliza.
     """
 
-    PATH = os.path.join("data", "farmacia", "recetas.json")
-    CONFIG_PATH = os.path.join("data", "farmacia", "farmacia_config.json")
-
     def __new__(cls):
         global _instancia
         if _instancia is None:
@@ -24,6 +22,8 @@ class RecetaManager:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("farmacia", "recetas.json")
+            self.CONFIG_PATH = data_path("farmacia", "farmacia_config.json")
             self.data = self._cargar_archivo()
             self.config = self._cargar_config()
 
@@ -53,12 +53,13 @@ class RecetaManager:
 
     def crear_receta(self, persona_id, obra_social_id, fecha_validez_desde,
                      medico, diagnostico, items, operador_id, fecha_creacion="",
-                     credencial_validada=False):
+                     credencial_validada=False, receta_url=None):
         """
         Crea una receta nueva con sus items.
         items: [{ medicamento_id, cantidad, cantidad_solicitada, estado_item }]
         Calcula fecha_vencimiento automáticamente.
         credencial_validada: True si la credencial de OS coincide con los registros.
+        receta_url: URL del archivo original guardado en storage (None si no aplica).
         Retorna receta_id.
         """
         dias_venc = self.config.get("recetas", {}).get("dias_vencimiento", 30)
@@ -83,6 +84,7 @@ class RecetaManager:
             "items": items,
             "estado": "pendiente",
             "operador_id": operador_id,
+            "receta_url": receta_url,
             "notas": [],
             "historial_estados": [
                 {
@@ -116,22 +118,46 @@ class RecetaManager:
         return sorted(resultado, key=lambda x: x.get("fecha_validez_desde", ""), reverse=True)
 
     def buscar_pendientes(self):
-        """Retorna todas las recetas pendientes (para la farmacia)."""
+        """Retorna recetas no finales (para la farmacia). Excluye cerrada."""
+        estados_config = self._get_estados_receta()
         resultado = []
         for rid, datos in self.data["recetas"].items():
-            if datos["estado"] in ("pendiente", "en_gestion"):
+            estado = datos.get("estado", "pendiente")
+            config = estados_config.get(estado, {})
+            if not config.get("es_final", False):
                 resultado.append({"receta_id": rid, **datos})
         return sorted(resultado, key=lambda x: x.get("fecha_validez_desde", ""))
 
     # ── ESTADOS ───────────────────────────────────────────────────────────────
+
+    def _get_estados_receta(self):
+        """Retorna los estados de receta desde la config."""
+        return self.config.get("recetas", {}).get("estados_receta", {})
+
+    def _get_estados_item(self):
+        """Retorna los estados de items desde la config."""
+        return self.config.get("recetas", {}).get("estados_item", {})
+
+    def get_estado_config(self, estado_id):
+        """Retorna la config de un estado de receta (label, icono, outflow, etc.)."""
+        return self._get_estados_receta().get(estado_id, {})
+
+    def get_outflow(self, estado_id):
+        """Retorna los estados a los que puede transicionar desde el estado actual."""
+        config = self.get_estado_config(estado_id)
+        return config.get("outflow", [])
+
+    def get_inflow(self, estado_id):
+        """Retorna los estados desde los que se puede llegar al estado actual."""
+        config = self.get_estado_config(estado_id)
+        return config.get("inflow", [])
 
     def cambiar_estado(self, receta_id, nuevo_estado, motivo=""):
         """Cambia el estado de la receta y registra en historial."""
         if receta_id not in self.data["recetas"]:
             return False
 
-        estados_validos = ["pendiente", "en_gestion", "autorizada",
-                           "lista_retiro", "cerrada", "rechazada"]
+        estados_validos = list(self._get_estados_receta().keys())
         if nuevo_estado not in estados_validos:
             return False
 
@@ -154,9 +180,7 @@ class RecetaManager:
         if item_index < 0 or item_index >= len(receta["items"]):
             return False
 
-        estados_validos = ["pendiente", "disponible", "sin_stock",
-                           "alternativa_ofrecida", "alternativa_aceptada",
-                           "rechazado_usuario", "omitido_usuario"]
+        estados_validos = list(self._get_estados_item().keys())
         if nuevo_estado not in estados_validos:
             return False
 
@@ -209,6 +233,54 @@ class RecetaManager:
             n for n in self.data["recetas"][receta_id]["notas"]
             if n["estado"] == "pendiente" and n["dirigida_a"] == dirigida_a
         ]
+
+    def contar_notificaciones_usuario(self, persona_id):
+        """Cuenta total de notas pendientes dirigidas al usuario en todas sus recetas activas."""
+        total = 0
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                notas = [
+                    n for n in datos.get("notas", [])
+                    if n["estado"] == "pendiente" and n["dirigida_a"] == "usuario"
+                ]
+                total += len(notas)
+        return total
+
+    def get_primera_notificacion_usuario(self, persona_id):
+        """
+        Retorna la primera nota pendiente dirigida al usuario (orden cronológico).
+        Retorna (receta_id, nota) o None.
+        """
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                for nota in datos.get("notas", []):
+                    if nota["estado"] == "pendiente" and nota["dirigida_a"] == "usuario":
+                        return (rid, nota)
+        return None
+
+    def buscar_recetas_activas(self, persona_id):
+        """Retorna recetas activas (no finales) de una persona."""
+        estados_config = self._get_estados_receta()
+        resultado = []
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                estado = datos.get("estado", "pendiente")
+                config_e = estados_config.get(estado, {})
+                if not config_e.get("es_final", False):
+                    resultado.append({"receta_id": rid, **datos})
+        return sorted(resultado, key=lambda x: x.get("fecha_vencimiento", ""))
+
+    def marcar_nota_leida(self, receta_id, nota_id):
+        """Marca una nota como leída (informativa, sin respuesta)."""
+        if receta_id not in self.data["recetas"]:
+            return False
+        for nota in self.data["recetas"][receta_id]["notas"]:
+            if nota["id"] == nota_id:
+                nota["estado"] = "leida"
+                nota["timestamp_leida"] = datetime.now().isoformat()
+                self._guardar_archivo()
+                return True
+        return False
 
     # ── VENCIMIENTO ───────────────────────────────────────────────────────────
 

@@ -1,6 +1,7 @@
 # src/maps/maps_config_loader.py
 import json
 import os
+from src.tenant import data_path
 
 _instancia = None
 
@@ -10,8 +11,6 @@ class MapsConfigLoader:
     Singleton — se carga una vez y se reutiliza.
     """
 
-    PATH = r"data\maps_config.json"
-
     def __new__(cls):
         global _instancia
         if _instancia is None:
@@ -20,6 +19,7 @@ class MapsConfigLoader:
 
     def __init__(self):
         if not hasattr(self, 'data'):
+            self.PATH = data_path("maps_config.json")
             self.data = self._cargar_archivo()
 
     def _cargar_archivo(self):

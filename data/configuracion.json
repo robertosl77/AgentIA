@@ -1,4 +1,5 @@
 {
+  "tenant_id": "demo",
   "nombre_negocio": "Proyecto ChatBot",
   "configuracion_bot": {
     "bloquear_fuera_de_horario": true,
@@ -127,219 +128,13 @@
   "estructura_sesion": {
     "rol_defecto": "usuario",
     "duracion_horas": 1,
-    "reintentos_input": 3,
-    "persona": {
-      "tipo_documento": {
-        "obligatorio": true,
-        "tipo": "catalogo",
-        "catalogo": "catalogo_tipo_documento",
-        "validadores": [],
-        "label": "Tipo documento",
-        "msj_pedido": "🪪 Seleccioná el *tipo de documento*:",
-        "msj_reintento": "⚠️ Opción no válida. Seleccioná una de la lista:"
-      },
-      "numero_documento": {
-        "obligatorio": true,
-        "tipo": "numero",
-        "validadores": [
-          "numero_documento_minimo",
-          "numero_documento_maximo"
-        ],
-        "label": "Nro. documento",
-        "msj_pedido": "🪪 Ingresá tu *número de documento*:",
-        "msj_reintento": "⚠️ El número de documento no es válido. Intentá nuevamente:"
-      },
-      "nombre": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3",
-          "texto_maximo_50"
-        ],
-        "label": "Nombre",
-        "msj_pedido": "👤 Por favor ingresá tu *nombre*:",
-        "msj_reintento": "⚠️ El nombre ingresado no es válido. Por favor ingresá solo letras:"
-      },
-      "apellido": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_maximo_50"
-        ],
-        "label": "Apellido",
-        "msj_pedido": "👤 Por favor ingresá tu *apellido*:",
-        "msj_reintento": "⚠️ El apellido ingresado no es válido. Por favor ingresá solo letras:"
-      },
-      "fecha_nacimiento": {
-        "obligatorio": true,
-        "tipo": "fecha",
-        "validadores": [
-          "fecha_formato_1",
-          "fecha_pasado"
-        ],
-        "label": "Fecha nacimiento",
-        "msj_pedido": "🎂 Ingresá tu *fecha de nacimiento* (DD/MM/AAAA):",
-        "msj_reintento": "⚠️ El formato debe ser DD/MM/AAAA. Intentá nuevamente:"
-      },
-      "contactos": {
-        "tipo_contacto": {
-          "obligatorio": true,
-          "tipo": "catalogo",
-          "catalogo": "catalogo_tipo_contacto",
-          "validadores": [],
-          "msj_pedido": "📇 Seleccioná el *tipo de contacto*:",
-          "msj_reintento": "⚠️ Opción no válida. Seleccioná una de la lista:"
-        },
-        "valor": {
-          "obligatorio": true,
-          "tipo": "dinamico",
-          "validadores_por_tipo": {
-            "telefono": {
-              "tipo_base": "telefono",
-              "validadores": [],
-              "msj_pedido": "📱 Ingresá el *número de teléfono* (solo números):",
-              "msj_reintento": "⚠️ El teléfono no es válido. Ingresá solo números (mín. 8 dígitos):"
-            },
-            "email": {
-              "tipo_base": "email",
-              "validadores": [
-                "email_formato"
-              ],
-              "msj_pedido": "📧 Ingresá el *email*:",
-              "msj_reintento": "⚠️ El email no es válido. El formato debe ser ejemplo@dominio.com:"
-            }
-          }
-        },
-        "etiqueta": {
-          "obligatorio": false,
-          "tipo": "texto",
-          "validadores": [
-            "texto_maximo_20"
-          ],
-          "msj_pedido": "🏷️ Ingresá una etiqueta (ej: *personal*, *laboral*) o '-' para omitir:",
-          "msj_reintento": "⚠️ La etiqueta no debe superar los 20 caracteres. Intentá nuevamente:"
-        }
-      }
-    },
-    "direccion": {
-      "calle": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3",
-          "texto_maximo_100"
-        ],
-        "msj_pedido": "🏠 Ingresá la *calle*:",
-        "msj_reintento": "⚠️ La calle ingresada no es válida. Intentá nuevamente:"
-      },
-      "altura": {
-        "obligatorio": true,
-        "tipo": "numero",
-        "validadores": [],
-        "msj_pedido": "🏠 Ingresá el *número de altura*:",
-        "msj_reintento": "⚠️ La altura debe ser solo números. Intentá nuevamente:"
-      },
-      "piso": {
-        "obligatorio": false,
-        "tipo": "texto",
-        "validadores": [],
-        "msj_pedido": "🏠 Ingresá el *piso* (o '-' si no aplica):",
-        "msj_reintento": ""
-      },
-      "depto": {
-        "obligatorio": false,
-        "tipo": "texto",
-        "validadores": [],
-        "msj_pedido": "🏠 Ingresá el *departamento* (o '-' si no aplica):",
-        "msj_reintento": ""
-      },
-      "localidad": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3"
-        ],
-        "msj_pedido": "🏠 Ingresá la *localidad*:",
-        "msj_reintento": "⚠️ La localidad ingresada no es válida. Intentá nuevamente:"
-      },
-      "codigo_postal": {
-        "obligatorio": true,
-        "tipo": "numero",
-        "validadores": [],
-        "msj_pedido": "🏠 Ingresá el *código postal*:",
-        "msj_reintento": "⚠️ El código postal debe ser solo números. Intentá nuevamente:"
-      },
-      "provincia": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3"
-        ],
-        "msj_pedido": "🏠 Ingresá la *provincia*:",
-        "msj_reintento": "⚠️ La provincia ingresada no es válida. Intentá nuevamente:"
-      }
-    },
-    "vinculacion": {
-      "alias": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "texto_minimo_3",
-          "alias_vinculacion"
-        ],
-        "msj_pedido": "🔗 Ingresá un alias para esta persona (ej: *mamá*, *hijo*, *tía rosa*):",
-        "msj_reintento": "⚠️ El alias no es válido. Debe tener entre 3 y 30 caracteres:"
-      }
-    },
-    "obra_social": {
-      "entidad": {
-        "obligatorio": true,
-        "tipo": "catalogo",
-        "catalogo": "catalogo_obras_sociales",
-        "validadores": [],
-        "label": "Obra social",
-        "msj_pedido": "🏥 Seleccioná tu *obra social* de la lista (o escribí el nombre si no está):",
-        "msj_reintento": "⚠️ Opción no válida. Intentá nuevamente:"
-      },
-      "numero": {
-        "obligatorio": true,
-        "tipo": "texto",
-        "validadores": [
-          "numero_obra_social"
-        ],
-        "label": "Nro. credencial",
-        "msj_pedido": "🪪 Ingresá tu *número de credencial/afiliado*:",
-        "msj_reintento": "⚠️ El número de afiliado no es válido. Intentá nuevamente:"
-      },
-      "plan": {
-        "obligatorio": false,
-        "tipo": "texto",
-        "validadores": [
-          "texto_maximo_50"
-        ],
-        "label": "Plan",
-        "msj_pedido": "📄 Ingresá el *plan* (o '-' si no aplica):",
-        "msj_reintento": "⚠️ El plan no es válido. Intentá nuevamente:"
-      }
-    }
+    "reintentos_input": 3
   },
   "mensajes": {
     "bienvenida": "👋 ¡Hola {pushname}! Bienvenido a {nombre_negocio}.",
     "menu_principal": {
       "consulta": "¿Qué deseas hacer?",
       "opciones": [
-        {
-          "id": "0",
-          "roles": [
-            "root",
-            "admin"
-          ],
-          "activacion": [
-            "0"
-          ],
-          "texto": "0. ⚙️ Configuración de Staff",
-          "submenu": "staff"
-        },
         {
           "id": "1",
           "roles": [
@@ -452,7 +247,7 @@
             "activacion": [
               "1"
             ],
-            "texto": "1. Gestionar Guardias",
+            "texto": "1. 🏥 Gestionar Guardias",
             "handler": "gestionar_guardias"
           },
           {
@@ -464,7 +259,7 @@
             "activacion": [
               "2"
             ],
-            "texto": "2. Gestionar Cierre Eventual",
+            "texto": "2. 🚫 Gestionar Cierre Eventual",
             "handler": "gestionar_cierre_eventual"
           },
           {
@@ -475,8 +270,20 @@
             "activacion": [
               "3"
             ],
-            "texto": "3. Editar Horarios Fijos",
+            "texto": "3. ⏰ Editar Horarios Fijos",
             "handler": "editar_horarios_fijos"
+          },
+          {
+            "id": "4",
+            "roles": [
+              "root",
+              "admin"
+            ],
+            "activacion": [
+              "4"
+            ],
+            "texto": "4. 📋 Recetas pendientes",
+            "handler": "gestionar_recetas_pendientes"
           },
           {
             "id": "salir",
@@ -495,6 +302,19 @@
       "farmacia": {
         "consulta": "💊 Farmacia{flag_beneficiario}\n\n¿Qué deseas hacer?",
         "opciones": [
+          {
+            "id": "0",
+            "roles": [
+              "root",
+              "admin"
+            ],
+            "activacion": [
+              "0"
+            ],
+            "texto": "0. ⚙️ Configuración de Staff",
+            "handler": "abrir_staff",
+            "requisitos": []
+          },
           {
             "id": "1",
             "roles": [
@@ -589,8 +409,8 @@
             "activacion": [
               "7"
             ],
-            "texto": "7. 🏥 Administrar obra social de {beneficiario}",
-            "handler": "administrar_obra_social",
+            "texto": "7. 🏠 Gestionar direcciones de {beneficiario}",
+            "handler": "gestionar_direccion",
             "requisitos": []
           },
           {
@@ -603,8 +423,36 @@
             "activacion": [
               "8"
             ],
-            "texto": "8. 📤 Cargar receta de {beneficiario}",
+            "texto": "8. 🏥 Administrar obra social de {beneficiario}",
+            "handler": "administrar_obra_social",
+            "requisitos": []
+          },
+          {
+            "id": "9",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "9"
+            ],
+            "texto": "9. 📤 Cargar receta de {beneficiario}",
             "handler": "cargar_receta",
+            "requisitos": []
+          },
+          {
+            "id": "10",
+            "roles": [
+              "root",
+              "admin",
+              "usuario"
+            ],
+            "activacion": [
+              "10"
+            ],
+            "texto": "10. 📬 Mis recetas{notificaciones}",
+            "handler": "mis_recetas",
             "requisitos": []
           },
           {

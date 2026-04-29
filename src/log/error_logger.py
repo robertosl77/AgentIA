@@ -3,6 +3,7 @@ import json
 import os
 import traceback
 from datetime import datetime
+from src.tenant import data_path
 
 class ErrorLogger:
     """
@@ -14,9 +15,8 @@ class ErrorLogger:
         - Preparado para mostrarse desde el panel root
     """
 
-    PATH = r"data\error_log.json"
-
     def __init__(self):
+        self.PATH = data_path("error_log.json")
         self.data = self._cargar_archivo()
 
     # ── PERSISTENCIA ──────────────────────────────────────────────────────────

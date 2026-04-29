@@ -1,0 +1,27 @@
+{
+  "catalogo_tipo_direccion": [
+    "casa",
+    "trabajo",
+    "facturacion",
+    "envio"
+  ],
+  "direcciones": {
+    "2cfe00aa-8eab-42dd-a82c-ef5d5aa57ad1": {
+      "direccion_formateada": "Tronador 661, C1427CRM Cdad. Autónoma de Buenos Aires",
+      "calle": "tronador",
+      "altura": "661",
+      "entre_calle_1": "iturri",
+      "entre_calle_2": "caldas",
+      "piso": "",
+      "depto": "",
+      "localidad": "buenos aires",
+      "codigo_postal": "C1427",
+      "provincia": "ciudad autónoma de buenos aires",
+      "place_id": "ChIJW7Cipgu2vJURYlkTqLqbw3s",
+      "coordenadas": {
+        "lat": -34.5848054,
+        "lng": -58.4667537
+      }
+    }
+  }
+}

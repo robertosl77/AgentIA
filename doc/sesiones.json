@@ -1,0 +1,20 @@
+{
+  "sesiones": {
+    "5491168387770@c.us": {
+      "rol": "admin",
+      "login": {
+        "timestamp": "2026-04-23T01:08:29.036182",
+        "expira": "2026-04-23T02:08:29.036182"
+      },
+      "pushname": "Sr Macros"
+    },
+    "125962901532858@lid": {
+      "rol": "admin",
+      "login": {
+        "timestamp": "2026-04-23T01:08:29.037181",
+        "expira": "2026-04-23T02:08:29.037181"
+      },
+      "pushname": "Sr Macros"
+    }
+  }
+}

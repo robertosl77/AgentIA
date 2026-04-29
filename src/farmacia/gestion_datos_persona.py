@@ -1,13 +1,14 @@
 # src/farmacia/gestion_datos_persona.py
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
+from src.farmacia.farmacia_config_loader import FarmaciaConfigLoader
 from src.cliente.persona_manager import PersonaManager
 
 
 class GestionDatosPersona:
     """
     Flujo conversacional dinámico para completar/editar datos de persona.
-    Campos simples se leen de configuracion.json (estructura_sesion.persona).
+    Campos simples se leen de farmacia_config.json (estructura_sesion.persona).
     Contactos se gestionan como CRUD aparte (agregar/eliminar).
     """
 
@@ -19,13 +20,14 @@ class GestionDatosPersona:
         self.numero = numero
         self.sw = SendWPP(numero)
         self.config = ConfigLoader()
+        self.farmacia_config = FarmaciaConfigLoader()
         self.persona_manager = PersonaManager()
 
     # ── CONFIGURACIÓN DINÁMICA ────────────────────────────────────────────────
 
     def _get_campos(self):
         """Retorna el dict de campos simples (sin contactos)."""
-        todos = self.config.data.get("estructura_sesion", {}).get(self.SECCION, {})
+        todos = self.farmacia_config.get_estructura_persona()
         return {k: v for k, v in todos.items() if k != self.CAMPO_CONTACTOS}
 
     def _get_campos_ordenados(self):
@@ -38,7 +40,7 @@ class GestionDatosPersona:
 
     def _get_config_contactos(self):
         """Retorna la config de la subestructura contactos."""
-        return self.config.data.get("estructura_sesion", {}).get(self.SECCION, {}).get(self.CAMPO_CONTACTOS, {})
+        return self.farmacia_config.get_estructura_persona().get(self.CAMPO_CONTACTOS, {})
 
     def _get_config_validadores(self):
         """Retorna el catálogo de validadores globales."""
