@@ -66,6 +66,35 @@
           "timestamp": "2026-04-28T22:11:00.065977",
           "estado": "leida",
           "timestamp_leida": "2026-04-28T22:12:07.873862"
+        },
+        {
+          "id": "0117c163",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-04-28T22:28:17.472811",
+          "estado": "leida",
+          "timestamp_leida": "2026-04-28T22:40:13.283514"
+        },
+        {
+          "id": "b73daffa",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-04-28T22:41:11.801355",
+          "estado": "respondida",
+          "respuesta": "Desestimada automáticamente por retroceso de estado.",
+          "timestamp_respuesta": "2026-04-28T22:41:25.057709"
+        },
+        {
+          "id": "31cfc426",
+          "autor": "farmacia",
+          "dirigida_a": "usuario",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-04-28T23:05:19.614645",
+          "estado": "respondida",
+          "respuesta": "Desestimada automáticamente por retroceso de estado.",
+          "timestamp_respuesta": "2026-04-28T23:06:03.376538"
         }
       ],
       "historial_estados": [
@@ -142,6 +171,56 @@
         {
           "estado": "pendiente",
           "timestamp": "2026-04-28T22:11:43.262509",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T22:27:56.548966",
+          "motivo": "Farmacia procesando"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-04-28T22:28:17.471811",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T22:28:27.937603",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-04-28T22:28:49.958021",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T22:41:04.041133",
+          "motivo": "Farmacia procesando"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-04-28T22:41:11.799356",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T22:41:25.055708",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-04-28T23:05:19.613641",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-04-28T23:06:03.375541",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-04-28T23:06:17.025360",
           "motivo": "Pendiente"
         }
       ]

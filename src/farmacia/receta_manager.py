@@ -282,6 +282,17 @@ class RecetaManager:
                 return True
         return False
 
+    def desestimar_todas_notas_usuario(self, receta_id):
+        """Desestima todas las notas pendientes dirigidas al usuario."""
+        if receta_id not in self.data["recetas"]:
+            return
+        for nota in self.data["recetas"][receta_id]["notas"]:
+            if nota["estado"] == "pendiente" and nota["dirigida_a"] == "usuario":
+                nota["estado"] = "respondida"
+                nota["respuesta"] = "Desestimada automáticamente por retroceso de estado."
+                nota["timestamp_respuesta"] = datetime.now().isoformat()
+        self._guardar_archivo()
+
     def reset_items(self, receta_id, estado_item="pendiente"):
         """Resetea todos los items no omitidos al estado dado."""
         if receta_id not in self.data["recetas"]:

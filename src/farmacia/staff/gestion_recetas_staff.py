@@ -8,6 +8,7 @@ from src.cliente.persona_manager import PersonaManager
 from src.farmacia.receta_manager import RecetaManager
 from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.obra_social_manager import ObraSocialManager
+from src.farmacia.vinculacion_manager import VinculacionManager
 
 
 from src.tenant import data_path
@@ -39,6 +40,7 @@ class GestionRecetasStaff:
         self.receta_manager = RecetaManager()
         self.med_manager = MedicamentoManager()
         self.os_manager = ObraSocialManager()
+        self.vinculacion_manager = VinculacionManager()
         self.farm_config = self._cargar_config()
 
     def _cargar_config(self):
@@ -548,8 +550,12 @@ class GestionRecetasStaff:
             nuevo_estado = getattr(sesiones[self.numero], "staff_receta_nuevo_estado", "")
             sesiones[self.numero].staff_receta_esperando_motivo = False
 
+            resultado_previo = self.receta_manager.get_receta(receta_id)
+            estado_previo = resultado_previo[1]["estado"] if resultado_previo else ""
+
             self.receta_manager.cambiar_estado(receta_id, nuevo_estado, comando.strip())
             self._reset_items_si_corresponde(receta_id, nuevo_estado)
+            self._desestimar_si_rollback(receta_id, estado_previo, nuevo_estado)
 
             config = self._get_estado_receta_config(nuevo_estado)
             label = config.get("label", nuevo_estado)
@@ -582,8 +588,12 @@ class GestionRecetasStaff:
             self.sw.enviar(self._msg("pedir_motivo", label=label))
             return
 
+        resultado_previo = self.receta_manager.get_receta(receta_id)
+        estado_previo = resultado_previo[1]["estado"] if resultado_previo else ""
+
         self.receta_manager.cambiar_estado(receta_id, nuevo_estado, config.get("label", ""))
         self._reset_items_si_corresponde(receta_id, nuevo_estado)
+        self._desestimar_si_rollback(receta_id, estado_previo, nuevo_estado)
 
         label = config.get("label", nuevo_estado)
         self.sw.enviar(self._msg("estado_cambiado", label=label))
@@ -676,6 +686,25 @@ class GestionRecetasStaff:
 
     # ── HELPERS ───────────────────────────────────────────────────────────────
 
+    def _resolver_lids(self, persona_id):
+        """
+        Retorna la lista de LIDs a los que enviar push para una persona.
+        Si la persona tiene titulares, usa los lids de todos ellos.
+        Si no tiene titulares, usa sus propios lids.
+        """
+        titulares = self.vinculacion_manager.buscar_titulares(persona_id)
+        if titulares:
+            lids = []
+            for titular_id in titulares:
+                titular_data = self.persona_manager.get_persona(titular_id)
+                if titular_data:
+                    lids.extend(titular_data[1].get("lids", []))
+            return lids
+        persona_data = self.persona_manager.get_persona(persona_id)
+        if not persona_data:
+            return []
+        return persona_data[1].get("lids", [])
+
     def _get_estado_receta_config(self, estado_id):
         return self.farm_config.get("recetas", {}).get("estados_receta", {}).get(estado_id, {})
 
@@ -699,22 +728,14 @@ class GestionRecetasStaff:
         if not persona_id:
             return
 
-        # Obtener LIDs del cliente
-        persona_data = self.persona_manager.get_persona(persona_id)
-        if not persona_data:
-            return
-
-        _, persona = persona_data
-        lids = persona.get("lids", [])
+        lids = self._resolver_lids(persona_id)
         if not lids:
-            print(f"[NOTIFICACION_PUSH] Sin LID para persona {persona_id} — no se puede enviar")
+            print(f"[NOTIFICACION_PUSH] Sin LID para persona {persona_id} ni titulares — no se puede enviar")
             return
 
-        # Enviar a todos los LIDs del cliente (puede tener varios dispositivos)
         from src.send_wpp import SendWPP
         for lid in lids:
-            sw_cliente = SendWPP(lid)
-            sw_cliente.enviar(mensaje)
+            SendWPP(lid).enviar(mensaje)
             print(f"[NOTIFICACION_PUSH] Enviado a {lid} | Estado: {estado_id}")
 
     def _evaluar_estado_post_cambio_item(self, receta_id, sesiones):
@@ -808,6 +829,30 @@ class GestionRecetasStaff:
         config = self._get_estado_receta_config(nuevo_estado)
         if config.get("reset_items_al_entrar", False):
             self.receta_manager.reset_items(receta_id, "pendiente")
+
+    def _desestimar_si_rollback(self, receta_id, estado_previo, nuevo_estado):
+        """Si la transición es un retroceso (nuevo_estado en inflow de estado_previo),
+        desestima todas las notas pendientes del usuario y envía push de cancelación."""
+        config_previo = self._get_estado_receta_config(estado_previo)
+        if nuevo_estado not in config_previo.get("inflow", []):
+            return
+        self.receta_manager.desestimar_todas_notas_usuario(receta_id)
+        msg = self.farm_config.get("recetas", {}).get("notificacion_push_rollback")
+        if not msg:
+            return
+        resultado = self.receta_manager.get_receta(receta_id)
+        if not resultado:
+            return
+        _, receta = resultado
+        persona_id = receta.get("persona_id", "")
+        if self.receta_manager.contar_notificaciones_usuario(persona_id) > 0:
+            print(f"[ROLLBACK_PUSH] Omitido — hay otras notificaciones pendientes para {persona_id}")
+            return
+        lids = self._resolver_lids(persona_id)
+        from src.send_wpp import SendWPP
+        for lid in lids:
+            SendWPP(lid).enviar(msg)
+            print(f"[ROLLBACK_PUSH] Enviado a {lid} | {estado_previo} → {nuevo_estado}")
 
     def _salir(self, sesiones):
         sesiones[self.numero].staff_receta_estado = None

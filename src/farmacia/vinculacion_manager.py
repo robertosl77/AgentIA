@@ -235,6 +235,17 @@ class VinculacionManager:
             self._guardar_archivo()
         return len(a_borrar)
 
+    def buscar_titulares(self, persona_id):
+        """
+        Retorna lista de persona_id que son titulares de esta persona
+        (vinculaciones donde persona_b.persona_id == persona_id).
+        """
+        return [
+            datos["persona_a"]["persona_id"]
+            for datos in self.data["vinculaciones"].values()
+            if datos["persona_b"]["persona_id"] == persona_id
+        ]
+
     # ── HELPERS INTERNOS ──────────────────────────────────────────────────────
 
     def _get_lado(self, datos, persona_id):

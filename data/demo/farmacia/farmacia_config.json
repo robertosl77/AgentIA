@@ -244,6 +244,7 @@
     "alerta_preventiva_dias": 20,
     "alerta_urgente_dias": 28,
     "max_reintentos_token": 3,
+    "notificacion_push_rollback": "🤖 *Asistente Virtual Informa:*\n\n✅ Una solicitud anterior de la farmacia fue cancelada. No necesitás hacer nada por el momento.",
     "estados_receta": {
       "pendiente": {
         "label": "Pendiente",
