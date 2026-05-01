@@ -255,21 +255,21 @@ class GestionRecetasCliente:
 
         if comando.strip() == "1":
             self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Acepto el cambio.", tipo="accion")
+            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Acepto el cambio.", tipo="accion", medicamento_id=med_id)
             self._cambiar_item_por_medicamento_id(receta_id, med_id, "alternativa_aceptada")
             self.sw.enviar("✅ Alternativa aceptada.")
             self._evaluar_estado_post_respuesta(receta_id, sesiones)
 
         elif comando.strip() == "2":
             self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Rechazo el medicamento.", tipo="accion")
+            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Rechazo el medicamento.", tipo="accion", medicamento_id=med_id)
             self._cambiar_item_por_medicamento_id(receta_id, med_id, "rechazado_usuario")
             self.sw.enviar("❌ Medicamento rechazado.")
             self._evaluar_estado_post_respuesta(receta_id, sesiones)
 
         elif comando.strip() == "3":
             self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Voy a esperar.", tipo="accion")
+            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Voy a esperar.", tipo="accion", medicamento_id=med_id)
             self.sw.enviar("⏳ Registrado. La farmacia será notificada.")
             print(f"[PLACEHOLDER] Agendar recordatorio para receta {receta_id}")
             self._mostrar_siguiente_notificacion(sesiones)
@@ -283,14 +283,14 @@ class GestionRecetasCliente:
 
         if comando.strip() == "1":
             self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Rechazo el medicamento.", tipo="accion")
+            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Rechazo el medicamento.", tipo="accion", medicamento_id=med_id)
             self._cambiar_item_por_medicamento_id(receta_id, med_id, "rechazado_usuario")
             self.sw.enviar("❌ Medicamento rechazado.")
             self._evaluar_estado_post_respuesta(receta_id, sesiones)
 
         elif comando.strip() == "2":
             self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Voy a esperar.", tipo="accion")
+            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Voy a esperar.", tipo="accion", medicamento_id=med_id)
             self.sw.enviar("⏳ Registrado. La farmacia será notificada.")
             print(f"[PLACEHOLDER] Agendar recordatorio para receta {receta_id}")
             self._mostrar_siguiente_notificacion(sesiones)

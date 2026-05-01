@@ -33,11 +33,11 @@
       "notas": [],
       "chat": [
         {
-          "id": "56037af5",
+          "id": "369e7363",
           "autor": "farmacia",
           "tipo": "sin_stock",
           "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-05-01T16:08:31.899694",
+          "timestamp": "2026-05-01T16:23:07.674217",
           "leido_por": [
             "farmacia",
             "b94588c2-2dda-4d4c-8d48-61b259cf991d"
@@ -45,11 +45,11 @@
           "medicamento_id": "dac1f2f8-bec3-4483-a557-c5d4395d51e8"
         },
         {
-          "id": "39e72240",
+          "id": "33c70ea8",
           "autor": "farmacia",
           "tipo": "alternativa",
-          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *aspirina 105 mg x 30 te toma el 40% el total seria $25000*. ¿Lo aceptás?",
-          "timestamp": "2026-05-01T16:09:22.976726",
+          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *aspirina*. ¿Lo aceptás?",
+          "timestamp": "2026-05-01T16:23:21.678172",
           "leido_por": [
             "farmacia",
             "b94588c2-2dda-4d4c-8d48-61b259cf991d"
@@ -57,11 +57,22 @@
           "medicamento_id": "b5387108-5a05-4e3c-beba-10c1d98602b5"
         },
         {
-          "id": "d2131b29",
+          "id": "fef93740",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "la aspirina te cubre el 40%",
+          "timestamp": "2026-05-01T16:23:41.815063",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "705f6c14",
           "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
           "tipo": "mensaje",
-          "mensaje": "cuando entra en stock?",
-          "timestamp": "2026-05-01T16:10:32.698367",
+          "mensaje": "cuando vas a tener stock?",
+          "timestamp": "2026-05-01T16:24:39.128024",
           "leido_por": [
             "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
@@ -69,26 +80,16 @@
           "medicamento_id": "dac1f2f8-bec3-4483-a557-c5d4395d51e8"
         },
         {
-          "id": "0da2f766",
+          "id": "ae3e8e06",
           "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
           "tipo": "accion",
           "mensaje": "Acepto el cambio.",
-          "timestamp": "2026-05-01T16:10:41.370005",
+          "timestamp": "2026-05-01T16:24:48.249796",
           "leido_por": [
             "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
-          ]
-        },
-        {
-          "id": "0bb8b082",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "mensaje",
-          "mensaje": "salir",
-          "timestamp": "2026-05-01T16:11:06.572697",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ]
+          ],
+          "medicamento_id": "b5387108-5a05-4e3c-beba-10c1d98602b5"
         }
       ],
       "historial_estados": [
@@ -99,12 +100,12 @@
         },
         {
           "estado": "en_gestion",
-          "timestamp": "2026-05-01T16:08:18.823595",
-          "motivo": "Farmacia procesando"
+          "timestamp": "2026-05-01T16:23:08.158999",
+          "motivo": "Farmacia retomó gestión"
         },
         {
           "estado": "a_la_espera",
-          "timestamp": "2026-05-01T16:09:23.439742",
+          "timestamp": "2026-05-01T16:23:22.179381",
           "motivo": "Items procesados — esperando respuesta del cliente"
         }
       ]
