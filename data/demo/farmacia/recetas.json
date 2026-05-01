@@ -90,6 +90,27 @@
             "farmacia"
           ],
           "medicamento_id": "b5387108-5a05-4e3c-beba-10c1d98602b5"
+        },
+        {
+          "id": "6b89d24b",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "sobre la hidro voy a tener para el lunes a la tarde, esperas?",
+          "timestamp": "2026-05-01T16:41:14.996357",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "18ce6546",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "si",
+          "timestamp": "2026-05-01T16:42:15.199100",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
         }
       ],
       "historial_estados": [

@@ -448,15 +448,17 @@ class GestionRecetasCliente:
 
                 if autor == "farmacia" and med_id and tipo in ("sin_stock", "alternativa", "solicitud_token"):
                     lineas.append(f"🏥 {msg['mensaje']}")
-                    # Busca la primera respuesta del cliente con el mismo medicamento_id
+                    # Muestra todos los mensajes del cliente para este medicamento
+                    # hasta el próximo mensaje de farmacia con el mismo med_id
                     for reply in chat[idx + 1:]:
+                        if reply["autor"] == "farmacia" and reply.get("medicamento_id") == med_id:
+                            break
                         if (reply["autor"] != "farmacia"
-                                and reply.get("tipo") == "accion"
+                                and reply.get("tipo") in ("accion", "mensaje")
                                 and reply.get("medicamento_id") == med_id
                                 and reply["id"] not in consumed):
                             lineas.append(f"└ 👤 {reply['mensaje']}")
                             consumed.add(reply["id"])
-                            break
                 else:
                     prefix = "🏥" if autor == "farmacia" else "👤"
                     lineas.append(f"{prefix} {msg['mensaje']}")
