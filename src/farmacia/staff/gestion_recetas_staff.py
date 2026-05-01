@@ -116,9 +116,12 @@ class GestionRecetasStaff:
             estado = rec.get("estado", "pendiente")
             estado_config = self._get_estado_receta_config(estado)
 
+            no_leidos = self.receta_manager.contar_no_leidos_chat(rec["receta_id"], "farmacia")
             linea = f"{i}. {nombre} — {cant_items} medicamento(s) — Vence: {vencimiento}"
             if estado != "pendiente":
                 linea += f" {estado_config.get('icono', '')}"
+            if no_leidos:
+                linea += f" 💬 {no_leidos}"
 
             credencial = rec.get("credencial_validada", True)
             if not credencial:
@@ -202,6 +205,18 @@ class GestionRecetasStaff:
         lineas.append(f"👨‍⚕️ Médico: {medico_str}")
         lineas.append("")
 
+        self.receta_manager.migrar_notas_a_chat(receta_id)
+        chat = self.receta_manager.get_chat(receta_id)
+        msgs_por_med = {}
+        msgs_generales = []
+        for msg in chat:
+            if msg["autor"] != "farmacia":
+                med_id = msg.get("medicamento_id")
+                if med_id:
+                    msgs_por_med.setdefault(med_id, []).append(msg)
+                else:
+                    msgs_generales.append(msg)
+
         lineas.append("*Medicamentos:*")
         items = receta.get("items", [])
         items_visibles_idx = []
@@ -218,11 +233,15 @@ class GestionRecetasStaff:
 
             cant_str = f"{cant_sol}" if cant_sol == cant_rec else f"{cant_sol} de {cant_rec}"
             lineas.append(f"• {icono} {label} — Cant: {cant_str} ({estado_label_item})")
+            for msg in msgs_por_med.get(item["medicamento_id"], []):
+                lineas.append(f"   └ {msg['mensaje']}")
             items_visibles_idx.append(i)
 
-        notas_farmacia = self.receta_manager.get_notas_pendientes(receta_id, "farmacia")
-        if notas_farmacia:
-            lineas.append(f"\n📬 *{len(notas_farmacia)} nota(s) pendiente(s) del paciente*")
+        if msgs_generales:
+            lineas.append(f"\n💬 *{len(msgs_generales)} mensaje(s) del paciente:*")
+            for msg in msgs_generales:
+                lineas.append(f"   └ {msg['mensaje']}")
+        self.receta_manager.marcar_chat_leido(receta_id, "farmacia")
 
         # Opciones dinámicas según estado actual
         opciones_staff = list(estado_config.get("opciones_staff", []))
@@ -344,9 +363,10 @@ class GestionRecetasStaff:
 
         if comando.strip() == "1":
             self.receta_manager.cambiar_estado(receta_id, "requiere_autorizacion", "Farmacia solicita token")
-            self.receta_manager.agregar_nota(
-                receta_id, "farmacia", "usuario",
-                self._msg("nota_solicitar_token")
+            self.receta_manager.agregar_mensaje_chat(
+                receta_id, "farmacia",
+                self._msg("nota_solicitar_token"),
+                tipo="solicitud_token"
             )
             self.sw.enviar(self._msg("token_si"))
             self._enviar_notificacion_push(receta_id, "requiere_autorizacion")
@@ -431,9 +451,11 @@ class GestionRecetasStaff:
                     _, receta = resultado
                     item = receta["items"][item_idx]
                     label = self.med_manager.get_label(item["medicamento_id"])
-                    self.receta_manager.agregar_nota(
-                        receta_id, "farmacia", "usuario",
-                        self._msg("nota_sin_stock", medicamento=label)
+                    self.receta_manager.agregar_mensaje_chat(
+                        receta_id, "farmacia",
+                        self._msg("nota_sin_stock", medicamento=label),
+                        tipo="sin_stock",
+                        medicamento_id=item["medicamento_id"]
                     )
                 self.sw.enviar(self._msg("item_sin_stock"))
                 self._evaluar_estado_post_cambio_item(receta_id, sesiones)
@@ -461,13 +483,18 @@ class GestionRecetasStaff:
 
         resultado = self.receta_manager.get_receta(receta_id)
         label_original = "el medicamento"
+        med_id = None
         if resultado:
             _, receta = resultado
             item = receta["items"][item_idx]
             label_original = self.med_manager.get_label(item["medicamento_id"])
+            med_id = item["medicamento_id"]
 
         mensaje_nota = self._msg("nota_alternativa", original=label_original, alternativa=comando.strip())
-        self.receta_manager.agregar_nota(receta_id, "farmacia", "usuario", mensaje_nota)
+        self.receta_manager.agregar_mensaje_chat(
+            receta_id, "farmacia", mensaje_nota,
+            tipo="alternativa", medicamento_id=med_id
+        )
 
         self.sw.enviar(self._msg("alternativa_ofrecida"))
         self._evaluar_estado_post_cambio_item(receta_id, sesiones)
@@ -485,7 +512,7 @@ class GestionRecetasStaff:
             return
 
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
-        self.receta_manager.agregar_nota(receta_id, "farmacia", "usuario", comando.strip())
+        self.receta_manager.agregar_mensaje_chat(receta_id, "farmacia", comando.strip(), tipo="mensaje")
 
         self.sw.enviar(self._msg("nota_enviada"))
         self._mostrar_detalle(sesiones)
@@ -791,38 +818,32 @@ class GestionRecetasStaff:
             self.sw.enviar(self._msg("todos_resueltos"))
 
     def _desestimar_notas_items(self, receta_id):
-        """Desestima todas las notas pendientes de sin_stock/alternativa dirigidas al usuario."""
+        """Marca como leídos por el cliente los mensajes de sin_stock/alternativa del chat."""
         resultado = self.receta_manager.get_receta(receta_id)
         if not resultado:
             return
         _, receta = resultado
-        for nota in receta.get("notas", []):
-            if nota["estado"] == "pendiente" and nota["dirigida_a"] == "usuario":
-                msg_lower = nota["mensaje"].lower()
-                if "stock" in msg_lower or "alternativa" in msg_lower:
-                    self.receta_manager.responder_nota(
-                        receta_id, nota["id"],
-                        self._msg("nota_desestimada_auto")
-                    )
+        persona_id = receta.get("persona_id", "")
+        for msg in receta.get("chat", []):
+            if (msg["autor"] == "farmacia"
+                    and msg.get("tipo") in ("sin_stock", "alternativa")
+                    and persona_id not in msg.get("leido_por", [])):
+                self.receta_manager.marcar_mensaje_leido(receta_id, msg["id"], persona_id)
 
     def _desestimar_notas_item(self, receta_id, item_idx):
-        """Desestima notas pendientes relacionadas con un item específico al marcarlo como disponible."""
+        """Marca como leídos por el cliente los mensajes del chat vinculados a un item confirmado."""
         resultado = self.receta_manager.get_receta(receta_id)
         if not resultado:
             return
         _, receta = resultado
-        item = receta["items"][item_idx]
-        label = self.med_manager.get_label(item["medicamento_id"])
-        if not label:
-            return
-
-        for nota in receta.get("notas", []):
-            if nota["estado"] == "pendiente" and nota["dirigida_a"] == "usuario":
-                if label.lower() in nota["mensaje"].lower():
-                    self.receta_manager.responder_nota(
-                        receta_id, nota["id"],
-                        self._msg("nota_desestimada_auto")
-                    )
+        persona_id = receta.get("persona_id", "")
+        med_id = receta["items"][item_idx]["medicamento_id"]
+        for msg in receta.get("chat", []):
+            if (msg["autor"] == "farmacia"
+                    and msg.get("tipo") in ("sin_stock", "alternativa")
+                    and msg.get("medicamento_id") == med_id
+                    and persona_id not in msg.get("leido_por", [])):
+                self.receta_manager.marcar_mensaje_leido(receta_id, msg["id"], persona_id)
 
     def _reset_items_si_corresponde(self, receta_id, nuevo_estado):
         """Resetea ítems a 'pendiente' si el estado destino lo requiere según config."""
@@ -845,8 +866,8 @@ class GestionRecetasStaff:
             return
         _, receta = resultado
         persona_id = receta.get("persona_id", "")
-        if self.receta_manager.contar_notificaciones_usuario(persona_id) > 0:
-            print(f"[ROLLBACK_PUSH] Omitido — hay otras notificaciones pendientes para {persona_id}")
+        if self.receta_manager.contar_chat_no_leidos_usuario(persona_id) > 0:
+            print(f"[ROLLBACK_PUSH] Omitido — hay mensajes no leídos pendientes para {persona_id}")
             return
         lids = self._resolver_lids(persona_id)
         from src.send_wpp import SendWPP
