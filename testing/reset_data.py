@@ -2,6 +2,7 @@
 import json
 import os
 import glob
+import uuid
 from datetime import datetime, timedelta
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -204,6 +205,141 @@ def reset_archivos_recetas():
     print(f"✅ archivos/recetas/ — {len(archivos)} archivo(s) eliminado(s)")
 
 
+def seed_recetas_testing():
+    """
+    Genera recetas de prueba para testear el flujo en_consulta y acciones del cliente.
+
+    Escenario A — en_consulta:
+        Receta con 2 items (sin_stock + alternativa_ofrecida).
+        El cliente ya consultó sobre el sin_stock → receta en en_consulta.
+        El farmacéutico ve la consulta pendiente y puede responderla.
+
+    Escenario B — a_la_espera:
+        Receta con 1 item alternativa_ofrecida sin ninguna acción del cliente.
+        El cliente ve la acción pendiente con opciones: aceptar/rechazar/esperar/consultar.
+
+    Requiere que exista al menos una persona en personas.json.
+    """
+    # Leer persona para usar como paciente
+    personas_path = get_tenant_path("persona", "personas.json")
+    with open(personas_path, encoding="utf-8") as f:
+        personas_data = json.load(f)
+    if not personas_data["personas"]:
+        print("⚠️  seed_recetas_testing — no hay personas, se omite")
+        return
+    persona_id = next(iter(personas_data["personas"]))
+
+    # Leer u crear medicamentos de prueba
+    med_path = get_tenant_path("farmacia", "medicamentos.json")
+    with open(med_path, encoding="utf-8") as f:
+        med_data = json.load(f)
+
+    def get_or_create_med(farmaco, dosis, presentacion):
+        for mid, m in med_data["medicamentos"].items():
+            if m["farmaco"] == farmaco and m["dosis"] == dosis:
+                return mid
+        mid = str(uuid.uuid4())
+        med_data["medicamentos"][mid] = {
+            "farmaco": farmaco, "dosis": dosis, "presentacion": presentacion,
+            "label": f"{farmaco} {dosis} {presentacion}"
+        }
+        return mid
+
+    mid_a = get_or_create_med("HIDROTISONA", "10 mg", "comp.x 30")
+    mid_b = get_or_create_med("LIPOMAX 105", "105 mg", "comp.x 30")
+    guardar(med_path, med_data)
+
+    ahora = datetime.now()
+    ts = ahora.isoformat()
+    fecha_hoy = ahora.strftime("%d/%m/%Y")
+    fecha_venc = (ahora + timedelta(days=28)).strftime("%d/%m/%Y")
+
+    def make_item(mid, cant, estado):
+        return {"medicamento_id": mid, "cantidad_receta": cant,
+                "cantidad_solicitada": cant, "estado_item": estado}
+
+    # ── Escenario A: en_consulta ─────────────────────────────────────────────
+    receta_id_a = str(uuid.uuid4())
+    receta_a = {
+        "persona_id": persona_id,
+        "obra_social_id": None,
+        "credencial_validada": False,
+        "fecha_creacion": fecha_hoy,
+        "fecha_validez_desde": fecha_hoy,
+        "fecha_vencimiento": fecha_venc,
+        "medico": {"nombre": "Dra. Prueba", "matricula": "12345", "especialidad": "Clínica"},
+        "diagnostico": "Testing en_consulta",
+        "items": [
+            make_item(mid_a, 2, "sin_stock"),
+            make_item(mid_b, 1, "alternativa_ofrecida"),
+        ],
+        "estado": "en_consulta",
+        "operador_id": persona_id,
+        "receta_url": None,
+        "notas": [],
+        "chat": [
+            # Farmacia notifica sin_stock sobre mid_a
+            {"id": "c001", "autor": "farmacia", "tipo": "sin_stock",
+             "mensaje": "HIDROTISONA 10 mg no está disponible (sin stock). ¿Esperás o cancelás?",
+             "medicamento_id": mid_a, "timestamp": ts, "leido_por": ["farmacia", persona_id]},
+            # Farmacia ofrece alternativa para mid_b
+            {"id": "c002", "autor": "farmacia", "tipo": "alternativa",
+             "mensaje": "No tenemos LIPOMAX 105 disponible. Ofrecemos como alternativa: LIPOMAX GENÉRICO 105 mg. ¿Lo aceptás?",
+             "medicamento_id": mid_b, "timestamp": ts, "leido_por": ["farmacia", persona_id]},
+            # Cliente consulta sobre el sin_stock (mid_a) — genera la transición H→M
+            {"id": "c003", "autor": persona_id, "tipo": "consulta",
+             "mensaje": "¿Cuándo van a tener stock?",
+             "medicamento_id": mid_a, "timestamp": ts, "leido_por": [persona_id]},
+        ],
+        "historial_estados": [
+            {"estado": "pendiente",    "timestamp": ts, "motivo": "Receta cargada por usuario"},
+            {"estado": "en_gestion",   "timestamp": ts, "motivo": "Farmacia procesando"},
+            {"estado": "a_la_espera",  "timestamp": ts, "motivo": "Items procesados — esperando respuesta del cliente"},
+            {"estado": "en_consulta",  "timestamp": ts, "motivo": "Cliente consulta sobre medicamento"},
+        ]
+    }
+
+    # ── Escenario B: a_la_espera ─────────────────────────────────────────────
+    receta_id_b = str(uuid.uuid4())
+    receta_b = {
+        "persona_id": persona_id,
+        "obra_social_id": None,
+        "credencial_validada": False,
+        "fecha_creacion": fecha_hoy,
+        "fecha_validez_desde": fecha_hoy,
+        "fecha_vencimiento": fecha_venc,
+        "medico": {"nombre": "Dr. Ejemplo", "matricula": "99999", "especialidad": "Clínica"},
+        "diagnostico": "Testing a_la_espera",
+        "items": [
+            make_item(mid_b, 1, "alternativa_ofrecida"),
+        ],
+        "estado": "a_la_espera",
+        "operador_id": persona_id,
+        "receta_url": None,
+        "notas": [],
+        "chat": [
+            # Farmacia ofrece alternativa — pendiente de respuesta del cliente
+            {"id": "d001", "autor": "farmacia", "tipo": "alternativa",
+             "mensaje": "No tenemos LIPOMAX 105 disponible. Ofrecemos como alternativa: LIPOMAX GENÉRICO 105 mg. ¿Lo aceptás?",
+             "medicamento_id": mid_b, "timestamp": ts, "leido_por": ["farmacia"]},
+        ],
+        "historial_estados": [
+            {"estado": "pendiente",   "timestamp": ts, "motivo": "Receta cargada por usuario"},
+            {"estado": "en_gestion",  "timestamp": ts, "motivo": "Farmacia procesando"},
+            {"estado": "a_la_espera", "timestamp": ts, "motivo": "Items procesados — esperando respuesta del cliente"},
+        ]
+    }
+
+    recetas_path = get_tenant_path("farmacia", "recetas.json")
+    with open(recetas_path, encoding="utf-8") as f:
+        recetas_data = json.load(f)
+    recetas_data["recetas"][receta_id_a] = receta_a
+    recetas_data["recetas"][receta_id_b] = receta_b
+    guardar(recetas_path, recetas_data)
+    print(f"   ├ Escenario A (en_consulta):  {receta_id_a[:8]}...")
+    print(f"   └ Escenario B (a_la_espera):  {receta_id_b[:8]}...")
+
+
 if __name__ == "__main__":
     print("🔄 Reseteando datos del tenant...\n")
 
@@ -216,6 +352,8 @@ if __name__ == "__main__":
     reset_medicamentos()
     reset_horarios_data()
     reset_archivos_recetas()
+    print("── seed testing ─────────────────────────")
+    seed_recetas_testing()
 
     print("── auxilio ──────────────────────────────")
     reset_servicios_data()

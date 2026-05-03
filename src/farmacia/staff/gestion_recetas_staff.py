@@ -26,6 +26,7 @@ class GestionRecetasStaff:
         "cambiar_estado_item":  "_iniciar_cambiar_estado_item",
         "enviar_nota":          "_iniciar_escribir_nota",
         "cambiar_estado_receta":"_iniciar_cambiar_estado_receta",
+        "responder_consulta":   "_iniciar_responder_consulta",
         "agendar_recordatorio": "_placeholder_agendar_recordatorio",
         "validar_token":        "_placeholder_validar_token",
     }
@@ -85,6 +86,8 @@ class GestionRecetasStaff:
             self._procesar_cambiar_estado_receta(comando, sesiones)
         elif estado == "confirmar_token":
             self._procesar_confirmar_token(comando, sesiones)
+        elif estado == "responder_consulta":
+            self._procesar_responder_consulta(comando, sesiones)
 
     # ── LISTA DE RECETAS PENDIENTES ───────────────────────────────────────────
 
@@ -207,15 +210,26 @@ class GestionRecetasStaff:
 
         self.receta_manager.migrar_notas_a_chat(receta_id)
         chat = self.receta_manager.get_chat(receta_id)
-        msgs_por_med = {}
-        msgs_generales = []
+
+        # Acciones del cliente por medicamento (solo tipo "accion")
+        acciones_por_med = {}
         for msg in chat:
-            if msg["autor"] != "farmacia":
+            if msg["autor"] != "farmacia" and msg.get("tipo") == "accion":
                 med_id = msg.get("medicamento_id")
                 if med_id:
-                    msgs_por_med.setdefault(med_id, []).append(msg)
-                else:
-                    msgs_generales.append(msg)
+                    acciones_por_med.setdefault(med_id, []).append(msg)
+
+        # Consultas sin respuesta (tipo "consulta" sin "respuesta_consulta" posterior)
+        consultas_sin_respuesta = []
+        for idx, msg in enumerate(chat):
+            if msg.get("tipo") == "consulta":
+                med_id = msg.get("medicamento_id")
+                tiene_respuesta = any(
+                    r.get("tipo") == "respuesta_consulta" and r.get("medicamento_id") == med_id
+                    for r in chat[idx + 1:]
+                )
+                if not tiene_respuesta:
+                    consultas_sin_respuesta.append(msg)
 
         lineas.append("*Medicamentos:*")
         items = receta.get("items", [])
@@ -233,14 +247,17 @@ class GestionRecetasStaff:
 
             cant_str = f"{cant_sol}" if cant_sol == cant_rec else f"{cant_sol} de {cant_rec}"
             lineas.append(f"• {icono} {label} — Cant: {cant_str} ({estado_label_item})")
-            for msg in msgs_por_med.get(item["medicamento_id"], []):
+            for msg in acciones_por_med.get(item["medicamento_id"], []):
                 lineas.append(f"   └ {msg['mensaje']}")
             items_visibles_idx.append(i)
 
-        if msgs_generales:
-            lineas.append(f"\n💬 *{len(msgs_generales)} mensaje(s) del paciente:*")
-            for msg in msgs_generales:
-                lineas.append(f"   └ {msg['mensaje']}")
+        if consultas_sin_respuesta:
+            lineas.append(f"\n{self._msg('consulta_pendiente_header')}")
+            for msg in consultas_sin_respuesta:
+                med_id = msg.get("medicamento_id")
+                med_label = self.med_manager.get_label(med_id) if med_id else "Receta"
+                lineas.append(f"   💬 *{med_label}:* {msg['mensaje']}")
+
         self.receta_manager.marcar_chat_leido(receta_id, "farmacia")
 
         # Opciones dinámicas según estado actual
@@ -700,6 +717,62 @@ class GestionRecetasStaff:
         else:
             self._mostrar_detalle(sesiones)
 
+    # ── RESPONDER CONSULTA ────────────────────────────────────────────────────
+
+    def _iniciar_responder_consulta(self, sesiones):
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        chat = self.receta_manager.get_chat(receta_id)
+
+        consulta = None
+        for idx, msg in enumerate(chat):
+            if msg.get("tipo") == "consulta":
+                med_id = msg.get("medicamento_id")
+                tiene_respuesta = any(
+                    r.get("tipo") == "respuesta_consulta" and r.get("medicamento_id") == med_id
+                    for r in chat[idx + 1:]
+                )
+                if not tiene_respuesta:
+                    consulta = msg
+                    break
+
+        if not consulta:
+            self.sw.enviar(self._msg("sin_cambios_estado"))
+            self._mostrar_detalle(sesiones)
+            return
+
+        med_id = consulta.get("medicamento_id")
+        med_label = self.med_manager.get_label(med_id) if med_id else "Receta"
+        sesiones[self.numero].staff_consulta_medicamento_id = med_id
+
+        lineas = [
+            self._msg("consulta_pendiente_header"),
+            f"   💬 *{med_label}:* {consulta['mensaje']}",
+            "",
+            self._msg("pedir_respuesta_consulta"),
+        ]
+        sesiones[self.numero].staff_receta_estado = "responder_consulta"
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_responder_consulta(self, comando, sesiones):
+        if comando.strip() == "cancelar":
+            self._mostrar_detalle(sesiones)
+            return
+
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        med_id = getattr(sesiones[self.numero], "staff_consulta_medicamento_id", None)
+
+        self.receta_manager.agregar_mensaje_chat(
+            receta_id, "farmacia", comando.strip(),
+            tipo="respuesta_consulta", medicamento_id=med_id
+        )
+        # Push al cliente usando el mensaje configurado en en_consulta.notificacion_push
+        self._enviar_notificacion_push(receta_id, "en_consulta")
+        # Transición automática M→H sin disparar push de a_la_espera
+        self.receta_manager.cambiar_estado(receta_id, "a_la_espera", "Farmacia respondió consulta")
+
+        self.sw.enviar(self._msg("respuesta_consulta_enviada"))
+        self._mostrar_detalle(sesiones)
+
     # ── PLACEHOLDERS ──────────────────────────────────────────────────────────
 
     def _placeholder_agendar_recordatorio(self, sesiones):
@@ -737,8 +810,7 @@ class GestionRecetasStaff:
 
     def _enviar_notificacion_push(self, receta_id, estado_id):
         """
-        Si el estado tiene notificacion_push configurada, envía mensaje real
-        al WhatsApp del cliente usando SendWPP.
+        Envía notificacion_push al cliente si el estado la tiene configurada.
         Resuelve el LID del cliente desde persona_id de la receta.
         """
         config = self._get_estado_receta_config(estado_id)
@@ -764,6 +836,26 @@ class GestionRecetasStaff:
         for lid in lids:
             SendWPP(lid).enviar(mensaje)
             print(f"[NOTIFICACION_PUSH] Enviado a {lid} | Estado: {estado_id}")
+
+    def _enviar_notificacion_push_staff(self, estado_id):
+        """
+        Envía notificacion_push_staff a los operadores configurados en
+        farmacia_config.operadores_notificacion si el estado la tiene.
+        """
+        config = self._get_estado_receta_config(estado_id)
+        mensaje = config.get("notificacion_push_staff")
+        if not mensaje:
+            return
+
+        operadores = self.farm_config.get("operadores_notificacion", [])
+        if not operadores:
+            print(f"[NOTIFICACION_PUSH_STAFF] Sin operadores configurados — no se puede enviar")
+            return
+
+        from src.send_wpp import SendWPP
+        for lid in operadores:
+            SendWPP(lid).enviar(mensaje)
+            print(f"[NOTIFICACION_PUSH_STAFF] Enviado a {lid} | Estado: {estado_id}")
 
     def _evaluar_estado_post_cambio_item(self, receta_id, sesiones):
         """
@@ -887,6 +979,7 @@ class GestionRecetasStaff:
         sesiones[self.numero].staff_receta_esperando_motivo = False
         sesiones[self.numero].staff_receta_nuevo_estado = None
         sesiones[self.numero].staff_receta_opciones_activas = None
+        sesiones[self.numero].staff_consulta_medicamento_id = None
 
     def _volver_menu_staff(self, sesiones):
         rol = self.session_manager.get_rol(self.numero)

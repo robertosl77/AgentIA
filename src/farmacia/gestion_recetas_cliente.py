@@ -72,8 +72,8 @@ class GestionRecetasCliente:
             self._procesar_menu(comando, sesiones)
         elif estado == "notificacion":
             self._procesar_notificacion(comando, sesiones)
-        elif estado == "chat_notificacion":
-            self._procesar_chat_notificacion(comando, sesiones)
+        elif estado == "escribir_consulta":
+            self._procesar_escribir_consulta(comando, sesiones)
         elif estado == "escribir_token":
             self._procesar_escribir_token(comando, sesiones)
         elif estado == "ver_recetas":
@@ -87,13 +87,15 @@ class GestionRecetasCliente:
 
     def _mostrar_menu(self, sesiones):
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
-        cant_notif = self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id)
+        cant_notif = self.receta_manager.contar_chat_no_leidos_usuario(
+            beneficiario_id, excluir_estados=["en_consulta"]
+        )
 
-        notif_label = f" ({cant_notif} nuevos)" if cant_notif > 0 else ""
+        notif_label = f" ({cant_notif} pendientes)" if cant_notif > 0 else ""
 
         lineas = [
             "📬 *Gestión de recetas*\n",
-            f"1. 🔔 Notificaciones{notif_label}",
+            f"1. 🔔 Acciones{notif_label}",
             "2. 📋 Ver mis recetas",
             "3. ⏰ Mis recordatorios",
             "4. 💬 Chat",
@@ -119,15 +121,17 @@ class GestionRecetasCliente:
         else:
             self.sw.enviar("❌ Opción no válida.")
 
-    # ── NOTIFICACIONES (una por una) ──────────────────────────────────────────
+    # ── ACCIONES (una por una) ────────────────────────────────────────────────
 
     def _mostrar_siguiente_notificacion(self, sesiones):
-        """Muestra el siguiente mensaje no leído o avisa que no hay más."""
+        """Muestra la siguiente acción pendiente o avisa que no hay más."""
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
-        resultado = self.receta_manager.get_primer_chat_no_leido_usuario(beneficiario_id)
+        resultado = self.receta_manager.get_primer_chat_no_leido_usuario(
+            beneficiario_id, excluir_estados=["en_consulta"]
+        )
 
         if not resultado:
-            self.sw.enviar("✅ No tenés notificaciones pendientes.")
+            self.sw.enviar("✅ No tenés acciones pendientes.")
             self._mostrar_menu(sesiones)
             return
 
@@ -151,41 +155,54 @@ class GestionRecetasCliente:
         estado_icono = estado_config.get("icono", "")
 
         tipo = msg.get("tipo", "mensaje")
-        cant_restantes = self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id) - 1
+        med_id = msg.get("medicamento_id")
 
         lineas = [
-            "🔔 *Notificación de la farmacia*",
+            "🔔 *Acción pendiente*",
             f"📊 Receta en estado: {estado_icono} {estado_label}",
             "",
             f"💬 {msg.get('mensaje', '')}",
             ""
         ]
 
-        if tipo == "alternativa":
-            lineas.append("1. ✅ Aceptar cambio")
-            lineas.append("2. ❌ Rechazar medicamento")
-            lineas.append("3. ⏳ Esperar / agendar")
-            lineas.append("4. 💬 Consultar antes de decidir")
-            sesiones[self.numero].cliente_receta_estado = "notificacion"
-
-        elif tipo == "sin_stock":
-            lineas.append("1. ❌ Rechazar medicamento")
-            lineas.append("2. ⏳ Esperar / agendar")
-            lineas.append("3. 💬 Consultar antes de decidir")
-            sesiones[self.numero].cliente_receta_estado = "notificacion"
-
-        elif tipo == "solicitud_token":
+        # solicitud_token: flujo especial de texto libre
+        if tipo == "solicitud_token":
             lineas.append("Escribí el *token de autorización*:")
+            sesiones[self.numero].cliente_receta_opciones_keys = []
             sesiones[self.numero].cliente_receta_estado = "escribir_token"
+            cant_restantes = self.receta_manager.contar_chat_no_leidos_usuario(
+                beneficiario_id, excluir_estados=["en_consulta"]
+            ) - 1
+            if cant_restantes > 0:
+                lineas.append(f"\n📬 Quedan {cant_restantes} acción(es) más.")
+            lineas.append("Escribí *cancelar* para volver:")
+            self.sw.enviar("\n".join(lineas))
+            return
 
+        # Opciones desde config según tipo de notificación
+        opciones_config = self.farm_config.get("recetas", {}).get("opciones_cliente", {})
+
+        if tipo == "respuesta_consulta" and med_id:
+            item = next(
+                (it for it in receta.get("items", []) if it["medicamento_id"] == med_id),
+                None
+            )
+            estado_item = item.get("estado_item", "sin_stock") if item else "sin_stock"
+            opciones = opciones_config.get("respuesta_consulta", {}).get(estado_item, [])
         else:
-            # Mensaje genérico de farmacia — ofrecer Entendido o Responder
-            lineas.append("1. ✅ Entendido")
-            lineas.append("2. 💬 Responder")
-            sesiones[self.numero].cliente_receta_estado = "notificacion"
+            opciones = opciones_config.get(tipo, [])
 
+        for i, op in enumerate(opciones, 1):
+            lineas.append(f"{i}. {op['label']}")
+
+        sesiones[self.numero].cliente_receta_opciones_keys = [op["key"] for op in opciones]
+        sesiones[self.numero].cliente_receta_estado = "notificacion"
+
+        cant_restantes = self.receta_manager.contar_chat_no_leidos_usuario(
+            beneficiario_id, excluir_estados=["en_consulta"]
+        ) - 1
         if cant_restantes > 0:
-            lineas.append(f"\n📬 Quedan {cant_restantes} notificación(es) más.")
+            lineas.append(f"\n📬 Quedan {cant_restantes} acción(es) más.")
         lineas.append("Escribí *cancelar* para volver:")
         self.sw.enviar("\n".join(lineas))
 
@@ -194,40 +211,69 @@ class GestionRecetasCliente:
             self._mostrar_menu(sesiones)
             return
 
-        tipo = getattr(sesiones[self.numero], "cliente_receta_nota_tipo", "")
+        opciones_keys = getattr(sesiones[self.numero], "cliente_receta_opciones_keys", [])
+        try:
+            idx = int(comando.strip()) - 1
+            if idx < 0 or idx >= len(opciones_keys):
+                raise ValueError
+        except ValueError:
+            self.sw.enviar("❌ Opción no válida.")
+            return
+
+        key = opciones_keys[idx]
         receta_id = getattr(sesiones[self.numero], "cliente_receta_nota_receta_id", None)
         msg_id = getattr(sesiones[self.numero], "cliente_receta_nota_id", None)
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
+        med_id = getattr(sesiones[self.numero], "cliente_receta_nota_medicamento_id", None)
 
-        if tipo == "alternativa":
-            if comando.strip() == "4":
-                sesiones[self.numero].cliente_receta_estado = "chat_notificacion"
-                self.sw.enviar("💬 Escribí tu consulta o *cancelar* para volver:")
-            else:
-                self._responder_alternativa(comando, receta_id, msg_id, sesiones)
+        if key == "aceptar":
+            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
+            self.receta_manager.agregar_mensaje_chat(
+                receta_id, beneficiario_id, "Acepto el cambio.",
+                tipo="accion", medicamento_id=med_id
+            )
+            self._cambiar_item_por_medicamento_id(receta_id, med_id, "alternativa_aceptada")
+            self.sw.enviar("✅ Alternativa aceptada.")
+            self._evaluar_estado_post_respuesta(receta_id, sesiones)
 
-        elif tipo == "sin_stock":
-            if comando.strip() == "3":
-                sesiones[self.numero].cliente_receta_estado = "chat_notificacion"
-                self.sw.enviar("💬 Escribí tu consulta o *cancelar* para volver:")
-            else:
-                self._responder_sin_stock(comando, receta_id, msg_id, sesiones)
+        elif key == "rechazar":
+            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
+            self.receta_manager.agregar_mensaje_chat(
+                receta_id, beneficiario_id, "Rechazo el medicamento.",
+                tipo="accion", medicamento_id=med_id
+            )
+            self._cambiar_item_por_medicamento_id(receta_id, med_id, "rechazado_usuario")
+            self.sw.enviar("❌ Medicamento rechazado.")
+            self._evaluar_estado_post_respuesta(receta_id, sesiones)
+
+        elif key == "esperar":
+            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
+            self.receta_manager.agregar_mensaje_chat(
+                receta_id, beneficiario_id, "Voy a esperar.",
+                tipo="accion", medicamento_id=med_id
+            )
+            self.sw.enviar("⏳ Registrado. La farmacia será notificada.")
+            print(f"[PLACEHOLDER] Agendar recordatorio para receta {receta_id}")
+            self._mostrar_siguiente_notificacion(sesiones)
+
+        elif key == "entendido":
+            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
+            self._mostrar_siguiente_notificacion(sesiones)
+
+        elif key == "consultar":
+            med_label = self.med_manager.get_label(med_id) if med_id else "el medicamento"
+            msj = self.farm_config.get("recetas", {}).get("mensajes", {}).get(
+                "pedir_texto_consulta", "✍️ Escribí tu consulta:\n\nO escribí *cancelar* para volver:"
+            ).replace("{medicamento}", med_label)
+            sesiones[self.numero].cliente_receta_estado = "escribir_consulta"
+            self.sw.enviar(msj)
 
         else:
-            # Mensaje genérico
-            if comando.strip() == "1":
-                self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-                self._mostrar_siguiente_notificacion(sesiones)
-            elif comando.strip() == "2":
-                sesiones[self.numero].cliente_receta_estado = "chat_notificacion"
-                self.sw.enviar("💬 Escribí tu respuesta o *cancelar* para volver:")
-            else:
-                self.sw.enviar("❌ Opción no válida. Respondé 1 o 2.")
+            self.sw.enviar("❌ Opción no válida.")
 
-    def _procesar_chat_notificacion(self, comando, sesiones):
-        """Mensaje libre enviado durante una notificación, antes de tomar acción."""
+    def _procesar_escribir_consulta(self, comando, sesiones):
+        """El cliente escribe su consulta sobre un medicamento — transiciona H→M."""
         if comando.strip() == "cancelar":
-            # Vuelve a mostrar la misma notificación (sigue sin leerse)
             self._mostrar_siguiente_notificacion(sesiones)
             return
 
@@ -235,68 +281,20 @@ class GestionRecetasCliente:
         msg_id = getattr(sesiones[self.numero], "cliente_receta_nota_id", None)
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
         med_id = getattr(sesiones[self.numero], "cliente_receta_nota_medicamento_id", None)
-        tipo = getattr(sesiones[self.numero], "cliente_receta_nota_tipo", "")
 
+        self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
         self.receta_manager.agregar_mensaje_chat(
             receta_id, beneficiario_id, comando.strip(),
-            tipo="mensaje", medicamento_id=med_id
+            tipo="consulta", medicamento_id=med_id
         )
+        self.receta_manager.cambiar_estado(receta_id, "en_consulta", "Cliente consulta sobre medicamento")
+        self._enviar_notificacion_push_staff("en_consulta")
 
-        # El cliente atendió esta notificación (consultó): se descuenta del contador.
-        # Cuando farmacia responda, el nuevo mensaje volverá a aparecer como pendiente.
-        self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-
-        self.sw.enviar("✅ Mensaje enviado. La farmacia te responderá pronto.")
+        msj = self.farm_config.get("recetas", {}).get("mensajes", {}).get(
+            "consulta_enviada", "✅ Consulta enviada."
+        )
+        self.sw.enviar(msj)
         self._mostrar_siguiente_notificacion(sesiones)
-
-    def _responder_alternativa(self, comando, receta_id, msg_id, sesiones):
-        beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
-        med_id = getattr(sesiones[self.numero], "cliente_receta_nota_medicamento_id", None)
-
-        if comando.strip() == "1":
-            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Acepto el cambio.", tipo="accion", medicamento_id=med_id)
-            self._cambiar_item_por_medicamento_id(receta_id, med_id, "alternativa_aceptada")
-            self.sw.enviar("✅ Alternativa aceptada.")
-            self._evaluar_estado_post_respuesta(receta_id, sesiones)
-
-        elif comando.strip() == "2":
-            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Rechazo el medicamento.", tipo="accion", medicamento_id=med_id)
-            self._cambiar_item_por_medicamento_id(receta_id, med_id, "rechazado_usuario")
-            self.sw.enviar("❌ Medicamento rechazado.")
-            self._evaluar_estado_post_respuesta(receta_id, sesiones)
-
-        elif comando.strip() == "3":
-            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Voy a esperar.", tipo="accion", medicamento_id=med_id)
-            self.sw.enviar("⏳ Registrado. La farmacia será notificada.")
-            print(f"[PLACEHOLDER] Agendar recordatorio para receta {receta_id}")
-            self._mostrar_siguiente_notificacion(sesiones)
-
-        else:
-            self.sw.enviar("❌ Opción no válida. Respondé 1, 2, 3 o 4.")
-
-    def _responder_sin_stock(self, comando, receta_id, msg_id, sesiones):
-        beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
-        med_id = getattr(sesiones[self.numero], "cliente_receta_nota_medicamento_id", None)
-
-        if comando.strip() == "1":
-            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Rechazo el medicamento.", tipo="accion", medicamento_id=med_id)
-            self._cambiar_item_por_medicamento_id(receta_id, med_id, "rechazado_usuario")
-            self.sw.enviar("❌ Medicamento rechazado.")
-            self._evaluar_estado_post_respuesta(receta_id, sesiones)
-
-        elif comando.strip() == "2":
-            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(receta_id, beneficiario_id, "Voy a esperar.", tipo="accion", medicamento_id=med_id)
-            self.sw.enviar("⏳ Registrado. La farmacia será notificada.")
-            print(f"[PLACEHOLDER] Agendar recordatorio para receta {receta_id}")
-            self._mostrar_siguiente_notificacion(sesiones)
-
-        else:
-            self.sw.enviar("❌ Opción no válida. Respondé 1, 2 o 3.")
 
     # ── TOKEN ─────────────────────────────────────────────────────────────────
 
@@ -527,9 +525,26 @@ class GestionRecetasCliente:
 
         self._mostrar_siguiente_notificacion(sesiones)
 
+    def _enviar_notificacion_push_staff(self, estado_id):
+        """Envía notificacion_push_staff a los operadores configurados."""
+        estados_config = self.farm_config.get("recetas", {}).get("estados_receta", {})
+        mensaje = estados_config.get(estado_id, {}).get("notificacion_push_staff")
+        if not mensaje:
+            return
+        operadores = self.farm_config.get("operadores_notificacion", [])
+        if not operadores:
+            print(f"[PUSH_STAFF] Sin operadores configurados — no se puede enviar")
+            return
+        from src.send_wpp import SendWPP
+        for lid in operadores:
+            SendWPP(lid).enviar(mensaje)
+            print(f"[PUSH_STAFF] Enviado a {lid} | Estado: {estado_id}")
+
     def contar_notificaciones(self, beneficiario_id):
-        """Retorna la cantidad de mensajes no leídos para un beneficiario."""
-        return self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id)
+        """Retorna la cantidad de acciones pendientes para un beneficiario."""
+        return self.receta_manager.contar_chat_no_leidos_usuario(
+            beneficiario_id, excluir_estados=["en_consulta"]
+        )
 
     def _salir(self, sesiones):
         sesiones[self.numero].cliente_receta_estado = None
@@ -538,5 +553,6 @@ class GestionRecetasCliente:
         sesiones[self.numero].cliente_receta_nota_receta_id = None
         sesiones[self.numero].cliente_receta_nota_tipo = None
         sesiones[self.numero].cliente_receta_nota_medicamento_id = None
+        sesiones[self.numero].cliente_receta_opciones_keys = None
         sesiones[self.numero].cliente_receta_lista = None
         sesiones[self.numero].cliente_receta_chat_receta_id = None

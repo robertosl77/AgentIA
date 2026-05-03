@@ -221,6 +221,9 @@
       }
     }
   },
+  "operadores_notificacion": [
+    "231400003358774@lid"
+  ],
   "agente_ia": {
     "proveedor": "gemini",
     "env_api_key": "GEMINI_API_KEY",
@@ -281,7 +284,7 @@
         "label": "A la espera del cliente",
         "icono": "⏸️",
         "inflow": ["en_gestion"],
-        "outflow": ["confirmando"],
+        "outflow": ["confirmando", "en_consulta"],
         "camino_feliz": "confirmando",
         "requiere_motivo": false,
         "es_final": false,
@@ -294,6 +297,20 @@
           "cambiar_estado_receta",
           "agendar_recordatorio"
         ]
+      },
+      "en_consulta": {
+        "label": "En consulta",
+        "icono": "❓",
+        "inflow": ["a_la_espera"],
+        "outflow": ["a_la_espera"],
+        "camino_feliz": "a_la_espera",
+        "requiere_motivo": false,
+        "es_final": false,
+        "automatico": false,
+        "reset_items_al_entrar": false,
+        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n💬 La farmacia respondió tu consulta.\nIngresá a *Mis recetas* para revisar y tomar una decisión.",
+        "notificacion_push_staff": "🤖 *Asistente Virtual Informa:*\n\n❓ El cliente realizó una consulta sobre su receta. Ingresá para responder.",
+        "opciones_staff": ["responder_consulta", "cambiar_estado_receta"]
       },
       "confirmando": {
         "label": "Cliente confirmando",
@@ -471,7 +488,10 @@
       "receta_duplicada": "⚠️ Esta receta ya fue cargada anteriormente.\nNo se puede registrar la misma receta dos veces.",
       "receta_enviada": "✅ *Receta enviada a la farmacia.*\n\n{lista}\n\n📋 Estado: *Pendiente de procesar por farmacia*",
       "responder_si_no": "⚠️ Respondé *si* o *no*.",
-      "numero_invalido": "❌ Número no válido."
+      "numero_invalido": "❌ Número no válido.",
+      "pedir_texto_consulta": "✍️ Escribí tu consulta sobre *{medicamento}*:\n\nO escribí *cancelar* para volver:",
+      "consulta_enviada": "✅ Consulta enviada. La farmacia te responderá pronto.",
+      "receta_en_consulta": "❓ Tu consulta está siendo respondida por la farmacia. Volvé más tarde."
     },
     "mensajes_staff": {
       "sin_recetas_pendientes": "📋 No hay recetas pendientes de procesar.",
@@ -510,7 +530,10 @@
       "nota_solicitar_token": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
       "cambio_automatico_a_la_espera": "⏸️ La receta pasó a *A la espera del cliente*. Se notificará al paciente.",
       "reintento_token": "🔄 Reintento {reintento}/{max}. Se notificará al paciente para que reenvíe el token.",
-      "reintentos_agotados": "❌ Se alcanzó el máximo de reintentos de token ({max}). Solo podés rechazar la receta desde *Cambiar estado*."
+      "reintentos_agotados": "❌ Se alcanzó el máximo de reintentos de token ({max}). Solo podés rechazar la receta desde *Cambiar estado*.",
+      "consulta_pendiente_header": "❓ *Consulta del cliente:*",
+      "pedir_respuesta_consulta": "✍️ Escribí tu respuesta al cliente\no *cancelar* para volver:",
+      "respuesta_consulta_enviada": "✅ Respuesta enviada. La receta vuelve a *A la espera del cliente*."
     },
     "opciones_staff_labels": {
       "confirmar_todos": "✅ Confirmar todos los medicamentos como disponibles",
@@ -518,7 +541,37 @@
       "enviar_nota": "💬 Enviar nota al paciente",
       "cambiar_estado_receta": "📊 Cambiar estado de la receta",
       "agendar_recordatorio": "🔔 Agendar recordatorio",
-      "validar_token": "🔑 Validar token recibido"
+      "validar_token": "🔑 Validar token recibido",
+      "responder_consulta": "❓ Responder consulta del cliente"
+    },
+    "opciones_cliente": {
+      "alternativa": [
+        {"key": "aceptar",   "label": "✅ Aceptar cambio"},
+        {"key": "rechazar",  "label": "❌ Rechazar medicamento"},
+        {"key": "esperar",   "label": "⏳ Esperar / agendar"},
+        {"key": "consultar", "label": "💬 Consultar a la farmacia"}
+      ],
+      "sin_stock": [
+        {"key": "rechazar",  "label": "❌ Rechazar medicamento"},
+        {"key": "esperar",   "label": "⏳ Esperar / agendar"},
+        {"key": "consultar", "label": "💬 Consultar a la farmacia"}
+      ],
+      "respuesta_consulta": {
+        "alternativa_ofrecida": [
+          {"key": "aceptar",   "label": "✅ Aceptar cambio"},
+          {"key": "rechazar",  "label": "❌ Rechazar medicamento"},
+          {"key": "esperar",   "label": "⏳ Esperar / agendar"},
+          {"key": "consultar", "label": "💬 Consultar nuevamente"}
+        ],
+        "sin_stock": [
+          {"key": "rechazar",  "label": "❌ Rechazar medicamento"},
+          {"key": "esperar",   "label": "⏳ Esperar / agendar"},
+          {"key": "consultar", "label": "💬 Consultar nuevamente"}
+        ]
+      },
+      "mensaje": [
+        {"key": "entendido", "label": "✅ Entendido"}
+      ]
     }
   },
   "gestion_direccion": {

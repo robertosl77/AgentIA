@@ -368,25 +368,32 @@ class RecetaManager:
             if msg["autor"] != lector and lector not in msg["leido_por"]
         )
 
-    def contar_chat_no_leidos_usuario(self, persona_id):
-        """Cuenta mensajes no leídos dirigidos al usuario en todas sus recetas activas."""
+    def contar_chat_no_leidos_usuario(self, persona_id, excluir_estados=None):
+        """Cuenta mensajes no leídos dirigidos al usuario en todas sus recetas activas.
+        excluir_estados: lista de estados de receta a ignorar (ej. ["en_consulta"]).
+        """
         total = 0
         for rid, datos in self.data["recetas"].items():
             if datos["persona_id"] == persona_id:
+                if excluir_estados and datos.get("estado") in excluir_estados:
+                    continue
                 total += sum(
                     1 for msg in datos.get("chat", [])
                     if msg["autor"] != persona_id and persona_id not in msg["leido_por"]
                 )
         return total
 
-    def get_primer_chat_no_leido_usuario(self, persona_id):
+    def get_primer_chat_no_leido_usuario(self, persona_id, excluir_estados=None):
         """
         Retorna (receta_id, msg) del primer mensaje no leído para la persona,
         ordenado cronológicamente. Retorna None si no hay.
+        excluir_estados: lista de estados de receta a ignorar (ej. ["en_consulta"]).
         """
         candidatos = []
         for rid, datos in self.data["recetas"].items():
             if datos["persona_id"] == persona_id:
+                if excluir_estados and datos.get("estado") in excluir_estados:
+                    continue
                 for msg in datos.get("chat", []):
                     if msg["autor"] != persona_id and persona_id not in msg["leido_por"]:
                         candidatos.append((msg["timestamp"], rid, msg))
