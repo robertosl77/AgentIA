@@ -139,6 +139,7 @@ class GestionRecetasStaff:
     def _procesar_lista(self, comando, sesiones):
         if comando.strip() == "cancelar":
             self._salir(sesiones)
+            self._volver_menu_staff(sesiones)
             return
 
         pendientes = getattr(sesiones[self.numero], "staff_receta_lista", [])
@@ -765,10 +766,15 @@ class GestionRecetasStaff:
             receta_id, "farmacia", comando.strip(),
             tipo="respuesta_consulta", medicamento_id=med_id
         )
-        # Push al cliente usando el mensaje configurado en en_consulta.notificacion_push
+
+        # Notificar al cliente por esta respuesta
         self._enviar_notificacion_push(receta_id, "en_consulta")
-        # Transición automática M→H sin disparar push de a_la_espera
-        self.receta_manager.cambiar_estado(receta_id, "a_la_espera", "Farmacia respondió consulta")
+
+        # Transición M→H solo si no quedan más consultas sin respuesta
+        chat = self.receta_manager.get_chat(receta_id)
+        meds_en_consulta = self.receta_manager._get_meds_en_consulta(chat)
+        if not meds_en_consulta:
+            self.receta_manager.cambiar_estado(receta_id, "a_la_espera", "Farmacia respondió todas las consultas")
 
         self.sw.enviar(self._msg("respuesta_consulta_enviada"))
         self._mostrar_detalle(sesiones)

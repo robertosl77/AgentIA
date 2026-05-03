@@ -87,9 +87,7 @@ class GestionRecetasCliente:
 
     def _mostrar_menu(self, sesiones):
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
-        cant_notif = self.receta_manager.contar_chat_no_leidos_usuario(
-            beneficiario_id, excluir_estados=["en_consulta"]
-        )
+        cant_notif = self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id)
 
         notif_label = f" ({cant_notif} pendientes)" if cant_notif > 0 else ""
 
@@ -126,12 +124,10 @@ class GestionRecetasCliente:
     def _mostrar_siguiente_notificacion(self, sesiones):
         """Muestra la siguiente acción pendiente o avisa que no hay más."""
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
-        resultado = self.receta_manager.get_primer_chat_no_leido_usuario(
-            beneficiario_id, excluir_estados=["en_consulta"]
-        )
+        resultado = self.receta_manager.get_primer_chat_no_leido_usuario(beneficiario_id)
 
         if not resultado:
-            self.sw.enviar("✅ No tenés acciones pendientes.")
+            self.sw.enviar("✅ No tenés acciones pendientes para esta receta.")
             self._mostrar_menu(sesiones)
             return
 
@@ -157,22 +153,22 @@ class GestionRecetasCliente:
         tipo = msg.get("tipo", "mensaje")
         med_id = msg.get("medicamento_id")
 
+        med_label = self.med_manager.get_label(med_id) if med_id else None
         lineas = [
             "🔔 *Acción pendiente*",
             f"📊 Receta en estado: {estado_icono} {estado_label}",
             "",
-            f"💬 {msg.get('mensaje', '')}",
-            ""
         ]
+        if med_label:
+            lineas.append(f"💊 *{med_label}*")
+        lineas += [f"💬 {msg.get('mensaje', '')}", ""]
 
         # solicitud_token: flujo especial de texto libre
         if tipo == "solicitud_token":
             lineas.append("Escribí el *token de autorización*:")
             sesiones[self.numero].cliente_receta_opciones_keys = []
             sesiones[self.numero].cliente_receta_estado = "escribir_token"
-            cant_restantes = self.receta_manager.contar_chat_no_leidos_usuario(
-                beneficiario_id, excluir_estados=["en_consulta"]
-            ) - 1
+            cant_restantes = self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id) - 1
             if cant_restantes > 0:
                 lineas.append(f"\n📬 Quedan {cant_restantes} acción(es) más.")
             lineas.append("Escribí *cancelar* para volver:")
@@ -198,9 +194,7 @@ class GestionRecetasCliente:
         sesiones[self.numero].cliente_receta_opciones_keys = [op["key"] for op in opciones]
         sesiones[self.numero].cliente_receta_estado = "notificacion"
 
-        cant_restantes = self.receta_manager.contar_chat_no_leidos_usuario(
-            beneficiario_id, excluir_estados=["en_consulta"]
-        ) - 1
+        cant_restantes = self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id) - 1
         if cant_restantes > 0:
             lineas.append(f"\n📬 Quedan {cant_restantes} acción(es) más.")
         lineas.append("Escribí *cancelar* para volver:")
@@ -332,16 +326,17 @@ class GestionRecetasCliente:
         estados_config = self.farm_config.get("recetas", {}).get("estados_receta", {})
         estados_item_config = self.farm_config.get("recetas", {}).get("estados_item", {})
 
-        lineas = ["📋 *Mis recetas activas:*\n"]
+        lineas = ["📋 *Mis recetas activas:*"]
         for i, rec in enumerate(recetas, 1):
             estado_id = rec.get("estado", "pendiente")
             estado_cfg = estados_config.get(estado_id, {})
             estado_label = estado_cfg.get("label", estado_id)
             estado_icono = estado_cfg.get("icono", "")
             vencimiento = rec.get("fecha_vencimiento", "—")
-            cant_items = len([it for it in rec.get("items", []) if it["estado_item"] != "omitido_usuario"])
 
-            lineas.append(f"{i}. {estado_icono} *{estado_label}* — {cant_items} medicamento(s) — Vence: {vencimiento}")
+            lineas.append("")
+            lineas.append(f"*Receta {i}* — Vence: {vencimiento}")
+            lineas.append(f"{estado_icono} {estado_label}")
 
             for item in rec.get("items", []):
                 if item["estado_item"] == "omitido_usuario":
@@ -350,9 +345,7 @@ class GestionRecetasCliente:
                 item_cfg = estados_item_config.get(item["estado_item"], {})
                 item_icono = item_cfg.get("icono", "❓")
                 item_label = item_cfg.get("label", item["estado_item"])
-                lineas.append(f"   • {item_icono} {label} ({item_label})")
-
-            lineas.append("")
+                lineas.append(f"   {item_icono} {label} ({item_label})")
 
         lineas.append("Escribí *cancelar* para volver:")
         sesiones[self.numero].cliente_receta_estado = "ver_recetas"
@@ -542,9 +535,7 @@ class GestionRecetasCliente:
 
     def contar_notificaciones(self, beneficiario_id):
         """Retorna la cantidad de acciones pendientes para un beneficiario."""
-        return self.receta_manager.contar_chat_no_leidos_usuario(
-            beneficiario_id, excluir_estados=["en_consulta"]
-        )
+        return self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id)
 
     def _salir(self, sesiones):
         sesiones[self.numero].cliente_receta_estado = None

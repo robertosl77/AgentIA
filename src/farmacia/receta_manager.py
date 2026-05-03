@@ -368,34 +368,53 @@ class RecetaManager:
             if msg["autor"] != lector and lector not in msg["leido_por"]
         )
 
+    def _get_meds_en_consulta(self, chat):
+        """Retorna set de medicamento_ids con consulta activa (sin respuesta_consulta posterior)."""
+        meds = set()
+        for idx, msg in enumerate(chat):
+            if msg.get("tipo") == "consulta":
+                med_id = msg.get("medicamento_id")
+                if med_id:
+                    tiene_respuesta = any(
+                        r.get("tipo") == "respuesta_consulta" and r.get("medicamento_id") == med_id
+                        for r in chat[idx + 1:]
+                    )
+                    if not tiene_respuesta:
+                        meds.add(med_id)
+        return meds
+
     def contar_chat_no_leidos_usuario(self, persona_id, excluir_estados=None):
-        """Cuenta mensajes no leídos dirigidos al usuario en todas sus recetas activas.
-        excluir_estados: lista de estados de receta a ignorar (ej. ["en_consulta"]).
-        """
+        """Cuenta mensajes no leídos del usuario, omitiendo los de medicamentos con consulta activa."""
         total = 0
         for rid, datos in self.data["recetas"].items():
             if datos["persona_id"] == persona_id:
                 if excluir_estados and datos.get("estado") in excluir_estados:
                     continue
-                total += sum(
-                    1 for msg in datos.get("chat", [])
-                    if msg["autor"] != persona_id and persona_id not in msg["leido_por"]
-                )
+                meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
+                for msg in datos.get("chat", []):
+                    if msg["autor"] != persona_id and persona_id not in msg["leido_por"]:
+                        med_id = msg.get("medicamento_id")
+                        if med_id and med_id in meds_en_consulta:
+                            continue
+                        total += 1
         return total
 
     def get_primer_chat_no_leido_usuario(self, persona_id, excluir_estados=None):
         """
         Retorna (receta_id, msg) del primer mensaje no leído para la persona,
-        ordenado cronológicamente. Retorna None si no hay.
-        excluir_estados: lista de estados de receta a ignorar (ej. ["en_consulta"]).
+        ordenado cronológicamente. Omite mensajes de medicamentos con consulta activa.
         """
         candidatos = []
         for rid, datos in self.data["recetas"].items():
             if datos["persona_id"] == persona_id:
                 if excluir_estados and datos.get("estado") in excluir_estados:
                     continue
+                meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
                 for msg in datos.get("chat", []):
                     if msg["autor"] != persona_id and persona_id not in msg["leido_por"]:
+                        med_id = msg.get("medicamento_id")
+                        if med_id and med_id in meds_en_consulta:
+                            continue
                         candidatos.append((msg["timestamp"], rid, msg))
         if not candidatos:
             return None

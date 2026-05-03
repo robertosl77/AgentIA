@@ -195,6 +195,36 @@ def reset_horarios_data():
     guardar(path, data)
 
 
+def reset_estado_recetas():
+    """
+    Resetea recetas existentes a estado inicial:
+    - estado → "pendiente"
+    - chat → []
+    - notas → []
+    - historial_estados → solo entrada inicial
+    - items: estado_item → "pendiente" (excepto omitido_usuario), sin alternativa_medicamento_id
+    """
+    path = get_tenant_path("farmacia", "recetas.json")
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    ts = datetime.now().isoformat()
+    for rid, receta in data["recetas"].items():
+        receta["estado"] = "pendiente"
+        receta["chat"] = []
+        receta["notas"] = []
+        receta["historial_estados"] = [
+            {"estado": "pendiente", "timestamp": ts, "motivo": "Reset manual"}
+        ]
+        for item in receta.get("items", []):
+            if item.get("estado_item") != "omitido_usuario":
+                item["estado_item"] = "pendiente"
+            item.pop("alternativa_medicamento_id", None)
+
+    guardar(path, data)
+    print(f"   └ {len(data['recetas'])} receta(s) reseteadas a pendiente")
+
+
 def reset_archivos_recetas():
     carpeta = get_tenant_path("archivos", "recetas")
     if not os.path.exists(carpeta):
@@ -207,20 +237,13 @@ def reset_archivos_recetas():
 
 def seed_recetas_testing():
     """
-    Genera recetas de prueba para testear el flujo en_consulta y acciones del cliente.
+    Genera recetas de prueba como recién cargadas por el cliente (estado pendiente).
 
-    Escenario A — en_consulta:
-        Receta con 2 items (sin_stock + alternativa_ofrecida).
-        El cliente ya consultó sobre el sin_stock → receta en en_consulta.
-        El farmacéutico ve la consulta pendiente y puede responderla.
-
-    Escenario B — a_la_espera:
-        Receta con 1 item alternativa_ofrecida sin ninguna acción del cliente.
-        El cliente ve la acción pendiente con opciones: aceptar/rechazar/esperar/consultar.
+    Receta A: 2 medicamentos (para testear flujo con múltiples items).
+    Receta B: 1 medicamento (para testear flujo simple).
 
     Requiere que exista al menos una persona en personas.json.
     """
-    # Leer persona para usar como paciente
     personas_path = get_tenant_path("persona", "personas.json")
     with open(personas_path, encoding="utf-8") as f:
         personas_data = json.load(f)
@@ -229,7 +252,6 @@ def seed_recetas_testing():
         return
     persona_id = next(iter(personas_data["personas"]))
 
-    # Leer u crear medicamentos de prueba
     med_path = get_tenant_path("farmacia", "medicamentos.json")
     with open(med_path, encoding="utf-8") as f:
         med_data = json.load(f)
@@ -254,90 +276,42 @@ def seed_recetas_testing():
     fecha_hoy = ahora.strftime("%d/%m/%Y")
     fecha_venc = (ahora + timedelta(days=28)).strftime("%d/%m/%Y")
 
-    def make_item(mid, cant, estado):
-        return {"medicamento_id": mid, "cantidad_receta": cant,
-                "cantidad_solicitada": cant, "estado_item": estado}
+    def make_receta(diagnostico, items_mids):
+        return {
+            "persona_id": persona_id,
+            "obra_social_id": None,
+            "credencial_validada": False,
+            "fecha_creacion": fecha_hoy,
+            "fecha_validez_desde": fecha_hoy,
+            "fecha_vencimiento": fecha_venc,
+            "medico": {"nombre": "Dr. Testing", "matricula": "00000", "especialidad": "Clínica"},
+            "diagnostico": diagnostico,
+            "items": [
+                {"medicamento_id": mid, "cantidad_receta": 1,
+                 "cantidad_solicitada": 1, "estado_item": "pendiente"}
+                for mid in items_mids
+            ],
+            "estado": "pendiente",
+            "operador_id": None,
+            "receta_url": None,
+            "notas": [],
+            "chat": [],
+            "historial_estados": [
+                {"estado": "pendiente", "timestamp": ts, "motivo": "Receta cargada por usuario"}
+            ]
+        }
 
-    # ── Escenario A: en_consulta ─────────────────────────────────────────────
     receta_id_a = str(uuid.uuid4())
-    receta_a = {
-        "persona_id": persona_id,
-        "obra_social_id": None,
-        "credencial_validada": False,
-        "fecha_creacion": fecha_hoy,
-        "fecha_validez_desde": fecha_hoy,
-        "fecha_vencimiento": fecha_venc,
-        "medico": {"nombre": "Dra. Prueba", "matricula": "12345", "especialidad": "Clínica"},
-        "diagnostico": "Testing en_consulta",
-        "items": [
-            make_item(mid_a, 2, "sin_stock"),
-            make_item(mid_b, 1, "alternativa_ofrecida"),
-        ],
-        "estado": "en_consulta",
-        "operador_id": persona_id,
-        "receta_url": None,
-        "notas": [],
-        "chat": [
-            # Farmacia notifica sin_stock sobre mid_a
-            {"id": "c001", "autor": "farmacia", "tipo": "sin_stock",
-             "mensaje": "HIDROTISONA 10 mg no está disponible (sin stock). ¿Esperás o cancelás?",
-             "medicamento_id": mid_a, "timestamp": ts, "leido_por": ["farmacia", persona_id]},
-            # Farmacia ofrece alternativa para mid_b
-            {"id": "c002", "autor": "farmacia", "tipo": "alternativa",
-             "mensaje": "No tenemos LIPOMAX 105 disponible. Ofrecemos como alternativa: LIPOMAX GENÉRICO 105 mg. ¿Lo aceptás?",
-             "medicamento_id": mid_b, "timestamp": ts, "leido_por": ["farmacia", persona_id]},
-            # Cliente consulta sobre el sin_stock (mid_a) — genera la transición H→M
-            {"id": "c003", "autor": persona_id, "tipo": "consulta",
-             "mensaje": "¿Cuándo van a tener stock?",
-             "medicamento_id": mid_a, "timestamp": ts, "leido_por": [persona_id]},
-        ],
-        "historial_estados": [
-            {"estado": "pendiente",    "timestamp": ts, "motivo": "Receta cargada por usuario"},
-            {"estado": "en_gestion",   "timestamp": ts, "motivo": "Farmacia procesando"},
-            {"estado": "a_la_espera",  "timestamp": ts, "motivo": "Items procesados — esperando respuesta del cliente"},
-            {"estado": "en_consulta",  "timestamp": ts, "motivo": "Cliente consulta sobre medicamento"},
-        ]
-    }
-
-    # ── Escenario B: a_la_espera ─────────────────────────────────────────────
     receta_id_b = str(uuid.uuid4())
-    receta_b = {
-        "persona_id": persona_id,
-        "obra_social_id": None,
-        "credencial_validada": False,
-        "fecha_creacion": fecha_hoy,
-        "fecha_validez_desde": fecha_hoy,
-        "fecha_vencimiento": fecha_venc,
-        "medico": {"nombre": "Dr. Ejemplo", "matricula": "99999", "especialidad": "Clínica"},
-        "diagnostico": "Testing a_la_espera",
-        "items": [
-            make_item(mid_b, 1, "alternativa_ofrecida"),
-        ],
-        "estado": "a_la_espera",
-        "operador_id": persona_id,
-        "receta_url": None,
-        "notas": [],
-        "chat": [
-            # Farmacia ofrece alternativa — pendiente de respuesta del cliente
-            {"id": "d001", "autor": "farmacia", "tipo": "alternativa",
-             "mensaje": "No tenemos LIPOMAX 105 disponible. Ofrecemos como alternativa: LIPOMAX GENÉRICO 105 mg. ¿Lo aceptás?",
-             "medicamento_id": mid_b, "timestamp": ts, "leido_por": ["farmacia"]},
-        ],
-        "historial_estados": [
-            {"estado": "pendiente",   "timestamp": ts, "motivo": "Receta cargada por usuario"},
-            {"estado": "en_gestion",  "timestamp": ts, "motivo": "Farmacia procesando"},
-            {"estado": "a_la_espera", "timestamp": ts, "motivo": "Items procesados — esperando respuesta del cliente"},
-        ]
-    }
 
     recetas_path = get_tenant_path("farmacia", "recetas.json")
     with open(recetas_path, encoding="utf-8") as f:
         recetas_data = json.load(f)
-    recetas_data["recetas"][receta_id_a] = receta_a
-    recetas_data["recetas"][receta_id_b] = receta_b
+    recetas_data["recetas"][receta_id_a] = make_receta("Testing 2 medicamentos", [mid_a, mid_b])
+    recetas_data["recetas"][receta_id_b] = make_receta("Testing 1 medicamento", [mid_b])
     guardar(recetas_path, recetas_data)
-    print(f"   ├ Escenario A (en_consulta):  {receta_id_a[:8]}...")
-    print(f"   └ Escenario B (a_la_espera):  {receta_id_b[:8]}...")
+    print(f"   ├ Receta A (2 meds): {receta_id_a[:8]}...")
+    print(f"   └ Receta B (1 med):  {receta_id_b[:8]}...")
 
 
 if __name__ == "__main__":
