@@ -161,7 +161,23 @@ class GestionRecetasCliente:
         ]
         if med_label:
             lineas.append(f"💊 *{med_label}*")
-        lineas += [f"💬 {msg.get('mensaje', '')}", ""]
+
+        if tipo == "respuesta_consulta" and med_id:
+            # Buscar la consulta original del cliente para este medicamento
+            chat = receta.get("chat", [])
+            consulta_original = next(
+                (m for m in chat
+                 if m.get("tipo") == "consulta" and m.get("medicamento_id") == med_id),
+                None
+            )
+            if consulta_original:
+                lineas.append(f" └ 👤 {consulta_original['mensaje']}")
+                lineas.append(f"    └ 🏥 {msg.get('mensaje', '')}")
+            else:
+                lineas.append(f"💬 {msg.get('mensaje', '')}")
+        else:
+            lineas.append(f"💬 {msg.get('mensaje', '')}")
+        lineas.append("")
 
         # solicitud_token: flujo especial de texto libre
         if tipo == "solicitud_token":
