@@ -24,7 +24,7 @@ class GestionRecetasStaff:
         "avanzar":              None,
         "confirmar_todos":      "_confirmar_todos_disponibles",
         "cambiar_estado_item":  "_iniciar_cambiar_estado_item",
-        "enviar_nota":          "_iniciar_escribir_nota",
+        "ver_chat":             "_iniciar_ver_chat",
         "cambiar_estado_receta":"_iniciar_cambiar_estado_receta",
         "responder_consulta":   "_iniciar_responder_consulta",
         "agendar_recordatorio": "_placeholder_agendar_recordatorio",
@@ -80,8 +80,8 @@ class GestionRecetasStaff:
             self._procesar_cambiar_estado_item(comando, sesiones)
         elif estado == "ofrecer_alternativa":
             self._procesar_ofrecer_alternativa(comando, sesiones)
-        elif estado == "escribir_nota":
-            self._procesar_escribir_nota(comando, sesiones)
+        elif estado == "chat_receta":
+            self._procesar_chat_receta(comando, sesiones)
         elif estado == "cambiar_estado_receta":
             self._procesar_cambiar_estado_receta(comando, sesiones)
         elif estado == "confirmar_token":
@@ -518,22 +518,98 @@ class GestionRecetasStaff:
         self._evaluar_estado_post_cambio_item(receta_id, sesiones)
         self._mostrar_detalle(sesiones)
 
-    # ── ESCRIBIR NOTA ─────────────────────────────────────────────────────────
+    # ── CHAT ──────────────────────────────────────────────────────────────────
 
-    def _iniciar_escribir_nota(self, sesiones):
-        sesiones[self.numero].staff_receta_estado = "escribir_nota"
-        self.sw.enviar(self._msg("pedir_nota"))
+    def _iniciar_ver_chat(self, sesiones):
+        sesiones[self.numero].staff_receta_estado = "chat_receta"
+        self._mostrar_chat_receta(sesiones)
 
-    def _procesar_escribir_nota(self, comando, sesiones):
+    def _mostrar_chat_receta(self, sesiones):
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        resultado = self.receta_manager.get_receta(receta_id)
+        if not resultado:
+            self._mostrar_detalle(sesiones)
+            return
+
+        _, receta = resultado
+        vencimiento = receta.get("fecha_vencimiento", "—")
+        estado_id = receta.get("estado", "pendiente")
+        estado_config = self._get_estado_receta_config(estado_id)
+        estado_label = estado_config.get("label", estado_id)
+        estado_icono = estado_config.get("icono", "")
+
+        chat = self.receta_manager.get_chat(receta_id)
+
+        lineas = [
+            f"💬 *Chat — Receta vence: {vencimiento}*",
+            f"Estado: {estado_icono} {estado_label}",
+            ""
+        ]
+
+        if not chat:
+            lineas.append("_(Sin mensajes aún)_")
+        else:
+            meds_order = []
+            meds_msgs = {}
+            generales = []
+            for msg in chat:
+                mid = msg.get("medicamento_id")
+                if mid:
+                    if mid not in meds_msgs:
+                        meds_order.append(mid)
+                        meds_msgs[mid] = []
+                    meds_msgs[mid].append(msg)
+                else:
+                    generales.append(msg)
+
+            for mid in meds_order:
+                med_label = self.med_manager.get_label(mid)
+                lineas.append(f"💊 *{med_label}*")
+                consumed = set()
+                for i, msg in enumerate(meds_msgs[mid]):
+                    if msg["id"] in consumed:
+                        continue
+                    tipo = msg.get("tipo", "mensaje")
+                    autor = msg["autor"]
+                    if tipo in ("sin_stock", "alternativa", "solicitud_token"):
+                        lineas.append(f" 🏥 {msg['mensaje']}")
+                    elif tipo == "consulta":
+                        lineas.append(f"  └ 👤 {msg['mensaje']}")
+                        respuesta = next(
+                            (r for r in meds_msgs[mid][i + 1:]
+                             if r.get("tipo") == "respuesta_consulta" and r["id"] not in consumed),
+                            None
+                        )
+                        if respuesta:
+                            lineas.append(f"     └ 🏥 {respuesta['mensaje']}")
+                            consumed.add(respuesta["id"])
+                    elif tipo == "respuesta_consulta":
+                        pass
+                    elif tipo in ("accion", "token_respuesta"):
+                        lineas.append(f"  └ 👤 {msg['mensaje']}")
+                    else:
+                        prefix = "🏥" if autor == "farmacia" else "👤"
+                        lineas.append(f"  {prefix} {msg['mensaje']}")
+                lineas.append("")
+
+            for msg in generales:
+                prefix = "🏥" if msg["autor"] == "farmacia" else "👤"
+                lineas.append(f"{prefix} {msg['mensaje']}")
+
+        self.receta_manager.marcar_chat_leido(receta_id, "farmacia")
+
+        lineas.append("")
+        lineas.append("Escribí un mensaje o *cancelar* para volver:")
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_chat_receta(self, comando, sesiones):
         if comando.strip() == "cancelar":
             self._mostrar_detalle(sesiones)
             return
 
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
         self.receta_manager.agregar_mensaje_chat(receta_id, "farmacia", comando.strip(), tipo="mensaje")
-
-        self.sw.enviar(self._msg("nota_enviada"))
-        self._mostrar_detalle(sesiones)
+        self._mostrar_chat_receta(sesiones)
 
     # ── CAMBIAR ESTADO DE RECETA (dinámico desde outflow) ─────────────────────
 

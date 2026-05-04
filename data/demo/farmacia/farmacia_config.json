@@ -276,7 +276,7 @@
         "opciones_staff": [
           "confirmar_todos",
           "cambiar_estado_item",
-          "enviar_nota",
+          "ver_chat",
           "cambiar_estado_receta",
           "agendar_recordatorio"
         ]
@@ -294,7 +294,7 @@
         "opciones_staff": [
           "confirmar_todos",
           "cambiar_estado_item",
-          "enviar_nota",
+          "ver_chat",
           "cambiar_estado_receta",
           "agendar_recordatorio"
         ]
@@ -324,7 +324,7 @@
         "automatico": true,
         "notificacion_push": null,
         "opciones_staff": [
-          "enviar_nota",
+          "ver_chat",
           "cambiar_estado_receta"
         ]
       },
@@ -339,7 +339,7 @@
         "automatico": false,
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n🔐 La farmacia necesita un *token de autorización* de tu obra social.\nIngresá al menú *Mis recetas* para enviarlo.",
         "opciones_staff": [
-          "enviar_nota",
+          "ver_chat",
           "cambiar_estado_receta",
           "agendar_recordatorio"
         ]
@@ -357,7 +357,7 @@
         "opciones_staff": [
           "avanzar",
           "validar_token",
-          "enviar_nota",
+          "ver_chat",
           "cambiar_estado_receta"
         ]
       },
@@ -388,7 +388,7 @@
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n⚠️ El token de autorización presentó un problema.\nIngresá al menú *Mis recetas* para reenviarlo.",
         "opciones_staff": [
           "avanzar",
-          "enviar_nota",
+          "ver_chat",
           "cambiar_estado_receta"
         ]
       },
@@ -404,7 +404,7 @@
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n✅ Tu medicación está lista para retirar en la farmacia.",
         "opciones_staff": [
           "avanzar",
-          "enviar_nota",
+          "ver_chat",
           "cambiar_estado_receta"
         ]
       },
@@ -539,7 +539,7 @@
     "opciones_staff_labels": {
       "confirmar_todos": "✅ Confirmar todos los medicamentos como disponibles",
       "cambiar_estado_item": "💊 Cambiar estado de un medicamento",
-      "enviar_nota": "💬 Enviar nota al paciente",
+      "ver_chat": "💬 Chat",
       "cambiar_estado_receta": "📊 Cambiar estado de la receta",
       "agendar_recordatorio": "🔔 Agendar recordatorio",
       "validar_token": "🔑 Validar token recibido",
