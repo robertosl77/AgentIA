@@ -28,7 +28,7 @@ class GestionRecetasStaff:
         "cambiar_estado_receta":"_iniciar_cambiar_estado_receta",
         "responder_consulta":   "_iniciar_responder_consulta",
         "agendar_recordatorio": "_placeholder_agendar_recordatorio",
-        "validar_token":        "_placeholder_validar_token",
+        "validar_token":        "_iniciar_validar_token",
     }
 
     def __init__(self, numero):
@@ -88,6 +88,8 @@ class GestionRecetasStaff:
             self._procesar_confirmar_token(comando, sesiones)
         elif estado == "responder_consulta":
             self._procesar_responder_consulta(comando, sesiones)
+        elif estado == "validar_token_resp":
+            self._procesar_validar_token_resp(comando, sesiones)
 
     # ── LISTA DE RECETAS PENDIENTES ───────────────────────────────────────────
 
@@ -769,8 +771,13 @@ class GestionRecetasStaff:
                 receta_id, "requiere_autorizacion",
                 f"Reintento {reintentos}/{max_reintentos} — solicitud de nuevo token"
             )
+            self.receta_manager.agregar_mensaje_chat(
+                receta_id, "farmacia",
+                self._msg("nota_solicitar_token"),
+                tipo="solicitud_token"
+            )
             self.sw.enviar(self._msg("reintento_token", reintento=reintentos, max=max_reintentos))
-            self._enviar_notificacion_push(receta_id, "error_token")
+            self._enviar_notificacion_push(receta_id, "requiere_autorizacion")
             self._mostrar_detalle(sesiones)
             return
 
@@ -861,10 +868,36 @@ class GestionRecetasStaff:
         self.sw.enviar(self._msg("agendar_recordatorio"))
         self._mostrar_detalle(sesiones)
 
-    def _placeholder_validar_token(self, sesiones):
-        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+    def _iniciar_validar_token(self, sesiones):
+        sesiones[self.numero].staff_receta_estado = "validar_token_resp"
         self.sw.enviar(self._msg("validar_token"))
-        print(f"[PLACEHOLDER] Validar token para receta {receta_id}")
+
+    def _procesar_validar_token_resp(self, comando, sesiones):
+        if comando.strip() == "cancelar":
+            self._mostrar_detalle(sesiones)
+            return
+
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+
+        if comando.strip() == "1":
+            # Token correcto → procesando
+            self.receta_manager.cambiar_estado(receta_id, "procesando", "Token validado")
+            self.sw.enviar(self._msg("token_validado"))
+            self._mostrar_detalle(sesiones)
+
+        elif comando.strip() == "2":
+            # Token inválido → error_token → reintento (lógica en _avanzar_camino_feliz)
+            self.receta_manager.cambiar_estado(receta_id, "error_token", "Token inválido")
+            self._avanzar_camino_feliz(sesiones)
+
+        elif comando.strip() == "3":
+            # No requiere token → procesando directo
+            self.receta_manager.cambiar_estado(receta_id, "procesando", "No requiere token — avance directo")
+            self.sw.enviar(self._msg("token_no"))
+            self._mostrar_detalle(sesiones)
+
+        else:
+            self.sw.enviar(self._msg("opcion_invalida"))
 
     # ── HELPERS ───────────────────────────────────────────────────────────────
 

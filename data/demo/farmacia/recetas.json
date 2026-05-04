@@ -1,6 +1,6 @@
 {
   "recetas": {
-    "a2bb3837-8644-420f-92b5-4d72efa15e9e": {
+    "6c7b8f71-8826-4462-9652-0718ef7d7cf5": {
       "persona_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
       "obra_social_id": null,
       "credencial_validada": false,
@@ -15,180 +15,62 @@
       "diagnostico": "Testing 2 medicamentos",
       "items": [
         {
-          "medicamento_id": "fe5dbc2e-a908-47b6-8dea-3d8123d9773e",
+          "medicamento_id": "7490b447-3882-42aa-ab28-0531d76643bf",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
           "estado_item": "disponible"
         },
         {
-          "medicamento_id": "82aaaaa5-df8f-42d4-b458-9c48065d72b3",
+          "medicamento_id": "a28bbfbb-aa65-4180-8dc2-fb0adc4218a9",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "alternativa_aceptada"
+          "estado_item": "disponible"
         }
       ],
-      "estado": "token_enviado",
+      "estado": "procesando",
       "operador_id": null,
       "receta_url": null,
       "notas": [],
       "chat": [
         {
-          "id": "425605f9",
-          "autor": "farmacia",
-          "tipo": "sin_stock",
-          "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-05-03T20:31:02.643205",
-          "leido_por": [
-            "farmacia",
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
-          ],
-          "medicamento_id": "fe5dbc2e-a908-47b6-8dea-3d8123d9773e"
-        },
-        {
-          "id": "925b3457",
-          "autor": "farmacia",
-          "tipo": "alternativa",
-          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *lipomin*. ¿Lo aceptás?",
-          "timestamp": "2026-05-03T20:31:20.620062",
-          "leido_por": [
-            "farmacia",
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
-          ],
-          "medicamento_id": "82aaaaa5-df8f-42d4-b458-9c48065d72b3"
-        },
-        {
-          "id": "df5fd278",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "consulta",
-          "mensaje": "cuando crees que este en stock?",
-          "timestamp": "2026-05-03T20:32:40.143978",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ],
-          "medicamento_id": "fe5dbc2e-a908-47b6-8dea-3d8123d9773e"
-        },
-        {
-          "id": "a2728207",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "consulta",
-          "mensaje": "cubre tambien el 60%? cuanto sale?",
-          "timestamp": "2026-05-03T20:33:59.562292",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ],
-          "medicamento_id": "82aaaaa5-df8f-42d4-b458-9c48065d72b3"
-        },
-        {
-          "id": "6e9466b7",
-          "autor": "farmacia",
-          "tipo": "respuesta_consulta",
-          "mensaje": "el martes",
-          "timestamp": "2026-05-03T20:35:02.724962",
-          "leido_por": [
-            "farmacia",
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
-          ],
-          "medicamento_id": "fe5dbc2e-a908-47b6-8dea-3d8123d9773e"
-        },
-        {
-          "id": "4a5c7ab9",
-          "autor": "farmacia",
-          "tipo": "respuesta_consulta",
-          "mensaje": "si cubre el 60% te sale $25.000",
-          "timestamp": "2026-05-03T20:35:38.671081",
-          "leido_por": [
-            "farmacia",
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
-          ],
-          "medicamento_id": "82aaaaa5-df8f-42d4-b458-9c48065d72b3"
-        },
-        {
-          "id": "6047eea6",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "accion",
-          "mensaje": "Voy a esperar.",
-          "timestamp": "2026-05-03T20:56:11.932626",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ],
-          "medicamento_id": "fe5dbc2e-a908-47b6-8dea-3d8123d9773e"
-        },
-        {
-          "id": "6d5fd5c7",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "accion",
-          "mensaje": "Acepto el cambio.",
-          "timestamp": "2026-05-03T20:58:52.295857",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ],
-          "medicamento_id": "82aaaaa5-df8f-42d4-b458-9c48065d72b3"
-        },
-        {
-          "id": "8446bd97",
-          "autor": "farmacia",
-          "tipo": "mensaje",
-          "mensaje": "mañana continuo con tus recetas",
-          "timestamp": "2026-05-03T21:22:58.688716",
-          "leido_por": [
-            "farmacia",
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
-          ]
-        },
-        {
-          "id": "1651478e",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "mensaje",
-          "mensaje": "oki avisame cualquier cosa!",
-          "timestamp": "2026-05-03T22:03:03.790523",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ]
-        },
-        {
-          "id": "e3a9dd6c",
-          "autor": "farmacia",
-          "tipo": "mensaje",
-          "mensaje": "hola ahi voy avanzando la medicacion!",
-          "timestamp": "2026-05-03T22:17:50.352640",
-          "leido_por": [
-            "farmacia",
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
-          ]
-        },
-        {
-          "id": "dde0a859",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "mensaje",
-          "mensaje": "perfecto!",
-          "timestamp": "2026-05-03T22:18:36.693129",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ]
-        },
-        {
-          "id": "cdc50cec",
+          "id": "805e7921",
           "autor": "farmacia",
           "tipo": "solicitud_token",
           "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
-          "timestamp": "2026-05-03T22:19:51.416423",
+          "timestamp": "2026-05-03T23:01:48.655449",
           "leido_por": [
             "farmacia",
             "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ]
         },
         {
-          "id": "bb37082f",
+          "id": "97e06e97",
           "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
           "tipo": "token_respuesta",
-          "mensaje": "Token de autorización: 8888",
-          "timestamp": "2026-05-03T22:20:33.101091",
+          "mensaje": "Token de autorización: 888",
+          "timestamp": "2026-05-03T23:02:33.167153",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "ffb5a176",
+          "autor": "farmacia",
+          "tipo": "solicitud_token",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-05-03T23:02:50.811763",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "82f9ff87",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "token_respuesta",
+          "mensaje": "Token de autorización: 889",
+          "timestamp": "2026-05-03T23:03:26.961274",
           "leido_por": [
             "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
@@ -198,47 +80,47 @@
       "historial_estados": [
         {
           "estado": "pendiente",
-          "timestamp": "2026-05-03T20:27:47.591250",
+          "timestamp": "2026-05-03T23:00:48.465297",
           "motivo": "Receta cargada por usuario"
         },
         {
           "estado": "en_gestion",
-          "timestamp": "2026-05-03T20:30:13.566109",
+          "timestamp": "2026-05-03T23:01:37.801770",
           "motivo": "Farmacia procesando"
         },
         {
-          "estado": "a_la_espera",
-          "timestamp": "2026-05-03T20:31:21.175061",
-          "motivo": "Items procesados — esperando respuesta del cliente"
-        },
-        {
-          "estado": "en_consulta",
-          "timestamp": "2026-05-03T20:32:40.147997",
-          "motivo": "Cliente consulta sobre medicamento"
-        },
-        {
-          "estado": "en_consulta",
-          "timestamp": "2026-05-03T20:33:59.563298",
-          "motivo": "Cliente consulta sobre medicamento"
-        },
-        {
-          "estado": "a_la_espera",
-          "timestamp": "2026-05-03T20:35:39.220082",
-          "motivo": "Farmacia respondió todas las consultas"
-        },
-        {
           "estado": "requiere_autorizacion",
-          "timestamp": "2026-05-03T22:19:51.415424",
+          "timestamp": "2026-05-03T23:01:48.653445",
           "motivo": "Farmacia solicita token"
         },
         {
           "estado": "token_enviado",
-          "timestamp": "2026-05-03T22:20:33.099091",
+          "timestamp": "2026-05-03T23:02:33.166151",
           "motivo": "Token enviado por paciente"
+        },
+        {
+          "estado": "error_token",
+          "timestamp": "2026-05-03T23:02:50.809766",
+          "motivo": "Token inválido"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-05-03T23:02:50.810765",
+          "motivo": "Reintento 1/3 — solicitud de nuevo token"
+        },
+        {
+          "estado": "token_enviado",
+          "timestamp": "2026-05-03T23:03:26.960274",
+          "motivo": "Token enviado por paciente"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-03T23:04:07.076550",
+          "motivo": "Token validado"
         }
       ]
     },
-    "4a1279ce-5b40-4ec0-8cee-9ed5687f3ea6": {
+    "79c7a27e-94b4-48d7-b4ce-a3015bafeff4": {
       "persona_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
       "obra_social_id": null,
       "credencial_validada": false,
@@ -253,7 +135,7 @@
       "diagnostico": "Testing 1 medicamento",
       "items": [
         {
-          "medicamento_id": "82aaaaa5-df8f-42d4-b458-9c48065d72b3",
+          "medicamento_id": "a28bbfbb-aa65-4180-8dc2-fb0adc4218a9",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
           "estado_item": "pendiente"
@@ -267,7 +149,7 @@
       "historial_estados": [
         {
           "estado": "pendiente",
-          "timestamp": "2026-05-03T20:27:47.591250",
+          "timestamp": "2026-05-03T23:00:48.465297",
           "motivo": "Receta cargada por usuario"
         }
       ]

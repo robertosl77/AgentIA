@@ -259,7 +259,7 @@
             "activacion": [
               "2"
             ],
-            "texto": "2. 🚫 Gestionar Cierre Eventual",
+            "texto": "2. 📆 Gestionar Cierre Eventual",
             "handler": "gestionar_cierre_eventual"
           },
           {
