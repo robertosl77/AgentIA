@@ -244,6 +244,7 @@
   },
   "recetas": {
     "dias_vencimiento": 30,
+    "tipos_accion_cliente": ["sin_stock", "alternativa", "solicitud_token", "respuesta_consulta"],
     "alerta_preventiva_dias": 20,
     "alerta_urgente_dias": 28,
     "max_reintentos_token": 3,

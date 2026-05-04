@@ -383,35 +383,40 @@ class RecetaManager:
                         meds.add(med_id)
         return meds
 
-    def contar_chat_no_leidos_usuario(self, persona_id, excluir_estados=None):
-        """Cuenta mensajes no leídos del usuario, omitiendo los de medicamentos con consulta activa."""
+    def _tipos_accion_cliente(self):
+        return set(self.config.get("recetas", {}).get("tipos_accion_cliente", []))
+
+    def contar_chat_no_leidos_usuario(self, persona_id):
+        """Cuenta acciones pendientes (tipos accionables) no leídas por el usuario."""
+        tipos_accion = self._tipos_accion_cliente()
         total = 0
         for rid, datos in self.data["recetas"].items():
             if datos["persona_id"] == persona_id:
-                if excluir_estados and datos.get("estado") in excluir_estados:
-                    continue
                 meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
                 for msg in datos.get("chat", []):
-                    if msg["autor"] != persona_id and persona_id not in msg["leido_por"]:
+                    if (msg["autor"] != persona_id
+                            and persona_id not in msg["leido_por"]
+                            and msg.get("tipo") in tipos_accion):
                         med_id = msg.get("medicamento_id")
                         if med_id and med_id in meds_en_consulta:
                             continue
                         total += 1
         return total
 
-    def get_primer_chat_no_leido_usuario(self, persona_id, excluir_estados=None):
+    def get_primer_chat_no_leido_usuario(self, persona_id):
         """
-        Retorna (receta_id, msg) del primer mensaje no leído para la persona,
+        Retorna (receta_id, msg) del primer mensaje accionable no leído,
         ordenado cronológicamente. Omite mensajes de medicamentos con consulta activa.
         """
+        tipos_accion = self._tipos_accion_cliente()
         candidatos = []
         for rid, datos in self.data["recetas"].items():
             if datos["persona_id"] == persona_id:
-                if excluir_estados and datos.get("estado") in excluir_estados:
-                    continue
                 meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
                 for msg in datos.get("chat", []):
-                    if msg["autor"] != persona_id and persona_id not in msg["leido_por"]:
+                    if (msg["autor"] != persona_id
+                            and persona_id not in msg["leido_por"]
+                            and msg.get("tipo") in tipos_accion):
                         med_id = msg.get("medicamento_id")
                         if med_id and med_id in meds_en_consulta:
                             continue
@@ -421,6 +426,18 @@ class RecetaManager:
         candidatos.sort(key=lambda x: x[0])
         _, rid, msg = candidatos[0]
         return (rid, msg)
+
+    def contar_mensajes_no_leidos_usuario(self, persona_id):
+        """Cuenta mensajes tipo 'mensaje' de farmacia no leídos — aparecen en Chat."""
+        total = 0
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                for msg in datos.get("chat", []):
+                    if (msg["autor"] != persona_id
+                            and persona_id not in msg["leido_por"]
+                            and msg.get("tipo") == "mensaje"):
+                        total += 1
+        return total
 
     def migrar_notas_a_chat(self, receta_id):
         """

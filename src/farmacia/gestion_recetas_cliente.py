@@ -88,15 +88,17 @@ class GestionRecetasCliente:
     def _mostrar_menu(self, sesiones):
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
         cant_notif = self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id)
+        cant_chat = self.receta_manager.contar_mensajes_no_leidos_usuario(beneficiario_id)
 
         notif_label = f" ({cant_notif} pendientes)" if cant_notif > 0 else ""
+        chat_label = f" ({cant_chat} nuevos)" if cant_chat > 0 else ""
 
         lineas = [
             "📬 *Gestión de recetas*\n",
             f"1. 🔔 Acciones{notif_label}",
             "2. 📋 Ver mis recetas",
             "3. ⏰ Mis recordatorios",
-            "4. 💬 Chat",
+            f"4. 💬 Chat{chat_label}",
             "Escribí *cancelar* para volver:"
         ]
         sesiones[self.numero].cliente_receta_estado = "menu"
@@ -445,30 +447,55 @@ class GestionRecetasCliente:
         if not chat:
             lineas.append("_(Sin mensajes aún)_")
         else:
-            consumed = set()
-            for idx, msg in enumerate(chat):
-                if msg["id"] in consumed:
-                    continue
-                tipo = msg.get("tipo", "mensaje")
-                autor = msg["autor"]
-                med_id = msg.get("medicamento_id")
-
-                if autor == "farmacia" and med_id and tipo in ("sin_stock", "alternativa", "solicitud_token"):
-                    lineas.append(f"🏥 {msg['mensaje']}")
-                    # Muestra todos los mensajes del cliente para este medicamento
-                    # hasta el próximo mensaje de farmacia con el mismo med_id
-                    for reply in chat[idx + 1:]:
-                        if reply["autor"] == "farmacia" and reply.get("medicamento_id") == med_id:
-                            break
-                        if (reply["autor"] != "farmacia"
-                                and reply.get("tipo") in ("accion", "mensaje")
-                                and reply.get("medicamento_id") == med_id
-                                and reply["id"] not in consumed):
-                            lineas.append(f"└ 👤 {reply['mensaje']}")
-                            consumed.add(reply["id"])
+            # Agrupar por medicamento_id; mensajes sin med_id van a generales
+            meds_order = []
+            meds_msgs = {}
+            generales = []
+            for msg in chat:
+                mid = msg.get("medicamento_id")
+                if mid:
+                    if mid not in meds_msgs:
+                        meds_order.append(mid)
+                        meds_msgs[mid] = []
+                    meds_msgs[mid].append(msg)
                 else:
-                    prefix = "🏥" if autor == "farmacia" else "👤"
-                    lineas.append(f"{prefix} {msg['mensaje']}")
+                    generales.append(msg)
+
+            # Hilo por medicamento
+            for mid in meds_order:
+                med_label = self.med_manager.get_label(mid)
+                lineas.append(f"💊 *{med_label}*")
+                consumed = set()
+                for i, msg in enumerate(meds_msgs[mid]):
+                    if msg["id"] in consumed:
+                        continue
+                    tipo = msg.get("tipo", "mensaje")
+                    autor = msg["autor"]
+                    if tipo in ("sin_stock", "alternativa", "solicitud_token"):
+                        lineas.append(f" 🏥 {msg['mensaje']}")
+                    elif tipo == "consulta":
+                        lineas.append(f"  └ 👤 {msg['mensaje']}")
+                        respuesta = next(
+                            (r for r in meds_msgs[mid][i + 1:]
+                             if r.get("tipo") == "respuesta_consulta" and r["id"] not in consumed),
+                            None
+                        )
+                        if respuesta:
+                            lineas.append(f"     └ 🏥 {respuesta['mensaje']}")
+                            consumed.add(respuesta["id"])
+                    elif tipo == "respuesta_consulta":
+                        pass  # ya mostrado bajo su consulta
+                    elif tipo in ("accion", "token_respuesta"):
+                        lineas.append(f"  └ 👤 {msg['mensaje']}")
+                    else:
+                        prefix = "🏥" if autor == "farmacia" else "👤"
+                        lineas.append(f"  {prefix} {msg['mensaje']}")
+                lineas.append("")
+
+            # Mensajes generales (sin medicamento_id) en orden cronológico
+            for msg in generales:
+                prefix = "🏥" if msg["autor"] == "farmacia" else "👤"
+                lineas.append(f"{prefix} {msg['mensaje']}")
 
         lineas.append("")
         lineas.append("Escribí tu consulta o *cancelar* para volver:")
@@ -476,7 +503,7 @@ class GestionRecetasCliente:
         # Solo marcar como leídos los mensajes informativos — los accionables
         # (sin_stock, alternativa, solicitud_token) siguen pendientes hasta que
         # el cliente decida explícitamente desde el flujo de notificaciones.
-        TIPOS_ACCIONABLES = {"sin_stock", "alternativa", "solicitud_token"}
+        TIPOS_ACCIONABLES = {"sin_stock", "alternativa", "solicitud_token", "respuesta_consulta"}
         for msg in chat:
             if (msg["autor"] != beneficiario_id
                     and beneficiario_id not in msg["leido_por"]

@@ -111,7 +111,8 @@
           "mensaje": "Voy a esperar.",
           "timestamp": "2026-05-03T20:56:11.932626",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "fe5dbc2e-a908-47b6-8dea-3d8123d9773e"
         },
@@ -122,9 +123,32 @@
           "mensaje": "Acepto el cambio.",
           "timestamp": "2026-05-03T20:58:52.295857",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "82aaaaa5-df8f-42d4-b458-9c48065d72b3"
+        },
+        {
+          "id": "8446bd97",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "mañana continuo con tus recetas",
+          "timestamp": "2026-05-03T21:22:58.688716",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "1651478e",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "oki avisame cualquier cosa!",
+          "timestamp": "2026-05-03T22:03:03.790523",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
         }
       ],
       "historial_estados": [
