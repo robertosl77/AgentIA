@@ -263,6 +263,15 @@ class GestionRecetasStaff:
 
         self.receta_manager.marcar_chat_leido(receta_id, "farmacia")
 
+        # Token enviado: mostrar el valor recibido del cliente
+        if estado_id == "token_enviado":
+            token_msg = next(
+                (m for m in reversed(chat) if m.get("tipo") == "token_respuesta"),
+                None
+            )
+            if token_msg:
+                lineas.append(f"\n🔑 *Token recibido:* {token_msg['mensaje']}")
+
         # Opciones dinámicas según estado actual
         opciones_staff = list(estado_config.get("opciones_staff", []))
         camino_feliz = estado_config.get("camino_feliz")
@@ -383,13 +392,8 @@ class GestionRecetasStaff:
 
         if comando.strip() == "1":
             self.receta_manager.cambiar_estado(receta_id, "requiere_autorizacion", "Farmacia solicita token")
-            self.receta_manager.agregar_mensaje_chat(
-                receta_id, "farmacia",
-                self._msg("nota_solicitar_token"),
-                tipo="solicitud_token"
-            )
             self.sw.enviar(self._msg("token_si"))
-            self._enviar_notificacion_push(receta_id, "requiere_autorizacion")
+            self._acciones_al_entrar(receta_id, "requiere_autorizacion")
             self._mostrar_detalle(sesiones)
 
         elif comando.strip() == "2":
@@ -684,7 +688,7 @@ class GestionRecetasStaff:
             label = config.get("label", nuevo_estado)
             self.sw.enviar(self._msg("estado_cambiado", label=label))
 
-            self._enviar_notificacion_push(receta_id, nuevo_estado)
+            self._acciones_al_entrar(receta_id, nuevo_estado)
 
             if config.get("es_final", False):
                 self.iniciar(sesiones)
@@ -721,7 +725,7 @@ class GestionRecetasStaff:
         label = config.get("label", nuevo_estado)
         self.sw.enviar(self._msg("estado_cambiado", label=label))
 
-        self._enviar_notificacion_push(receta_id, nuevo_estado)
+        self._acciones_al_entrar(receta_id, nuevo_estado)
 
         if config.get("es_final", False):
             self.iniciar(sesiones)
@@ -760,7 +764,12 @@ class GestionRecetasStaff:
         if estado_actual == "error_token":
             max_reintentos = self.farm_config.get("recetas", {}).get("max_reintentos_token", 3)
             historial = receta.get("historial_estados", [])
-            reintentos = sum(1 for h in historial if h["estado"] == "error_token")
+            ultimo_req = next(
+                (i for i in range(len(historial) - 1, -1, -1)
+                 if historial[i]["estado"] == "requiere_autorizacion"),
+                0
+            )
+            reintentos = sum(1 for h in historial[ultimo_req:] if h["estado"] == "error_token")
 
             if reintentos >= max_reintentos:
                 self.sw.enviar(self._msg("reintentos_agotados", max=max_reintentos))
@@ -771,13 +780,8 @@ class GestionRecetasStaff:
                 receta_id, "requiere_autorizacion",
                 f"Reintento {reintentos}/{max_reintentos} — solicitud de nuevo token"
             )
-            self.receta_manager.agregar_mensaje_chat(
-                receta_id, "farmacia",
-                self._msg("nota_solicitar_token"),
-                tipo="solicitud_token"
-            )
             self.sw.enviar(self._msg("reintento_token", reintento=reintentos, max=max_reintentos))
-            self._enviar_notificacion_push(receta_id, "requiere_autorizacion")
+            self._acciones_al_entrar(receta_id, "requiere_autorizacion")
             self._mostrar_detalle(sesiones)
             return
 
@@ -794,7 +798,7 @@ class GestionRecetasStaff:
         self.receta_manager.cambiar_estado(receta_id, camino_feliz, f"Avance → {cf_label}")
         self.sw.enviar(self._msg("avance_exitoso", label=cf_label))
 
-        self._enviar_notificacion_push(receta_id, camino_feliz)
+        self._acciones_al_entrar(receta_id, camino_feliz)
 
         if cf_config.get("es_final", False):
             self.iniciar(sesiones)
@@ -851,7 +855,7 @@ class GestionRecetasStaff:
         )
 
         # Notificar al cliente por esta respuesta
-        self._enviar_notificacion_push(receta_id, "en_consulta")
+        self._acciones_al_entrar(receta_id, "en_consulta")
 
         # Transición M→H solo si no quedan más consultas sin respuesta
         chat = self.receta_manager.get_chat(receta_id)
@@ -890,12 +894,6 @@ class GestionRecetasStaff:
             self.receta_manager.cambiar_estado(receta_id, "error_token", "Token inválido")
             self._avanzar_camino_feliz(sesiones)
 
-        elif comando.strip() == "3":
-            # No requiere token → procesando directo
-            self.receta_manager.cambiar_estado(receta_id, "procesando", "No requiere token — avance directo")
-            self.sw.enviar(self._msg("token_no"))
-            self._mostrar_detalle(sesiones)
-
         else:
             self.sw.enviar(self._msg("opcion_invalida"))
 
@@ -922,6 +920,20 @@ class GestionRecetasStaff:
 
     def _get_estado_receta_config(self, estado_id):
         return self.farm_config.get("recetas", {}).get("estados_receta", {}).get(estado_id, {})
+
+    def _acciones_al_entrar(self, receta_id, estado_id):
+        """
+        Ejecuta las acciones declaradas en la config al entrar a un estado:
+        1. Agrega mensaje al chat si mensaje_al_entrar está definido.
+        2. Envía push al cliente si notificacion_push está definida.
+        """
+        config = self._get_estado_receta_config(estado_id)
+        msg_config = config.get("mensaje_al_entrar")
+        if msg_config:
+            texto = self._msg(msg_config["clave_texto"])
+            tipo = msg_config["tipo"]
+            self.receta_manager.agregar_mensaje_chat(receta_id, "farmacia", texto, tipo=tipo)
+        self._enviar_notificacion_push(receta_id, estado_id)
 
     def _enviar_notificacion_push(self, receta_id, estado_id):
         """
@@ -1014,7 +1026,7 @@ class GestionRecetasStaff:
             if estado_actual != "a_la_espera":
                 self.receta_manager.cambiar_estado(receta_id, "a_la_espera", "Items procesados — esperando respuesta del cliente")
                 self.sw.enviar(self._msg("cambio_automatico_a_la_espera"))
-                self._enviar_notificacion_push(receta_id, "a_la_espera")
+                self._acciones_al_entrar(receta_id, "a_la_espera")
             return
 
         if todos_resueltos:

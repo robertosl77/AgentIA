@@ -331,13 +331,14 @@
       "requiere_autorizacion": {
         "label": "Requiere autorización",
         "icono": "🔐",
-        "inflow": ["en_gestion", "error_token"],
+        "inflow": ["en_gestion"],
         "outflow": ["token_enviado", "rechazada"],
         "camino_feliz": null,
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n🔐 La farmacia necesita un *token de autorización* de tu obra social.\nIngresá al menú *Mis recetas* para enviarlo.",
+        "mensaje_al_entrar": {"tipo": "solicitud_token", "clave_texto": "nota_solicitar_token"},
         "opciones_staff": [
           "ver_chat",
           "cambiar_estado_receta",
@@ -385,7 +386,7 @@
         "requiere_motivo": false,
         "es_final": false,
         "automatico": false,
-        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n⚠️ El token de autorización presentó un problema.\nIngresá al menú *Mis recetas* para reenviarlo.",
+        "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n⚠️ Tu token de autorización presentó un problema. La farmacia te solicitará uno nuevo a la brevedad.",
         "opciones_staff": [
           "avanzar",
           "ver_chat",
@@ -525,7 +526,7 @@
       "avance_exitoso": "✅ Receta avanzada a: *{label}*",
       "todos_resueltos": "🔔 Todos los medicamentos están resueltos.\nPodés usar *Confirmar todos* o *Cambiar estado de la receta* para avanzar.",
       "agendar_recordatorio": "🚧 Agendar recordatorio — próximamente...",
-      "validar_token": "🔑 *Validación de token:*\n\n1. ✅ Token correcto — avanzar\n2. 🔄 Solicitar nuevo token\n3. ⏭️ No requiere token — avanzar\n\nEscribí *cancelar* para volver:",
+      "validar_token": "🔑 *Validación de token:*\n\n1. ✅ Token correcto — avanzar\n2. 🔄 Solicitar nuevo token\n\nEscribí *cancelar* para volver:",
       "escribi_cancelar": "Escribí *cancelar* para volver:",
       "volver_atras_label": " (volver atrás)",
       "nota_desestimada_auto": "Nota desestimada automáticamente: el medicamento ya fue marcado como disponible.",
