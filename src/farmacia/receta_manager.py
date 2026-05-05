@@ -4,6 +4,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 from src.tenant import data_path
+from src.farmacia.constants import ESTADO_OMITIDO
 
 _instancia = None
 
@@ -299,7 +300,7 @@ class RecetaManager:
         if receta_id not in self.data["recetas"]:
             return
         for item in self.data["recetas"][receta_id]["items"]:
-            if item["estado_item"] != "omitido_usuario":
+            if item["estado_item"] != ESTADO_OMITIDO:
                 item["estado_item"] = estado_item
         self._guardar_archivo()
 

@@ -3,17 +3,26 @@ BACKLOG — módulo farmacia
 ══════════════════════════════════════════════════════
 
 ──────────────────────────────────────────────────────
-DECISIONES PENDIENTES (deharcode)
+BUGS / FIXES
 ──────────────────────────────────────────────────────
 
-[D4] omitido_usuario — dos usos con semántica distinta
-  Aparece en 8+ lugares como filtro de visibilidad ("no mostrar en UI")
-  y también como "no resetear este item" en reset_items().
-  Opciones:
-    a) Flag oculto: true en estados_item → cubre filtros UI
-       Flag no_resetear: true → cubre reset_items
-    b) Dejar omitido_usuario como string conocido en Python
-       (es un estado de sistema, no de negocio puro)
+[B2] Mensajes del chat filtrados por estado de la receta
+  Problema:
+    - En la vista de detalle de receta (staff), ciertos mensajes del chat
+      son relevantes solo mientras la receta está en un estado determinado.
+      Una vez que el estado avanza, esos mensajes generan ruido y confusión.
+    Ejemplos concretos:
+      · "Voy a esperar." (acción del cliente) → solo relevante mientras
+        el estado es en_gestion. Cuando avanza (ej: token_enviado) ya no aporta.
+      · "🔑 Token recibido: Token de autorización: 888" → solo relevante
+        mientras el estado es token_enviado. Una vez validado/rechazado, sobra.
+  Concepto:
+    - Cada mensaje del chat tiene una relación con el estado en que fue generado.
+    - Mostrar mensajes de estados anteriores no aporta contexto operativo al staff.
+  Propuesta:
+    - Definir para cada tipo de mensaje (o para el nodo de vista) qué estados
+      son "activos" para mostrar ese mensaje.
+    - Alternativamente: filtrar por estado actual de la receta al renderizar.
 
 ──────────────────────────────────────────────────────
 MEJORAS / FEATURES

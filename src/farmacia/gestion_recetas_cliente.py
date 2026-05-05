@@ -6,6 +6,7 @@ from src.config_loader import ConfigLoader
 from src.sesiones.session_manager import SessionManager
 from src.cliente.persona_manager import PersonaManager
 from src.farmacia.receta_manager import RecetaManager
+from src.farmacia.constants import ESTADO_OMITIDO
 from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.obra_social_manager import ObraSocialManager
 
@@ -378,7 +379,7 @@ class GestionRecetasCliente:
             lineas.append(f"{estado_icono} {estado_label}")
 
             for item in rec.get("items", []):
-                if item["estado_item"] == "omitido_usuario":
+                if item["estado_item"] == ESTADO_OMITIDO:
                     continue
                 label = self.med_manager.get_label(item["medicamento_id"])
                 item_cfg = estados_item_config.get(item["estado_item"], {})
@@ -557,7 +558,7 @@ class GestionRecetasCliente:
             return
         _, receta = resultado
         for i, item in enumerate(receta.get("items", [])):
-            if item["estado_item"] != "omitido_usuario" and item["medicamento_id"] == medicamento_id:
+            if item["estado_item"] != ESTADO_OMITIDO and item["medicamento_id"] == medicamento_id:
                 self.receta_manager.cambiar_estado_item(receta_id, i, nuevo_estado)
                 return
 
@@ -567,7 +568,7 @@ class GestionRecetasCliente:
         if resultado:
             _, receta = resultado
             beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
-            items_activos = [it for it in receta["items"] if it["estado_item"] != "omitido_usuario"]
+            items_activos = [it for it in receta["items"] if it["estado_item"] != ESTADO_OMITIDO]
             estados_resueltos = ("disponible", "alternativa_aceptada", "rechazado_usuario")
             todos_resueltos = all(it["estado_item"] in estados_resueltos for it in items_activos)
 

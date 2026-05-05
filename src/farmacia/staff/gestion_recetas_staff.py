@@ -6,6 +6,7 @@ from src.config_loader import ConfigLoader
 from src.sesiones.session_manager import SessionManager
 from src.cliente.persona_manager import PersonaManager
 from src.farmacia.receta_manager import RecetaManager
+from src.farmacia.constants import ESTADO_OMITIDO
 from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.obra_social_manager import ObraSocialManager
 from src.farmacia.vinculacion_manager import VinculacionManager
@@ -118,7 +119,7 @@ class GestionRecetasStaff:
         for i, rec in enumerate(pendientes, 1):
             persona_id = rec.get("persona_id", "")
             nombre = self.persona_manager.get_nombre_completo(persona_id) or "Desconocido"
-            cant_items = len([it for it in rec.get("items", []) if it["estado_item"] != "omitido_usuario"])
+            cant_items = len([it for it in rec.get("items", []) if it["estado_item"] != ESTADO_OMITIDO])
             vencimiento = rec.get("fecha_vencimiento", "—")
             estado = rec.get("estado", "pendiente")
             estado_config = self._get_estado_receta_config(estado)
@@ -241,7 +242,7 @@ class GestionRecetasStaff:
         items_visibles_idx = []
         estados_item_config = self.farm_config.get("recetas", {}).get("estados_item", {})
         for i, item in enumerate(items):
-            if item["estado_item"] == "omitido_usuario":
+            if item["estado_item"] == ESTADO_OMITIDO:
                 continue
             label = self.med_manager.get_label(item["medicamento_id"])
             cant_rec = item.get("cantidad_receta", 0)
@@ -281,7 +282,7 @@ class GestionRecetasStaff:
         lineas.append("")
 
         # Detectar si todos los items están resueltos
-        items_activos = [it for it in items if it["estado_item"] != "omitido_usuario"]
+        items_activos = [it for it in items if it["estado_item"] != ESTADO_OMITIDO]
         todos_resueltos = all(
             it["estado_item"] in ("disponible", "alternativa_aceptada", "rechazado_usuario")
             for it in items_activos
@@ -423,7 +424,7 @@ class GestionRecetasStaff:
         items_visibles = []
         estados_item_config = self.farm_config.get("recetas", {}).get("estados_item", {})
         for i, item in enumerate(items):
-            if item["estado_item"] == "omitido_usuario":
+            if item["estado_item"] == ESTADO_OMITIDO:
                 continue
             label = self.med_manager.get_label(item["medicamento_id"])
             items_visibles.append(i)
@@ -1134,7 +1135,7 @@ class GestionRecetasStaff:
         if estado_actual not in ("en_gestion", "a_la_espera"):
             return
 
-        items_activos = [it for it in receta["items"] if it["estado_item"] != "omitido_usuario"]
+        items_activos = [it for it in receta["items"] if it["estado_item"] != ESTADO_OMITIDO]
 
         hay_pendientes = any(it["estado_item"] == "pendiente" for it in items_activos)
         hay_sin_resolver = any(
