@@ -447,11 +447,13 @@
       },
       "sin_stock": {
         "label": "Sin stock",
-        "icono": "❌"
+        "icono": "❌",
+        "mostrar_acciones_cliente": true
       },
       "alternativa_ofrecida": {
         "label": "Alternativa ofrecida",
-        "icono": "🔄"
+        "icono": "🔄",
+        "mostrar_acciones_cliente": true
       },
       "alternativa_aceptada": {
         "label": "Alternativa aceptada",

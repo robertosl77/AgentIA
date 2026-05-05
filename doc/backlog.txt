@@ -3,28 +3,6 @@ BACKLOG — módulo farmacia
 ══════════════════════════════════════════════════════
 
 ──────────────────────────────────────────────────────
-BUGS / FIXES
-──────────────────────────────────────────────────────
-
-[B2] Mensajes del chat filtrados por estado de la receta
-  Problema:
-    - En la vista de detalle de receta (staff), ciertos mensajes del chat
-      son relevantes solo mientras la receta está en un estado determinado.
-      Una vez que el estado avanza, esos mensajes generan ruido y confusión.
-    Ejemplos concretos:
-      · "Voy a esperar." (acción del cliente) → solo relevante mientras
-        el estado es en_gestion. Cuando avanza (ej: token_enviado) ya no aporta.
-      · "🔑 Token recibido: Token de autorización: 888" → solo relevante
-        mientras el estado es token_enviado. Una vez validado/rechazado, sobra.
-  Concepto:
-    - Cada mensaje del chat tiene una relación con el estado en que fue generado.
-    - Mostrar mensajes de estados anteriores no aporta contexto operativo al staff.
-  Propuesta:
-    - Definir para cada tipo de mensaje (o para el nodo de vista) qué estados
-      son "activos" para mostrar ese mensaje.
-    - Alternativamente: filtrar por estado actual de la receta al renderizar.
-
-──────────────────────────────────────────────────────
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 

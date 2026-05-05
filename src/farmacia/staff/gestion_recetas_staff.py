@@ -253,8 +253,10 @@ class GestionRecetasStaff:
 
             cant_str = f"{cant_sol}" if cant_sol == cant_rec else f"{cant_sol} de {cant_rec}"
             lineas.append(f"• {icono} {label} — Cant: {cant_str} ({estado_label_item})")
-            for msg in acciones_por_med.get(item["medicamento_id"], []):
-                lineas.append(f"   └ {msg['mensaje']}")
+            if item_config.get("mostrar_acciones_cliente"):
+                msgs_accion = acciones_por_med.get(item["medicamento_id"], [])
+                if msgs_accion:
+                    lineas.append(f"   └ {msgs_accion[-1]['mensaje']}")
             items_visibles_idx.append(i)
 
         if consultas_sin_respuesta:
@@ -1157,6 +1159,7 @@ class GestionRecetasStaff:
         if hay_sin_resolver:
             # Escenario 2: no hay pendientes pero hay sin_stock/alternativa → a_la_espera
             if estado_actual != "a_la_espera":
+                self.receta_manager.desestimar_solicitud_token(receta_id)
                 self.receta_manager.cambiar_estado(receta_id, "a_la_espera", "Items procesados — esperando respuesta del cliente")
                 self.sw.enviar(self._msg("cambio_automatico_a_la_espera"))
                 self._acciones_al_entrar(receta_id, "a_la_espera")

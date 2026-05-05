@@ -295,6 +295,19 @@ class RecetaManager:
                 nota["timestamp_respuesta"] = datetime.now().isoformat()
         self._guardar_archivo()
 
+    def desestimar_solicitud_token(self, receta_id):
+        """Desestima mensajes de solicitud_token pendientes para el usuario de la receta."""
+        resultado = self.get_receta(receta_id)
+        if not resultado:
+            return
+        _, receta = resultado
+        persona_id = receta.get("persona_id", "")
+        for msg in receta.get("chat", []):
+            if (msg["autor"] == "farmacia"
+                    and msg.get("tipo") == "solicitud_token"
+                    and persona_id not in msg.get("leido_por", [])):
+                self.marcar_mensaje_leido(receta_id, msg["id"], persona_id)
+
     def reset_items(self, receta_id, estado_item="pendiente"):
         """Resetea todos los items no omitidos al estado dado."""
         if receta_id not in self.data["recetas"]:
