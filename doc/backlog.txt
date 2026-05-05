@@ -17,12 +17,3 @@ MEJORAS / FEATURES
     - Inspirado en el patrón outflow/inflow de recetas: config-driven
     - Aplica a farmacia y auxilio
 
-[M2] Reestructurar menú farmacia en árbol de opciones
-  Problema:
-    - El menú de farmacia tiene 10 ítems planos (0 al 10), queda largo y difícil de leer
-    - Ítems 1, 2, 3 (horarios y guardias) son del mismo grupo temático
-  Propuesta:
-    - Agrupar opciones en sub-categorías con un nivel más de profundidad
-      Ej: "1. 🕒 Horarios y guardias" → despliega 1, 2, 3 actuales
-    - Diseñar el árbol de menú en config (no hardcodeado)
-    - Replicar la misma estructura para el módulo auxilio

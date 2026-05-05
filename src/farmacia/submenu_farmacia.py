@@ -284,6 +284,7 @@ class SubMenuFarmacia:
 
     def _mostrar_menu_farmacia(self, sesiones):
         """Muestra el submenú de farmacia con beneficiario resuelto."""
+        sesiones[self.numero].farmacia_subgrupo_activo = None
         beneficiario_alias = getattr(sesiones[self.numero], "farmacia_beneficiario_alias", "mí")
         beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
         operador_id = getattr(sesiones[self.numero], "farmacia_operador_id", None)
@@ -328,6 +329,15 @@ class SubMenuFarmacia:
 
     def _procesar_menu_farmacia(self, comando, sesiones):
         """Procesa comandos dentro del submenú farmacia."""
+        subgrupo = getattr(sesiones[self.numero], "farmacia_subgrupo_activo", None)
+        if subgrupo is not None:
+            if comando.strip() == "salir":
+                sesiones[self.numero].farmacia_subgrupo_activo = None
+                self._mostrar_menu_farmacia(sesiones)
+            else:
+                self._procesar_subgrupo(comando, sesiones, subgrupo)
+            return
+
         if comando.strip() == "salir":
             self._salir(sesiones)
             return
@@ -340,7 +350,42 @@ class SubMenuFarmacia:
             self.sw.enviar("❌ Opción no válida.")
             return
 
-        handler_nombre = opcion.get("handler")
+        if "subgrupo" in opcion:
+            sesiones[self.numero].farmacia_subgrupo_activo = opcion["subgrupo"]
+            self._mostrar_subgrupo(sesiones, opcion["subgrupo"])
+            return
+
+        self._ejecutar_handler(opcion.get("handler"), sesiones)
+
+    def _mostrar_subgrupo(self, sesiones, subgrupo):
+        beneficiario_alias = getattr(sesiones[self.numero], "farmacia_beneficiario_alias", "mí")
+        operador_id = getattr(sesiones[self.numero], "farmacia_operador_id", None)
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        nombre_beneficiario = "mí" if beneficiario_id == operador_id else beneficiario_alias
+
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        cant_notif = self.gestion_recetas_cliente.contar_notificaciones(beneficiario_id)
+        notif_badge = f" ({cant_notif} notificaciones)" if cant_notif > 0 else ""
+
+        consulta = subgrupo.get("consulta", "").replace("{beneficiario}", nombre_beneficiario)
+        lineas = [consulta, ""]
+        for op in subgrupo.get("opciones", []):
+            texto = op["texto"].replace("{beneficiario}", nombre_beneficiario)
+            texto = texto.replace("{notificaciones}", notif_badge)
+            lineas.append(texto)
+        lineas.append("Escribí 'salir' para volver:")
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_subgrupo(self, comando, sesiones, subgrupo):
+        opciones = subgrupo.get("opciones", [])
+        opcion = next((op for op in opciones if comando.strip() in op.get("activacion", [])), None)
+        if opcion is None:
+            self.sw.enviar("❌ Opción no válida.")
+            return
+        sesiones[self.numero].farmacia_subgrupo_activo = None
+        self._ejecutar_handler(opcion.get("handler"), sesiones)
+
+    def _ejecutar_handler(self, handler_nombre, sesiones):
         if handler_nombre:
             handler = getattr(self, handler_nombre, None)
             if handler:
@@ -482,3 +527,4 @@ class SubMenuFarmacia:
         sesiones[self.numero].farmacia_beneficiario_alias = None
         sesiones[self.numero].farmacia_vinculados = None
         sesiones[self.numero].farmacia_staff_estado = None
+        sesiones[self.numero].farmacia_subgrupo_activo = None
