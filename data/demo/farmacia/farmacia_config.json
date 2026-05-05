@@ -466,6 +466,25 @@
         "icono": "⏭️"
       }
     },
+    "opciones_cambiar_estado_item": [
+      {
+        "label": "✅ Disponible (hay stock)",
+        "estado_destino": "disponible",
+        "desestimar": true,
+        "msg_confirmacion": "item_disponible"
+      },
+      {
+        "label": "❌ Sin stock",
+        "estado_destino": "sin_stock",
+        "agregar_chat": "nota_sin_stock",
+        "msg_confirmacion": "item_sin_stock"
+      },
+      {
+        "label": "🔄 Ofrecer alternativa",
+        "accion": "ofrecer_alternativa",
+        "msg_inicio": "pedir_alternativa"
+      }
+    ],
     "mensajes": {
       "pedir_imagen": "📤 Enviá la *imagen o PDF* de la receta médica.\nPodés sacarle una foto o adjuntar el archivo.\n\nEscribí *cancelar* para volver.",
       "interpretando": "🔍 Interpretando receta... un momento por favor.",
@@ -509,7 +528,8 @@
       "token_validado": "✅ Token validado. La receta avanza a *Procesando*.",
       "token_opcion_invalida": "❌ Opción no válida. Respondé *1* o *2*.",
       "seleccionar_medicamento": "¿Qué medicamento querés actualizar?\n",
-      "seleccionar_estado_item": "Seleccioná el nuevo estado:\n\n1. ✅ Disponible (hay stock)\n2. ❌ Sin stock\n3. 🔄 Ofrecer alternativa\n\nEscribí *cancelar* para volver:",
+      "procesar_en_secuencia": "▶️ Procesar todos en secuencia",
+      "seleccionar_estado_item": "Seleccioná el nuevo estado:\n",
       "item_disponible": "✅ Medicamento marcado como disponible.",
       "item_sin_stock": "❌ Medicamento marcado como sin stock.",
       "nota_sin_stock": "El medicamento *{medicamento}* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",

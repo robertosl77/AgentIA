@@ -90,6 +90,8 @@ class GestionRecetasStaff:
             self._procesar_responder_consulta(comando, sesiones)
         elif estado == "validar_token_resp":
             self._procesar_validar_token_resp(comando, sesiones)
+        elif estado == "secuencial_item":
+            self._procesar_item_secuencial(comando, sesiones)
 
     # ── LISTA DE RECETAS PENDIENTES ───────────────────────────────────────────
 
@@ -417,6 +419,7 @@ class GestionRecetasStaff:
         items = receta.get("items", [])
 
         lineas = [self._msg("seleccionar_medicamento")]
+        lineas.append(f"0. {self._msg('procesar_en_secuencia')}\n")
         items_visibles = []
         estados_item_config = self.farm_config.get("recetas", {}).get("estados_item", {})
         for i, item in enumerate(items):
@@ -444,6 +447,14 @@ class GestionRecetasStaff:
         esperando_estado = getattr(sesiones[self.numero], "staff_receta_esperando_estado", False)
 
         if not esperando_estado:
+            if comando.strip() == "0":
+                sesiones[self.numero].staff_receta_sec_items = items_visibles
+                sesiones[self.numero].staff_receta_sec_cursor = 0
+                sesiones[self.numero].staff_receta_sec_activo = False
+                sesiones[self.numero].staff_receta_estado = "secuencial_item"
+                self._mostrar_item_secuencial(sesiones)
+                return
+
             try:
                 idx = int(comando.strip()) - 1
                 if idx < 0 or idx >= len(items_visibles):
@@ -455,21 +466,131 @@ class GestionRecetasStaff:
             item_real_idx = items_visibles[idx]
             sesiones[self.numero].staff_receta_item_idx = item_real_idx
             sesiones[self.numero].staff_receta_esperando_estado = True
-            self.sw.enviar(self._msg("seleccionar_estado_item"))
+            opciones = self.farm_config.get("recetas", {}).get("opciones_cambiar_estado_item", [])
+            lineas = [self._msg("seleccionar_estado_item")]
+            for i, op in enumerate(opciones, 1):
+                lineas.append(f"{i}. {op['label']}")
+            lineas.append(f"\n{self._msg('escribi_cancelar')}")
+            self.sw.enviar("\n".join(lineas))
         else:
             sesiones[self.numero].staff_receta_esperando_estado = False
             receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
             item_idx = getattr(sesiones[self.numero], "staff_receta_item_idx", 0)
+            opciones = self.farm_config.get("recetas", {}).get("opciones_cambiar_estado_item", [])
 
-            if comando.strip() == "1":
-                self.receta_manager.cambiar_estado_item(receta_id, item_idx, "disponible")
-                self._desestimar_notas_item(receta_id, item_idx)
-                self.sw.enviar(self._msg("item_disponible"))
+            try:
+                idx = int(comando.strip()) - 1
+                if idx < 0 or idx >= len(opciones):
+                    raise ValueError
+            except ValueError:
+                self.sw.enviar(self._msg("opcion_invalida"))
+                sesiones[self.numero].staff_receta_esperando_estado = True
+                return
+
+            opcion = opciones[idx]
+
+            if "accion" in opcion:
+                sesiones[self.numero].staff_receta_estado = opcion["accion"]
+                self.sw.enviar(self._msg(opcion["msg_inicio"]))
+            else:
+                estado_destino = opcion["estado_destino"]
+                self.receta_manager.cambiar_estado_item(receta_id, item_idx, estado_destino)
+
+                if opcion.get("desestimar"):
+                    self._desestimar_notas_item(receta_id, item_idx)
+
+                if opcion.get("agregar_chat"):
+                    resultado = self.receta_manager.get_receta(receta_id)
+                    if resultado:
+                        _, receta = resultado
+                        item = receta["items"][item_idx]
+                        label = self.med_manager.get_label(item["medicamento_id"])
+                        self.receta_manager.agregar_mensaje_chat(
+                            receta_id, "farmacia",
+                            self._msg(opcion["agregar_chat"], medicamento=label),
+                            tipo=estado_destino,
+                            medicamento_id=item["medicamento_id"]
+                        )
+
+                if opcion.get("msg_confirmacion"):
+                    self.sw.enviar(self._msg(opcion["msg_confirmacion"]))
+
                 self._evaluar_estado_post_cambio_item(receta_id, sesiones)
                 self._mostrar_detalle(sesiones)
 
-            elif comando.strip() == "2":
-                self.receta_manager.cambiar_estado_item(receta_id, item_idx, "sin_stock")
+    # ── MODO SECUENCIAL DE ITEMS ──────────────────────────────────────────────
+
+    def _mostrar_item_secuencial(self, sesiones):
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        sec_items = getattr(sesiones[self.numero], "staff_receta_sec_items", [])
+        cursor = getattr(sesiones[self.numero], "staff_receta_sec_cursor", 0)
+
+        if cursor >= len(sec_items):
+            self._mostrar_detalle(sesiones)
+            return
+
+        resultado = self.receta_manager.get_receta(receta_id)
+        if not resultado:
+            self._mostrar_detalle(sesiones)
+            return
+
+        _, receta = resultado
+        item_idx = sec_items[cursor]
+        item = receta["items"][item_idx]
+        label = self.med_manager.get_label(item["medicamento_id"])
+
+        estados_item_config = self.farm_config.get("recetas", {}).get("estados_item", {})
+        item_config = estados_item_config.get(item["estado_item"], {})
+        icono = item_config.get("icono", "❓")
+        estado_label = item_config.get("label", item["estado_item"])
+
+        opciones = self.farm_config.get("recetas", {}).get("opciones_cambiar_estado_item", [])
+        lineas = [
+            f"💊 *{label}* ({cursor + 1}/{len(sec_items)})",
+            f"Estado actual: {icono} {estado_label}",
+            "",
+            self._msg("seleccionar_estado_item"),
+        ]
+        for i, op in enumerate(opciones, 1):
+            lineas.append(f"{i}. {op['label']}")
+        lineas.append(f"\n{self._msg('escribi_cancelar')}")
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_item_secuencial(self, comando, sesiones):
+        if comando.strip() == "cancelar":
+            self._mostrar_detalle(sesiones)
+            return
+
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        sec_items = getattr(sesiones[self.numero], "staff_receta_sec_items", [])
+        cursor = getattr(sesiones[self.numero], "staff_receta_sec_cursor", 0)
+        item_idx = sec_items[cursor]
+        opciones = self.farm_config.get("recetas", {}).get("opciones_cambiar_estado_item", [])
+
+        try:
+            idx = int(comando.strip()) - 1
+            if idx < 0 or idx >= len(opciones):
+                raise ValueError
+        except ValueError:
+            self.sw.enviar(self._msg("opcion_invalida"))
+            self._mostrar_item_secuencial(sesiones)
+            return
+
+        opcion = opciones[idx]
+
+        if "accion" in opcion:
+            sesiones[self.numero].staff_receta_item_idx = item_idx
+            sesiones[self.numero].staff_receta_sec_activo = True
+            sesiones[self.numero].staff_receta_estado = opcion["accion"]
+            self.sw.enviar(self._msg(opcion["msg_inicio"]))
+        else:
+            estado_destino = opcion["estado_destino"]
+            self.receta_manager.cambiar_estado_item(receta_id, item_idx, estado_destino)
+
+            if opcion.get("desestimar"):
+                self._desestimar_notas_item(receta_id, item_idx)
+
+            if opcion.get("agregar_chat"):
                 resultado = self.receta_manager.get_receta(receta_id)
                 if resultado:
                     _, receta = resultado
@@ -477,27 +598,29 @@ class GestionRecetasStaff:
                     label = self.med_manager.get_label(item["medicamento_id"])
                     self.receta_manager.agregar_mensaje_chat(
                         receta_id, "farmacia",
-                        self._msg("nota_sin_stock", medicamento=label),
-                        tipo="sin_stock",
+                        self._msg(opcion["agregar_chat"], medicamento=label),
+                        tipo=estado_destino,
                         medicamento_id=item["medicamento_id"]
                     )
-                self.sw.enviar(self._msg("item_sin_stock"))
-                self._evaluar_estado_post_cambio_item(receta_id, sesiones)
-                self._mostrar_detalle(sesiones)
 
-            elif comando.strip() == "3":
-                sesiones[self.numero].staff_receta_estado = "ofrecer_alternativa"
-                self.sw.enviar(self._msg("pedir_alternativa"))
+            if opcion.get("msg_confirmacion"):
+                self.sw.enviar(self._msg(opcion["msg_confirmacion"]))
 
-            else:
-                self.sw.enviar(self._msg("opcion_invalida"))
-                sesiones[self.numero].staff_receta_esperando_estado = True
+            self._evaluar_estado_post_cambio_item(receta_id, sesiones)
+            sesiones[self.numero].staff_receta_sec_cursor = cursor + 1
+            sesiones[self.numero].staff_receta_estado = "secuencial_item"
+            self._mostrar_item_secuencial(sesiones)
 
     # ── OFRECER ALTERNATIVA ───────────────────────────────────────────────────
 
     def _procesar_ofrecer_alternativa(self, comando, sesiones):
         if comando.strip() == "cancelar":
-            self._mostrar_detalle(sesiones)
+            if getattr(sesiones[self.numero], "staff_receta_sec_activo", False):
+                sesiones[self.numero].staff_receta_sec_activo = False
+                sesiones[self.numero].staff_receta_estado = "secuencial_item"
+                self._mostrar_item_secuencial(sesiones)
+            else:
+                self._mostrar_detalle(sesiones)
             return
 
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
@@ -522,7 +645,15 @@ class GestionRecetasStaff:
 
         self.sw.enviar(self._msg("alternativa_ofrecida"))
         self._evaluar_estado_post_cambio_item(receta_id, sesiones)
-        self._mostrar_detalle(sesiones)
+
+        if getattr(sesiones[self.numero], "staff_receta_sec_activo", False):
+            sesiones[self.numero].staff_receta_sec_activo = False
+            cursor = getattr(sesiones[self.numero], "staff_receta_sec_cursor", 0)
+            sesiones[self.numero].staff_receta_sec_cursor = cursor + 1
+            sesiones[self.numero].staff_receta_estado = "secuencial_item"
+            self._mostrar_item_secuencial(sesiones)
+        else:
+            self._mostrar_detalle(sesiones)
 
     # ── CHAT ──────────────────────────────────────────────────────────────────
 
@@ -1107,6 +1238,9 @@ class GestionRecetasStaff:
         sesiones[self.numero].staff_receta_nuevo_estado = None
         sesiones[self.numero].staff_receta_opciones_activas = None
         sesiones[self.numero].staff_consulta_medicamento_id = None
+        sesiones[self.numero].staff_receta_sec_items = None
+        sesiones[self.numero].staff_receta_sec_cursor = 0
+        sesiones[self.numero].staff_receta_sec_activo = False
 
     def _volver_menu_staff(self, sesiones):
         rol = self.session_manager.get_rol(self.numero)
