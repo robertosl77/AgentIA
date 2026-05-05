@@ -627,6 +627,7 @@ class GestionRecetasStaff:
         item_idx = getattr(sesiones[self.numero], "staff_receta_item_idx", 0)
 
         self.receta_manager.cambiar_estado_item(receta_id, item_idx, "alternativa_ofrecida")
+        self._desestimar_notas_item(receta_id, item_idx)
 
         resultado = self.receta_manager.get_receta(receta_id)
         label_original = "el medicamento"

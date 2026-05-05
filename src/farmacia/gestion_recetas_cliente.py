@@ -237,51 +237,59 @@ class GestionRecetasCliente:
         msg_id = getattr(sesiones[self.numero], "cliente_receta_nota_id", None)
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
         med_id = getattr(sesiones[self.numero], "cliente_receta_nota_medicamento_id", None)
+        tipo = getattr(sesiones[self.numero], "cliente_receta_nota_tipo", "mensaje")
 
-        if key == "aceptar":
+        opciones_config = self.farm_config.get("recetas", {}).get("opciones_cliente", {})
+        if tipo == "respuesta_consulta" and med_id:
+            rec_resultado = self.receta_manager.get_receta(receta_id)
+            if rec_resultado:
+                _, receta = rec_resultado
+                item = next((it for it in receta.get("items", []) if it["medicamento_id"] == med_id), None)
+                estado_item = item.get("estado_item", "sin_stock") if item else "sin_stock"
+            else:
+                estado_item = "sin_stock"
+            lista_opciones = opciones_config.get("respuesta_consulta", {}).get(estado_item, [])
+        else:
+            lista_opciones = opciones_config.get(tipo, [])
+
+        opcion = next((op for op in lista_opciones if op["key"] == key), None)
+        if not opcion:
+            self.sw.enviar("❌ Opción no válida.")
+            return
+
+        post_accion = opcion.get("post_accion", "siguiente")
+
+        if post_accion != "sub_flujo":
             self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
+
+        if opcion.get("texto_accion"):
             self.receta_manager.agregar_mensaje_chat(
-                receta_id, beneficiario_id, "Acepto el cambio.",
+                receta_id, beneficiario_id, opcion["texto_accion"],
                 tipo="accion", medicamento_id=med_id
             )
-            self._cambiar_item_por_medicamento_id(receta_id, med_id, "alternativa_aceptada")
-            self.sw.enviar("✅ Alternativa aceptada.")
+
+        if opcion.get("estado_item_destino"):
+            self._cambiar_item_por_medicamento_id(receta_id, med_id, opcion["estado_item_destino"])
+
+        if opcion.get("msg_confirmacion"):
+            self.sw.enviar(opcion["msg_confirmacion"])
+
+        if post_accion == "evaluar_y_siguiente":
             self._evaluar_estado_post_respuesta(receta_id, sesiones)
-
-        elif key == "rechazar":
-            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(
-                receta_id, beneficiario_id, "Rechazo el medicamento.",
-                tipo="accion", medicamento_id=med_id
-            )
-            self._cambiar_item_por_medicamento_id(receta_id, med_id, "rechazado_usuario")
-            self.sw.enviar("❌ Medicamento rechazado.")
-            self._evaluar_estado_post_respuesta(receta_id, sesiones)
-
-        elif key == "esperar":
-            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-            self.receta_manager.agregar_mensaje_chat(
-                receta_id, beneficiario_id, "Voy a esperar.",
-                tipo="accion", medicamento_id=med_id
-            )
-            self.sw.enviar("⏳ Registrado. La farmacia será notificada.")
+        elif post_accion == "recordatorio_y_siguiente":
             print(f"[PLACEHOLDER] Agendar recordatorio para receta {receta_id}")
             self._mostrar_siguiente_notificacion(sesiones)
-
-        elif key == "entendido":
-            self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
+        elif post_accion == "siguiente":
             self._mostrar_siguiente_notificacion(sesiones)
-
-        elif key == "consultar":
-            med_label = self.med_manager.get_label(med_id) if med_id else "el medicamento"
-            msj = self.farm_config.get("recetas", {}).get("mensajes", {}).get(
-                "pedir_texto_consulta", "✍️ Escribí tu consulta:\n\nO escribí *cancelar* para volver:"
-            ).replace("{medicamento}", med_label)
-            sesiones[self.numero].cliente_receta_estado = "escribir_consulta"
-            self.sw.enviar(msj)
-
-        else:
-            self.sw.enviar("❌ Opción no válida.")
+        elif post_accion == "sub_flujo":
+            flujo = opcion.get("flujo", "")
+            if flujo == "escribir_consulta":
+                med_label = self.med_manager.get_label(med_id) if med_id else "el medicamento"
+                msj = self.farm_config.get("recetas", {}).get("mensajes", {}).get(
+                    "pedir_texto_consulta", "✍️ Escribí tu consulta:\n\nO escribí *cancelar* para volver:"
+                ).replace("{medicamento}", med_label)
+                sesiones[self.numero].cliente_receta_estado = flujo
+                self.sw.enviar(msj)
 
     def _procesar_escribir_consulta(self, comando, sesiones):
         """El cliente escribe su consulta sobre un medicamento — transiciona H→M."""

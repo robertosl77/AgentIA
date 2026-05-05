@@ -39,7 +39,8 @@
           "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
           "timestamp": "2026-05-04T21:25:55.343139",
           "leido_por": [
-            "farmacia"
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ],
           "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
         },
@@ -50,7 +51,8 @@
           "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *aspirina*. ¿Lo aceptás?",
           "timestamp": "2026-05-04T21:26:17.747205",
           "leido_por": [
-            "farmacia"
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ],
           "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
         },
@@ -61,7 +63,8 @@
           "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
           "timestamp": "2026-05-04T21:50:13.872918",
           "leido_por": [
-            "farmacia"
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ],
           "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
         },
@@ -72,6 +75,103 @@
           "mensaje": "El medicamento *LIPOMAX 105 105 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
           "timestamp": "2026-05-04T21:50:19.164315",
           "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
+        },
+        {
+          "id": "a2137277",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-04T21:55:47.463000",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
+        },
+        {
+          "id": "b1716c1c",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Acepto el cambio.",
+          "timestamp": "2026-05-04T21:56:23.848948",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
+        },
+        {
+          "id": "310d78fa",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-04T21:56:28.872342",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
+        },
+        {
+          "id": "2622e045",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-04T21:56:32.477087",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
+        },
+        {
+          "id": "2e3afce8",
+          "autor": "farmacia",
+          "tipo": "sin_stock",
+          "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
+          "timestamp": "2026-05-04T22:22:01.157039",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
+        },
+        {
+          "id": "32cc2634",
+          "autor": "farmacia",
+          "tipo": "sin_stock",
+          "mensaje": "El medicamento *LIPOMAX 105 105 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
+          "timestamp": "2026-05-04T22:22:03.012430",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
+        },
+        {
+          "id": "13c6c741",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-04T22:22:35.624037",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
+        },
+        {
+          "id": "f5213dcd",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-04T22:22:38.261710",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
           ],
           "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"

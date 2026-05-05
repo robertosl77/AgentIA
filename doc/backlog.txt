@@ -1,0 +1,44 @@
+══════════════════════════════════════════════════════
+BACKLOG — módulo farmacia
+══════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────
+DECISIONES PENDIENTES (deharcode)
+──────────────────────────────────────────────────────
+
+[D3] Destinos de transición desde el lado del cliente
+  Cuando el cliente envía consulta → en_consulta (hardcodeado)
+  Cuando el cliente envía token    → token_enviado (hardcodeado)
+  Opciones:
+    a) En la action key de opciones_cliente:
+         {"key": "consultar", "estado_receta_destino": "en_consulta"}
+    b) Como campo en el tipo de mensaje de farmacia:
+         solicitud_token → "estado_al_responder": "token_enviado"
+    c) En la config del estado actual de la receta
+
+[D4] omitido_usuario — dos usos con semántica distinta
+  Aparece en 8+ lugares como filtro de visibilidad ("no mostrar en UI")
+  y también como "no resetear este item" en reset_items().
+  Opciones:
+    a) Flag oculto: true en estados_item → cubre filtros UI
+       Flag no_resetear: true → cubre reset_items
+    b) Dejar omitido_usuario como string conocido en Python
+       (es un estado de sistema, no de negocio puro)
+
+──────────────────────────────────────────────────────
+BUGS / FIXES PENDIENTES
+──────────────────────────────────────────────────────
+
+[B1] Doble acción al cliente al reasignar estado de item
+  Al cambiar el estado de un medicamento que ya tiene un chat pendiente
+  (sin_stock o alternativa), el mensaje anterior no se desestima antes
+  de agregar el nuevo. El cliente ve dos acciones sobre el mismo medicamento.
+  Afecta: modo secuencial y modo directo.
+  Fix: desestimar mensajes anteriores del item antes de agregar el nuevo
+       en las opciones sin_stock y alternativa.
+
+──────────────────────────────────────────────────────
+MEJORAS / FEATURES
+──────────────────────────────────────────────────────
+
+(vacío por ahora)

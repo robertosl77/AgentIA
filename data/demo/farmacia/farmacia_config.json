@@ -476,6 +476,7 @@
       {
         "label": "❌ Sin stock",
         "estado_destino": "sin_stock",
+        "desestimar": true,
         "agregar_chat": "nota_sin_stock",
         "msg_confirmacion": "item_sin_stock"
       },
@@ -569,31 +570,121 @@
     },
     "opciones_cliente": {
       "alternativa": [
-        {"key": "aceptar",   "label": "✅ Aceptar cambio"},
-        {"key": "rechazar",  "label": "❌ Rechazar medicamento"},
-        {"key": "esperar",   "label": "⏳ Esperar / agendar"},
-        {"key": "consultar", "label": "💬 Consultar a la farmacia"}
+        {
+          "key": "aceptar",
+          "label": "✅ Aceptar cambio",
+          "texto_accion": "Acepto el cambio.",
+          "estado_item_destino": "alternativa_aceptada",
+          "msg_confirmacion": "✅ Alternativa aceptada.",
+          "post_accion": "evaluar_y_siguiente"
+        },
+        {
+          "key": "rechazar",
+          "label": "❌ Rechazar medicamento",
+          "texto_accion": "Rechazo el medicamento.",
+          "estado_item_destino": "rechazado_usuario",
+          "msg_confirmacion": "❌ Medicamento rechazado.",
+          "post_accion": "evaluar_y_siguiente"
+        },
+        {
+          "key": "esperar",
+          "label": "⏳ Esperar / agendar",
+          "texto_accion": "Voy a esperar.",
+          "msg_confirmacion": "⏳ Registrado. La farmacia será notificada.",
+          "post_accion": "recordatorio_y_siguiente"
+        },
+        {
+          "key": "consultar",
+          "label": "💬 Consultar a la farmacia",
+          "post_accion": "sub_flujo",
+          "flujo": "escribir_consulta"
+        }
       ],
       "sin_stock": [
-        {"key": "rechazar",  "label": "❌ Rechazar medicamento"},
-        {"key": "esperar",   "label": "⏳ Esperar / agendar"},
-        {"key": "consultar", "label": "💬 Consultar a la farmacia"}
+        {
+          "key": "rechazar",
+          "label": "❌ Rechazar medicamento",
+          "texto_accion": "Rechazo el medicamento.",
+          "estado_item_destino": "rechazado_usuario",
+          "msg_confirmacion": "❌ Medicamento rechazado.",
+          "post_accion": "evaluar_y_siguiente"
+        },
+        {
+          "key": "esperar",
+          "label": "⏳ Esperar / agendar",
+          "texto_accion": "Voy a esperar.",
+          "msg_confirmacion": "⏳ Registrado. La farmacia será notificada.",
+          "post_accion": "recordatorio_y_siguiente"
+        },
+        {
+          "key": "consultar",
+          "label": "💬 Consultar a la farmacia",
+          "post_accion": "sub_flujo",
+          "flujo": "escribir_consulta"
+        }
       ],
       "respuesta_consulta": {
         "alternativa_ofrecida": [
-          {"key": "aceptar",   "label": "✅ Aceptar cambio"},
-          {"key": "rechazar",  "label": "❌ Rechazar medicamento"},
-          {"key": "esperar",   "label": "⏳ Esperar / agendar"},
-          {"key": "consultar", "label": "💬 Consultar nuevamente"}
+          {
+            "key": "aceptar",
+            "label": "✅ Aceptar cambio",
+            "texto_accion": "Acepto el cambio.",
+            "estado_item_destino": "alternativa_aceptada",
+            "msg_confirmacion": "✅ Alternativa aceptada.",
+            "post_accion": "evaluar_y_siguiente"
+          },
+          {
+            "key": "rechazar",
+            "label": "❌ Rechazar medicamento",
+            "texto_accion": "Rechazo el medicamento.",
+            "estado_item_destino": "rechazado_usuario",
+            "msg_confirmacion": "❌ Medicamento rechazado.",
+            "post_accion": "evaluar_y_siguiente"
+          },
+          {
+            "key": "esperar",
+            "label": "⏳ Esperar / agendar",
+            "texto_accion": "Voy a esperar.",
+            "msg_confirmacion": "⏳ Registrado. La farmacia será notificada.",
+            "post_accion": "recordatorio_y_siguiente"
+          },
+          {
+            "key": "consultar",
+            "label": "💬 Consultar nuevamente",
+            "post_accion": "sub_flujo",
+            "flujo": "escribir_consulta"
+          }
         ],
         "sin_stock": [
-          {"key": "rechazar",  "label": "❌ Rechazar medicamento"},
-          {"key": "esperar",   "label": "⏳ Esperar / agendar"},
-          {"key": "consultar", "label": "💬 Consultar nuevamente"}
+          {
+            "key": "rechazar",
+            "label": "❌ Rechazar medicamento",
+            "texto_accion": "Rechazo el medicamento.",
+            "estado_item_destino": "rechazado_usuario",
+            "msg_confirmacion": "❌ Medicamento rechazado.",
+            "post_accion": "evaluar_y_siguiente"
+          },
+          {
+            "key": "esperar",
+            "label": "⏳ Esperar / agendar",
+            "texto_accion": "Voy a esperar.",
+            "msg_confirmacion": "⏳ Registrado. La farmacia será notificada.",
+            "post_accion": "recordatorio_y_siguiente"
+          },
+          {
+            "key": "consultar",
+            "label": "💬 Consultar nuevamente",
+            "post_accion": "sub_flujo",
+            "flujo": "escribir_consulta"
+          }
         ]
       },
       "mensaje": [
-        {"key": "entendido", "label": "✅ Entendido"}
+        {
+          "key": "entendido",
+          "label": "✅ Entendido",
+          "post_accion": "siguiente"
+        }
       ]
     }
   },
