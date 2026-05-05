@@ -302,16 +302,21 @@ class GestionRecetasCliente:
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
         med_id = getattr(sesiones[self.numero], "cliente_receta_nota_medicamento_id", None)
 
+        flujo = self.farm_config.get("recetas", {}).get("flujos_input_cliente", {}).get("escribir_consulta", {})
+        estado_destino = flujo.get("estado_receta_destino", "en_consulta")
+        notificacion_staff = flujo.get("notificacion_staff", estado_destino)
+        msg_key = flujo.get("msg_confirmacion", "consulta_enviada")
+
         self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
         self.receta_manager.agregar_mensaje_chat(
             receta_id, beneficiario_id, comando.strip(),
             tipo="consulta", medicamento_id=med_id
         )
-        self.receta_manager.cambiar_estado(receta_id, "en_consulta", "Cliente consulta sobre medicamento")
-        self._enviar_notificacion_push_staff("en_consulta")
+        self.receta_manager.cambiar_estado(receta_id, estado_destino, "Cliente consulta sobre medicamento")
+        self._enviar_notificacion_push_staff(notificacion_staff)
 
         msj = self.farm_config.get("recetas", {}).get("mensajes", {}).get(
-            "consulta_enviada", "✅ Consulta enviada."
+            msg_key, "✅ Consulta enviada."
         )
         self.sw.enviar(msj)
         self._mostrar_siguiente_notificacion(sesiones)
@@ -327,15 +332,23 @@ class GestionRecetasCliente:
         msg_id = getattr(sesiones[self.numero], "cliente_receta_nota_id", None)
         beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
 
+        flujo = self.farm_config.get("recetas", {}).get("flujos_input_cliente", {}).get("escribir_token", {})
+        estado_destino = flujo.get("estado_receta_destino", "token_enviado")
+        prefijo_chat = flujo.get("prefijo_chat", "Token de autorización: ")
+        msg_key = flujo.get("msg_confirmacion", "token_enviado_cliente")
+
         self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
-        self.receta_manager.cambiar_estado(receta_id, "token_enviado", "Token enviado por paciente")
+        self.receta_manager.cambiar_estado(receta_id, estado_destino, "Token enviado por paciente")
         self.receta_manager.agregar_mensaje_chat(
             receta_id, beneficiario_id,
-            f"Token de autorización: {comando.strip()}",
+            f"{prefijo_chat}{comando.strip()}",
             tipo="token_respuesta"
         )
 
-        self.sw.enviar("✅ Token enviado a la farmacia. Te avisaremos cuando sea procesado.")
+        msj = self.farm_config.get("recetas", {}).get("mensajes", {}).get(
+            msg_key, "✅ Token enviado a la farmacia. Te avisaremos cuando sea procesado."
+        )
+        self.sw.enviar(msj)
         self._mostrar_siguiente_notificacion(sesiones)
 
     # ── VER MIS RECETAS ───────────────────────────────────────────────────────

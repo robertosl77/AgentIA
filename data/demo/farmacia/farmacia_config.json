@@ -513,6 +513,7 @@
       "numero_invalido": "❌ Número no válido.",
       "pedir_texto_consulta": "✍️ Escribí tu consulta sobre *{medicamento}*:\n\nO escribí *cancelar* para volver:",
       "consulta_enviada": "✅ Consulta enviada. La farmacia te responderá pronto.",
+      "token_enviado_cliente": "✅ Token enviado a la farmacia. Te avisaremos cuando sea procesado.",
       "receta_en_consulta": "❓ Tu consulta está siendo respondida por la farmacia. Volvé más tarde."
     },
     "mensajes_staff": {
@@ -686,6 +687,18 @@
           "post_accion": "siguiente"
         }
       ]
+    },
+    "flujos_input_cliente": {
+      "escribir_consulta": {
+        "estado_receta_destino": "en_consulta",
+        "notificacion_staff": "en_consulta",
+        "msg_confirmacion": "consulta_enviada"
+      },
+      "escribir_token": {
+        "estado_receta_destino": "token_enviado",
+        "prefijo_chat": "Token de autorización: ",
+        "msg_confirmacion": "token_enviado_cliente"
+      }
     }
   },
   "gestion_direccion": {

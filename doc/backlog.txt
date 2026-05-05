@@ -6,16 +6,6 @@ BACKLOG — módulo farmacia
 DECISIONES PENDIENTES (deharcode)
 ──────────────────────────────────────────────────────
 
-[D3] Destinos de transición desde el lado del cliente
-  Cuando el cliente envía consulta → en_consulta (hardcodeado)
-  Cuando el cliente envía token    → token_enviado (hardcodeado)
-  Opciones:
-    a) En la action key de opciones_cliente:
-         {"key": "consultar", "estado_receta_destino": "en_consulta"}
-    b) Como campo en el tipo de mensaje de farmacia:
-         solicitud_token → "estado_al_responder": "token_enviado"
-    c) En la config del estado actual de la receta
-
 [D4] omitido_usuario — dos usos con semántica distinta
   Aparece en 8+ lugares como filtro de visibilidad ("no mostrar en UI")
   y también como "no resetear este item" en reset_items().
@@ -26,19 +16,26 @@ DECISIONES PENDIENTES (deharcode)
        (es un estado de sistema, no de negocio puro)
 
 ──────────────────────────────────────────────────────
-BUGS / FIXES PENDIENTES
-──────────────────────────────────────────────────────
-
-[B1] Doble acción al cliente al reasignar estado de item
-  Al cambiar el estado de un medicamento que ya tiene un chat pendiente
-  (sin_stock o alternativa), el mensaje anterior no se desestima antes
-  de agregar el nuevo. El cliente ve dos acciones sobre el mismo medicamento.
-  Afecta: modo secuencial y modo directo.
-  Fix: desestimar mensajes anteriores del item antes de agregar el nuevo
-       en las opciones sin_stock y alternativa.
-
-──────────────────────────────────────────────────────
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 
-(vacío por ahora)
+[M1] Sistema de navegación global — reemplazar "cancelar" y retorno secuencial
+  Problema:
+    - "cancelar" como palabra de escape es larga e inconsistente con el resto del UX
+    - No hay forma de saltar a un nodo superior sin hacer retorno secuencial paso a paso
+  Propuesta:
+    - Reemplazar "cancelar" por tecla corta (ej: "A") o mini-submenu con letras
+    - Definir nodos de navegación globales: menu_principal / staff / receta
+    - Desde cualquier punto del flujo, el usuario puede saltar a cualquier nodo
+    - Inspirado en el patrón outflow/inflow de recetas: config-driven
+    - Aplica a farmacia y auxilio
+
+[M2] Reestructurar menú farmacia en árbol de opciones
+  Problema:
+    - El menú de farmacia tiene 10 ítems planos (0 al 10), queda largo y difícil de leer
+    - Ítems 1, 2, 3 (horarios y guardias) son del mismo grupo temático
+  Propuesta:
+    - Agrupar opciones en sub-categorías con un nivel más de profundidad
+      Ej: "1. 🕒 Horarios y guardias" → despliega 1, 2, 3 actuales
+    - Diseñar el árbol de menú en config (no hardcodeado)
+    - Replicar la misma estructura para el módulo auxilio

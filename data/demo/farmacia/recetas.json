@@ -1,6 +1,6 @@
 {
   "recetas": {
-    "3afa2ce9-8a3a-4666-b70c-2682261dc1a9": {
+    "af4934ed-75e3-415a-be7c-f11e244380f6": {
       "persona_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
       "obra_social_id": null,
       "credencial_validada": false,
@@ -15,187 +15,147 @@
       "diagnostico": "Testing 2 medicamentos",
       "items": [
         {
-          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e",
+          "medicamento_id": "08cbb512-f000-4b41-8520-efb69d86ff0c",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "sin_stock"
+          "estado_item": "disponible"
         },
         {
-          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047",
+          "medicamento_id": "8b8ea27d-6c54-41c0-b83f-1845e391e5dd",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "sin_stock"
+          "estado_item": "disponible"
         }
       ],
-      "estado": "a_la_espera",
+      "estado": "token_enviado",
       "operador_id": null,
       "receta_url": null,
       "notas": [],
       "chat": [
         {
-          "id": "478e2126",
+          "id": "217f14ba",
           "autor": "farmacia",
           "tipo": "sin_stock",
           "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-05-04T21:25:55.343139",
+          "timestamp": "2026-05-04T22:29:08.681387",
           "leido_por": [
             "farmacia",
             "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ],
-          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
+          "medicamento_id": "08cbb512-f000-4b41-8520-efb69d86ff0c"
         },
         {
-          "id": "a2ee6d7e",
-          "autor": "farmacia",
-          "tipo": "alternativa",
-          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *aspirina*. ¿Lo aceptás?",
-          "timestamp": "2026-05-04T21:26:17.747205",
-          "leido_por": [
-            "farmacia",
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
-          ],
-          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
-        },
-        {
-          "id": "2484fd5b",
-          "autor": "farmacia",
-          "tipo": "sin_stock",
-          "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-05-04T21:50:13.872918",
-          "leido_por": [
-            "farmacia",
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
-          ],
-          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
-        },
-        {
-          "id": "5837c50c",
+          "id": "3e469aff",
           "autor": "farmacia",
           "tipo": "sin_stock",
           "mensaje": "El medicamento *LIPOMAX 105 105 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-05-04T21:50:19.164315",
+          "timestamp": "2026-05-04T22:29:10.355248",
           "leido_por": [
             "farmacia",
             "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ],
-          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
+          "medicamento_id": "8b8ea27d-6c54-41c0-b83f-1845e391e5dd"
         },
         {
-          "id": "a2137277",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "accion",
-          "mensaje": "Voy a esperar.",
-          "timestamp": "2026-05-04T21:55:47.463000",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ],
-          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
-        },
-        {
-          "id": "b1716c1c",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "accion",
-          "mensaje": "Acepto el cambio.",
-          "timestamp": "2026-05-04T21:56:23.848948",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ],
-          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
-        },
-        {
-          "id": "310d78fa",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "accion",
-          "mensaje": "Voy a esperar.",
-          "timestamp": "2026-05-04T21:56:28.872342",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ],
-          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
-        },
-        {
-          "id": "2622e045",
-          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-          "tipo": "accion",
-          "mensaje": "Voy a esperar.",
-          "timestamp": "2026-05-04T21:56:32.477087",
-          "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-            "farmacia"
-          ],
-          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
-        },
-        {
-          "id": "2e3afce8",
+          "id": "061e64f1",
           "autor": "farmacia",
           "tipo": "sin_stock",
           "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-05-04T22:22:01.157039",
+          "timestamp": "2026-05-04T22:29:20.438905",
           "leido_por": [
             "farmacia",
             "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ],
-          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
+          "medicamento_id": "08cbb512-f000-4b41-8520-efb69d86ff0c"
         },
         {
-          "id": "32cc2634",
+          "id": "09af1741",
           "autor": "farmacia",
           "tipo": "sin_stock",
           "mensaje": "El medicamento *LIPOMAX 105 105 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
-          "timestamp": "2026-05-04T22:22:03.012430",
+          "timestamp": "2026-05-04T22:29:22.389352",
           "leido_por": [
             "farmacia",
             "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ],
-          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
+          "medicamento_id": "8b8ea27d-6c54-41c0-b83f-1845e391e5dd"
         },
         {
-          "id": "13c6c741",
+          "id": "fb03e6ea",
           "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
           "tipo": "accion",
           "mensaje": "Voy a esperar.",
-          "timestamp": "2026-05-04T22:22:35.624037",
+          "timestamp": "2026-05-04T22:29:48.805904",
           "leido_por": [
             "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
           ],
-          "medicamento_id": "f81934fd-c549-4d79-a093-8b957bee9d0e"
+          "medicamento_id": "08cbb512-f000-4b41-8520-efb69d86ff0c"
         },
         {
-          "id": "f5213dcd",
+          "id": "f6ef3236",
           "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
           "tipo": "accion",
           "mensaje": "Voy a esperar.",
-          "timestamp": "2026-05-04T22:22:38.261710",
+          "timestamp": "2026-05-04T22:29:50.911051",
           "leido_por": [
             "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
           ],
-          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047"
+          "medicamento_id": "8b8ea27d-6c54-41c0-b83f-1845e391e5dd"
+        },
+        {
+          "id": "8a3eaa43",
+          "autor": "farmacia",
+          "tipo": "solicitud_token",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-05-04T22:53:06.715986",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "91203f53",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "token_respuesta",
+          "mensaje": "Token de autorización: 888",
+          "timestamp": "2026-05-04T22:54:14.388210",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
         }
       ],
       "historial_estados": [
         {
           "estado": "pendiente",
-          "timestamp": "2026-05-04T20:18:57.337014",
+          "timestamp": "2026-05-04T22:28:23.111535",
           "motivo": "Receta cargada por usuario"
         },
         {
           "estado": "en_gestion",
-          "timestamp": "2026-05-04T21:25:40.831769",
+          "timestamp": "2026-05-04T22:29:00.205582",
           "motivo": "Farmacia procesando"
         },
         {
           "estado": "a_la_espera",
-          "timestamp": "2026-05-04T21:26:18.203494",
+          "timestamp": "2026-05-04T22:29:10.849572",
           "motivo": "Items procesados — esperando respuesta del cliente"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-05-04T22:53:06.273219",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "token_enviado",
+          "timestamp": "2026-05-04T22:54:14.387210",
+          "motivo": "Token enviado por paciente"
         }
       ]
     },
-    "cdba2c32-06ee-4dc1-bcd1-a15e83c890cc": {
+    "527f0bdc-2319-4a6c-9b8c-b138e1371cba": {
       "persona_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
       "obra_social_id": null,
       "credencial_validada": false,
@@ -210,7 +170,7 @@
       "diagnostico": "Testing 1 medicamento",
       "items": [
         {
-          "medicamento_id": "42f49272-66fa-46cf-a544-7f957dddd047",
+          "medicamento_id": "8b8ea27d-6c54-41c0-b83f-1845e391e5dd",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
           "estado_item": "pendiente"
@@ -224,7 +184,7 @@
       "historial_estados": [
         {
           "estado": "pendiente",
-          "timestamp": "2026-05-04T20:18:57.337014",
+          "timestamp": "2026-05-04T22:28:23.111535",
           "motivo": "Receta cargada por usuario"
         }
       ]
