@@ -316,7 +316,8 @@ class SubMenuFarmacia:
 
         # Armar opciones visibles con {beneficiario} resuelto
         opciones_visibles = self.config.get_opciones_visibles(submenu_data, rol)
-        cant_notif = self.gestion_recetas_cliente.contar_notificaciones(beneficiario_id)
+        cant_notif = (self.gestion_recetas_cliente.contar_notificaciones(beneficiario_id)
+                      + self.gestion_recetas_cliente.contar_chat_nuevos(beneficiario_id))
         notif_badge = f" ({cant_notif} notificaciones)" if cant_notif > 0 else ""
 
         lineas = [consulta, ""]
@@ -365,13 +366,20 @@ class SubMenuFarmacia:
 
         beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
         cant_notif = self.gestion_recetas_cliente.contar_notificaciones(beneficiario_id)
+        cant_acciones = self.gestion_recetas_cliente.contar_notificaciones(beneficiario_id)
+        cant_chat = self.gestion_recetas_cliente.contar_chat_nuevos(beneficiario_id)
         notif_badge = f" ({cant_notif} notificaciones)" if cant_notif > 0 else ""
+        acciones_badge = f" ({cant_acciones})" if cant_acciones > 0 else ""
+        chat_badge = f" ({cant_chat} nuevos)" if cant_chat > 0 else ""
 
         consulta = subgrupo.get("consulta", "").replace("{beneficiario}", nombre_beneficiario)
         lineas = [consulta, ""]
         for op in subgrupo.get("opciones", []):
             texto = op["texto"].replace("{beneficiario}", nombre_beneficiario)
             texto = texto.replace("{notificaciones}", notif_badge)
+            texto = texto.replace("{acciones}", acciones_badge)
+            texto = texto.replace("{recordatorios}", "")
+            texto = texto.replace("{chat}", chat_badge)
             lineas.append(texto)
         lineas.append("Escribí 'salir' para volver:")
         self.sw.enviar("\n".join(lineas))
@@ -476,14 +484,37 @@ class SubMenuFarmacia:
             return
         self.gestion_recetas.iniciar(sesiones, beneficiario_id, operador_id)
 
-    def mis_recetas(self, sesiones):
-        """Dispara el flujo de gestión de recetas del lado del cliente."""
+    def acciones_receta(self, sesiones):
         beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
         if not beneficiario_id:
             self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
             self._mostrar_menu_farmacia(sesiones)
             return
-        self.gestion_recetas_cliente.iniciar(sesiones, beneficiario_id)
+        self.gestion_recetas_cliente.iniciar_acciones(sesiones, beneficiario_id)
+
+    def ver_mis_recetas(self, sesiones):
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        if not beneficiario_id:
+            self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
+            self._mostrar_menu_farmacia(sesiones)
+            return
+        self.gestion_recetas_cliente.iniciar_ver_recetas(sesiones, beneficiario_id)
+
+    def mis_recordatorios(self, sesiones):
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        if not beneficiario_id:
+            self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
+            self._mostrar_menu_farmacia(sesiones)
+            return
+        self.gestion_recetas_cliente.iniciar_recordatorios(sesiones, beneficiario_id)
+
+    def chat_receta(self, sesiones):
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        if not beneficiario_id:
+            self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
+            self._mostrar_menu_farmacia(sesiones)
+            return
+        self.gestion_recetas_cliente.iniciar_chat(sesiones, beneficiario_id)
 
     def abrir_staff(self, sesiones):
         """Abre el sub-submenú de staff dentro de farmacia."""

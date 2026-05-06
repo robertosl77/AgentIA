@@ -58,20 +58,33 @@ class GestionRecetasCliente:
         estado = getattr(sesiones[self.numero], "cliente_receta_estado", None)
         return estado is not None
 
-    def iniciar(self, sesiones, beneficiario_id):
-        """Punto de entrada — migra datos legacy y muestra submenú."""
-        sesiones[self.numero].cliente_receta_estado = "menu"
+    def _setup(self, sesiones, beneficiario_id):
+        """Prepara estado común y migra datos legacy."""
         sesiones[self.numero].cliente_receta_beneficiario_id = beneficiario_id
         for rec in self.receta_manager.buscar_recetas_activas(beneficiario_id):
             self.receta_manager.migrar_notas_a_chat(rec["receta_id"])
-        self._mostrar_menu(sesiones)
+
+    def iniciar_acciones(self, sesiones, beneficiario_id):
+        self._setup(sesiones, beneficiario_id)
+        self._mostrar_siguiente_notificacion(sesiones)
+
+    def iniciar_ver_recetas(self, sesiones, beneficiario_id):
+        self._setup(sesiones, beneficiario_id)
+        self._mostrar_mis_recetas(sesiones)
+
+    def iniciar_recordatorios(self, sesiones, beneficiario_id):
+        self._setup(sesiones, beneficiario_id)
+        self.sw.enviar("🚧 Mis recordatorios — próximamente...")
+        self._salir(sesiones)
+
+    def iniciar_chat(self, sesiones, beneficiario_id):
+        self._setup(sesiones, beneficiario_id)
+        self._mostrar_lista_chat(sesiones)
 
     def procesar(self, comando, sesiones):
         estado = getattr(sesiones[self.numero], "cliente_receta_estado", None)
 
-        if estado == "menu":
-            self._procesar_menu(comando, sesiones)
-        elif estado == "notificacion":
+        if estado == "notificacion":
             self._procesar_notificacion(comando, sesiones)
         elif estado == "escribir_consulta":
             self._procesar_escribir_consulta(comando, sesiones)
@@ -84,44 +97,6 @@ class GestionRecetasCliente:
         elif estado == "chat_libre":
             self._procesar_chat_libre(comando, sesiones)
 
-    # ── SUBMENÚ ───────────────────────────────────────────────────────────────
-
-    def _mostrar_menu(self, sesiones):
-        beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
-        cant_notif = self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id)
-        cant_chat = self.receta_manager.contar_mensajes_no_leidos_usuario(beneficiario_id)
-
-        notif_label = f" ({cant_notif} pendientes)" if cant_notif > 0 else ""
-        chat_label = f" ({cant_chat} nuevos)" if cant_chat > 0 else ""
-
-        lineas = [
-            "📬 *Gestión de recetas*\n",
-            f"1. 🔔 Acciones{notif_label}",
-            "2. 📋 Ver mis recetas",
-            "3. ⏰ Mis recordatorios",
-            f"4. 💬 Chat{chat_label}",
-            "Escribí *cancelar* para volver:"
-        ]
-        sesiones[self.numero].cliente_receta_estado = "menu"
-        self.sw.enviar("\n".join(lineas))
-
-    def _procesar_menu(self, comando, sesiones):
-        if comando.strip() == "cancelar":
-            self._salir(sesiones)
-            return
-
-        if comando.strip() == "1":
-            self._mostrar_siguiente_notificacion(sesiones)
-        elif comando.strip() == "2":
-            self._mostrar_mis_recetas(sesiones)
-        elif comando.strip() == "3":
-            self.sw.enviar("🚧 Mis recordatorios — próximamente...")
-            self._mostrar_menu(sesiones)
-        elif comando.strip() == "4":
-            self._mostrar_lista_chat(sesiones)
-        else:
-            self.sw.enviar("❌ Opción no válida.")
-
     # ── ACCIONES (una por una) ────────────────────────────────────────────────
 
     def _mostrar_siguiente_notificacion(self, sesiones):
@@ -131,7 +106,7 @@ class GestionRecetasCliente:
 
         if not resultado:
             self.sw.enviar("✅ No tenés acciones pendientes para esta receta.")
-            self._mostrar_menu(sesiones)
+            self._salir(sesiones)
             return
 
         receta_id, msg = resultado
@@ -221,7 +196,7 @@ class GestionRecetasCliente:
 
     def _procesar_notificacion(self, comando, sesiones):
         if comando.strip() == "cancelar":
-            self._mostrar_menu(sesiones)
+            self._salir(sesiones)
             return
 
         opciones_keys = getattr(sesiones[self.numero], "cliente_receta_opciones_keys", [])
@@ -326,7 +301,7 @@ class GestionRecetasCliente:
 
     def _procesar_escribir_token(self, comando, sesiones):
         if comando.strip() == "cancelar":
-            self._mostrar_menu(sesiones)
+            self._salir(sesiones)
             return
 
         receta_id = getattr(sesiones[self.numero], "cliente_receta_nota_receta_id", None)
@@ -360,7 +335,7 @@ class GestionRecetasCliente:
 
         if not recetas:
             self.sw.enviar("📋 No tenés recetas activas en este momento.")
-            self._mostrar_menu(sesiones)
+            self._salir(sesiones)
             return
 
         estados_config = self.farm_config.get("recetas", {}).get("estados_receta", {})
@@ -392,7 +367,7 @@ class GestionRecetasCliente:
         self.sw.enviar("\n".join(lineas))
 
     def _procesar_ver_recetas(self, comando, sesiones):
-        self._mostrar_menu(sesiones)
+        self._salir(sesiones)
 
     # ── CHAT POR RECETA ───────────────────────────────────────────────────────
 
@@ -402,7 +377,7 @@ class GestionRecetasCliente:
 
         if not recetas:
             self.sw.enviar("📋 No tenés recetas activas.")
-            self._mostrar_menu(sesiones)
+            self._salir(sesiones)
             return
 
         estados_config = self.farm_config.get("recetas", {}).get("estados_receta", {})
@@ -425,7 +400,7 @@ class GestionRecetasCliente:
 
     def _procesar_ver_chat_lista(self, comando, sesiones):
         if comando.strip() == "cancelar":
-            self._mostrar_menu(sesiones)
+            self._salir(sesiones)
             return
 
         recetas = getattr(sesiones[self.numero], "cliente_receta_lista", [])
@@ -447,7 +422,7 @@ class GestionRecetasCliente:
         rec_resultado = self.receta_manager.get_receta(receta_id)
         if not rec_resultado:
             self.sw.enviar("❌ Receta no encontrada.")
-            self._mostrar_menu(sesiones)
+            self._salir(sesiones)
             return
 
         _, receta = rec_resultado
@@ -601,6 +576,10 @@ class GestionRecetasCliente:
     def contar_notificaciones(self, beneficiario_id):
         """Retorna la cantidad de acciones pendientes para un beneficiario."""
         return self.receta_manager.contar_chat_no_leidos_usuario(beneficiario_id)
+
+    def contar_chat_nuevos(self, beneficiario_id):
+        """Retorna la cantidad de mensajes de chat no leídos para un beneficiario."""
+        return self.receta_manager.contar_mensajes_no_leidos_usuario(beneficiario_id)
 
     def _salir(self, sesiones):
         sesiones[self.numero].cliente_receta_estado = None

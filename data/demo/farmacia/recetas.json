@@ -18,16 +18,16 @@
           "medicamento_id": "08cbb512-f000-4b41-8520-efb69d86ff0c",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "sin_stock"
+          "estado_item": "disponible"
         },
         {
           "medicamento_id": "8b8ea27d-6c54-41c0-b83f-1845e391e5dd",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "sin_stock"
+          "estado_item": "disponible"
         }
       ],
-      "estado": "a_la_espera",
+      "estado": "pendiente_retiro",
       "operador_id": null,
       "receta_url": null,
       "notas": [],
@@ -321,6 +321,39 @@
             "farmacia"
           ],
           "medicamento_id": "8b8ea27d-6c54-41c0-b83f-1845e391e5dd"
+        },
+        {
+          "id": "47a07e11",
+          "autor": "farmacia",
+          "tipo": "solicitud_token",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-05-05T23:17:36.426819",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "1cf8f27f",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "token_respuesta",
+          "mensaje": "Token de autorización: 888",
+          "timestamp": "2026-05-05T23:23:19.225977",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "531a01df",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "ya podes retirarlo, estamos hoy hasta las 20",
+          "timestamp": "2026-05-05T23:26:02.196108",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
         }
       ],
       "historial_estados": [
@@ -423,6 +456,26 @@
           "estado": "a_la_espera",
           "timestamp": "2026-05-05T00:06:40.196315",
           "motivo": "Items procesados — esperando respuesta del cliente"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-05-05T23:17:35.950576",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "token_enviado",
+          "timestamp": "2026-05-05T23:23:19.223975",
+          "motivo": "Token enviado por paciente"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-05T23:23:37.555966",
+          "motivo": "Token validado"
+        },
+        {
+          "estado": "pendiente_retiro",
+          "timestamp": "2026-05-05T23:23:51.487903",
+          "motivo": "Avance → Pendiente de retiro"
         }
       ]
     },
@@ -456,6 +509,46 @@
         {
           "estado": "pendiente",
           "timestamp": "2026-05-04T22:28:23.111535",
+          "motivo": "Receta cargada por usuario"
+        }
+      ]
+    },
+    "ab224726-f434-4c9c-acb0-a74f4192e7d0": {
+      "persona_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+      "obra_social_id": "a71bd8d5-d225-4995-9553-6c8dd45f10ab",
+      "credencial_validada": true,
+      "fecha_creacion": "12/03/2026",
+      "fecha_validez_desde": "12/05/2026",
+      "fecha_vencimiento": "11/06/2026",
+      "medico": {
+        "nombre": "María Inés Ortiz",
+        "matricula": "111002",
+        "especialidad": "ENDOCRINOLOGIA"
+      },
+      "diagnostico": "Panhipopituitarismo",
+      "items": [
+        {
+          "medicamento_id": "802f59ae-688b-4ed6-9484-ecddca95a52c",
+          "cantidad_receta": 2,
+          "cantidad_solicitada": 2,
+          "estado_item": "pendiente"
+        },
+        {
+          "medicamento_id": "730da71f-fda3-41eb-a8e4-3cab0e86569a",
+          "cantidad_receta": 1,
+          "cantidad_solicitada": 1,
+          "estado_item": "pendiente"
+        }
+      ],
+      "estado": "pendiente",
+      "operador_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+      "receta_url": "data/demo/archivos/recetas/farmacia_20260505_fa8c0354.jpg",
+      "notas": [],
+      "chat": [],
+      "historial_estados": [
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-05-05T23:12:42.302353",
           "motivo": "Receta cargada por usuario"
         }
       ]

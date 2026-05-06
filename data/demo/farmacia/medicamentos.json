@@ -11,6 +11,18 @@
       "dosis": "105 mg",
       "presentacion": "comp.x 30",
       "label": "LIPOMAX 105 105 mg comp.x 30"
+    },
+    "802f59ae-688b-4ed6-9484-ecddca95a52c": {
+      "farmaco": "Hidrocortisona",
+      "nombre_comercial": "Hidrotisona",
+      "dosis": "10 mg",
+      "presentacion": "comp.x 30"
+    },
+    "730da71f-fda3-41eb-a8e4-3cab0e86569a": {
+      "farmaco": "Fenofíbrico,ác.",
+      "nombre_comercial": "Lipomax 105",
+      "dosis": "105 mg",
+      "presentacion": "comp.x 30"
     }
   }
 }

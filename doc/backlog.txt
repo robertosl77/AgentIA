@@ -3,6 +3,22 @@ BACKLOG — módulo farmacia
 ══════════════════════════════════════════════════════
 
 ──────────────────────────────────────────────────────
+FIXES
+──────────────────────────────────────────────────────
+
+[B6] Chat cliente — mostrar solo el último mensaje accionable por medicamento
+  Problema:
+    - El hilo de chat muestra todos los mensajes históricos de tipo sin_stock,
+      alternativa y solicitud_token, generando cadenas largas repetitivas.
+    - Solo debería mostrarse el último mensaje accionable de cada tipo por
+      medicamento (igual que ya se hace en la vista del staff).
+  Propuesta:
+    - En _mostrar_hilo_chat (gestion_recetas_cliente.py): para sin_stock,
+      alternativa y solicitud_token, agrupar por medicamento_id y mostrar
+      solo el último, junto con su respuesta del cliente (accion/token_respuesta)
+      si existe.
+
+──────────────────────────────────────────────────────
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 
@@ -16,15 +32,6 @@ MEJORAS / FEATURES
       básicamente la salida de _armar_resumen sin las opciones de edición
     - Las opciones existentes se renumeran: Completar datos → 2, Direcciones → 3,
       Obra social → 4
-
-[B5] Menú farmacia — Cargar receta y Mis recetas como ítems de primer nivel
-  Problema:
-    - "Cargar receta" y "Mis recetas" están agrupadas bajo "💊 Recetas de mí",
-      generando un nivel de jerarquía innecesario para solo 2 opciones.
-  Propuesta:
-    - Eliminar el subgrupo "Recetas" de configuracion.json
-    - Agregar "Cargar receta" y "Mis recetas" directamente como opciones del menú
-      farmacia (ítems 4 y 5), sin subgrupo intermedio
 
 [M3] Quitar beneficiario desde el grupo Beneficiario
   Problema:

@@ -354,12 +354,15 @@
             "id": "4",
             "roles": ["root", "admin", "usuario"],
             "activacion": ["4"],
-            "texto": "4. 💊 Recetas de {beneficiario}",
+            "texto": "4. 📬 Mis recetas{notificaciones}",
             "subgrupo": {
-              "consulta": "💊 *Recetas de {beneficiario}:*",
+              "consulta": "📬 *Mis recetas de {beneficiario}:*",
               "opciones": [
                 {"id": "1", "activacion": ["1"], "texto": "1. 📤 Cargar receta", "handler": "cargar_receta"},
-                {"id": "2", "activacion": ["2"], "texto": "2. 📬 Mis recetas{notificaciones}", "handler": "mis_recetas"}
+                {"id": "2", "activacion": ["2"], "texto": "2. 📋 Ver mis recetas", "handler": "ver_mis_recetas"},
+                {"id": "3", "activacion": ["3"], "texto": "3. 🔔 Acciones{acciones}", "handler": "acciones_receta"},
+                {"id": "4", "activacion": ["4"], "texto": "4. ⏰ Mis recordatorios{recordatorios}", "handler": "mis_recordatorios"},
+                {"id": "5", "activacion": ["5"], "texto": "5. 💬 Chat{chat}", "handler": "chat_receta"}
               ]
             }
           },
