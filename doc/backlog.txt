@@ -6,6 +6,56 @@ BACKLOG — módulo farmacia
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 
+[M5] Subgrupo "Mis datos" — opción "Ver todos mis datos" como ítem 1
+  Problema:
+    - El subgrupo "Mis datos" solo ofrece acciones de edición; no hay forma de
+      ver el perfil completo sin entrar a "Completar datos".
+  Propuesta:
+    - Agregar opción "1. 👤 Ver todos mis datos" como primer ítem del subgrupo
+    - Muestra toda la información de la persona (campos simples + contactos),
+      básicamente la salida de _armar_resumen sin las opciones de edición
+    - Las opciones existentes se renumeran: Completar datos → 2, Direcciones → 3,
+      Obra social → 4
+
+[B5] Menú farmacia — Cargar receta y Mis recetas como ítems de primer nivel
+  Problema:
+    - "Cargar receta" y "Mis recetas" están agrupadas bajo "💊 Recetas de mí",
+      generando un nivel de jerarquía innecesario para solo 2 opciones.
+  Propuesta:
+    - Eliminar el subgrupo "Recetas" de configuracion.json
+    - Agregar "Cargar receta" y "Mis recetas" directamente como opciones del menú
+      farmacia (ítems 4 y 5), sin subgrupo intermedio
+
+[B3] Teléfono WhatsApp deprecado — eliminar del perfil de datos
+  Problema:
+    - El campo "Teléfono WhatsApp" aparece en la vista "Datos registrados" marcado
+      como faltante (❌), pero el campo está deprecado y no debería mostrarse.
+  Propuesta:
+    - Identificar dónde se renderiza ese campo en gestion_datos_persona.py
+    - Eliminarlo de la vista o marcarlo como oculto en la estructura_persona del config
+
+[M3] Quitar beneficiario desde el grupo Beneficiario
+  Problema:
+    - El grupo "Beneficiario" tiene Registrar y Cambiar, pero no hay opción para
+      desvincular/quitar un beneficiario existente.
+  Propuesta:
+    - Agregar opción "3. ❌ Quitar beneficiario" al subgrupo en configuracion.json
+    - Implementar handler quitar_beneficiario en submenu_farmacia.py
+    - El flujo debe pedir confirmación antes de desvincular
+
+[M4] Contactos — número de teléfono con país + código de área + número
+  Alcance: TRANSVERSAL (no solo farmacia — aplica a todo módulo que use contactos)
+  Problema:
+    - El teléfono se guarda como string libre sin estructura (ej: "1151069392").
+    - No hay distinción de país ni código de área, lo que complica validación,
+      formateo y uso futuro (ej: envío por WhatsApp, normalización internacional).
+  Propuesta:
+    - Estructurar el ingreso en 3 pasos: país → código de área → número
+    - Guardar como objeto: {"pais": "AR", "cod_area": "11", "numero": "51069392"}
+      o como E.164 normalizado: "+541151069392"
+    - Analizar si "Gestionar contactos" debe separarse como enlatado propio,
+      desacoplado de farmacia, reutilizable por otros módulos
+
 [M1] Sistema de navegación global — reemplazar "cancelar" y retorno secuencial
   Problema:
     - "cancelar" como palabra de escape es larga e inconsistente con el resto del UX

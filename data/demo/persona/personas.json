@@ -19,11 +19,22 @@
       "numero_documento": "25784362",
       "nombre": "roberto",
       "apellido": "sl",
-      "fecha_nacimiento": "",
+      "fecha_nacimiento": "10/02/1977",
       "lids": [
         "231400003358774@lid"
       ],
-      "contactos": [],
+      "contactos": [
+        {
+          "tipo": "telefono",
+          "valor": "1151069392",
+          "etiqueta": "personal"
+        },
+        {
+          "tipo": "email",
+          "valor": "robertosl77@gmail.com",
+          "etiqueta": "personal"
+        }
+      ],
       "direcciones": [
         {
           "direccion_id": "2cfe00aa-8eab-42dd-a82c-ef5d5aa57ad1",

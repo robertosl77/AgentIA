@@ -187,11 +187,14 @@ class GestionDatosPersona:
                 lineas.append(f"  {label}: — ❌")
 
         # Contactos
-        cant = len(contactos)
-        if cant > 0:
-            lineas.append(f"  📇 Contactos: {cant} registrado(s) ✅")
+        if contactos:
+            lineas.append("  📇 Contactos: ✅")
+            for c in contactos:
+                icono = "📱" if c["tipo"] == "telefono" else "📧"
+                etiqueta = f" ({c['etiqueta']})" if c.get("etiqueta") else ""
+                lineas.append(f"    {icono} {c['valor']}{etiqueta}")
         else:
-            lineas.append(f"  📇 Contactos: ninguno ❌")
+            lineas.append("  📇 Contactos: ninguno ❌")
 
         lineas.append("")
         lineas.append("1. ✏️ Editar un campo")
