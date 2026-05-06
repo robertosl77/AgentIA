@@ -1,0 +1,186 @@
+══════════════════════════════════════════════════════
+BACKLOG — módulo farmacia
+══════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────
+FIXES
+──────────────────────────────────────────────────────
+
+[B8] Conductores (auxilio) — detectar persona existente en lugar de duplicar
+  Problema:
+    - Al registrar un conductor, si ya existe una persona con ese DNI en el sistema
+      (ej: registrada en farmacia), se crea un duplicado en vez de reutilizar el
+      registro existente y agregarle el tipo "auxilio_conductor".
+    - Además, el conductor recién agregado no aparece en la lista (posible falla
+      silenciosa al guardar).
+  Propuesta:
+    - En _guardar_campo_y_continuar (gestion_conductores) y _finalizar_carga_conductor
+      (registro_servicio): antes de crear_persona, buscar por tipo_documento + número.
+    - Si existe → agregar_tipo_persona(persona_id, "auxilio_conductor") sin duplicar.
+    - Si no existe → crear_persona normalmente.
+
+[B6] Chat cliente — mostrar solo el último mensaje accionable por medicamento
+  Problema:
+    - El hilo de chat muestra todos los mensajes históricos de tipo sin_stock,
+      alternativa y solicitud_token, generando cadenas largas repetitivas.
+    - Solo debería mostrarse el último mensaje accionable de cada tipo por
+      medicamento (igual que ya se hace en la vista del staff).
+  Propuesta:
+    - En _mostrar_hilo_chat (gestion_recetas_cliente.py): para sin_stock,
+      alternativa y solicitud_token, agrupar por medicamento_id y mostrar
+      solo el último, junto con su respuesta del cliente (accion/token_respuesta)
+      si existe.
+
+──────────────────────────────────────────────────────
+MEJORAS / FEATURES
+──────────────────────────────────────────────────────
+
+[M5] Subgrupo "Mis datos" — opción "Ver todos mis datos" como ítem 1
+  Problema:
+    - El subgrupo "Mis datos" solo ofrece acciones de edición; no hay forma de
+      ver el perfil completo sin entrar a "Completar datos".
+  Propuesta:
+    - Agregar opción "1. 👤 Ver todos mis datos" como primer ítem del subgrupo
+    - Muestra toda la información de la persona (campos simples + contactos),
+      básicamente la salida de _armar_resumen sin las opciones de edición
+    - Las opciones existentes se renumeran: Completar datos → 2, Direcciones → 3,
+      Obra social → 4
+
+[M3] Quitar beneficiario desde el grupo Beneficiario
+  Problema:
+    - El grupo "Beneficiario" tiene Registrar y Cambiar, pero no hay opción para
+      desvincular/quitar un beneficiario existente.
+  Propuesta:
+    - Agregar opción "3. ❌ Quitar beneficiario" al subgrupo en configuracion.json
+    - Implementar handler quitar_beneficiario en submenu_farmacia.py
+    - El flujo debe pedir confirmación antes de desvincular
+
+[M12] Conversación directa con farmacia — modo passthrough
+  Contexto:
+    - A veces el cliente necesita hablar directamente con la farmacia por WhatsApp
+      sin pasar por los menús del bot.
+    - El bot actualmente intercepta todos los mensajes; no hay forma de tener un
+      diálogo libre farmacia↔cliente.
+  ⚠️  PENDIENTE DE DISEÑO — ideas iniciales:
+    - Modalidades posibles (no excluyentes):
+        · Passthrough: el bot "se hace a un lado" temporalmente; los mensajes del
+          cliente llegan directo al operador de farmacia y viceversa
+        · Push iniciado por farmacia: el farmacéutico envía un mensaje libre al
+          cliente sin esperar que este interactúe con el menú
+        · Chat estructurado: usar el canal de chat ya existente en recetas pero
+          sin atarlo a un medicamento específico (hilo general)
+    - Activación del modo passthrough: por comando del farmacéutico o por tiempo
+    - Desactivación: manual o por timeout configurable
+    - Preguntas abiertas:
+        · ¿Quién activa y desactiva el passthrough (solo staff, o el cliente también)?
+        · ¿Se registra el historial del diálogo libre?
+        · ¿El bot retoma automáticamente al cerrar el passthrough?
+        · ¿Aplica por cliente individual o por número de farmacia completo?
+
+[M11] Consulta de medicamentos — agente IA con análisis de historial
+  Contexto:
+    - Cuando se cargan nuevas recetas, el sistema debería compararlas contra el
+      historial de recetas y medicamentos del cliente para detectar anomalías.
+  ⚠️  PENDIENTE DE DISEÑO — ideas iniciales:
+    - Al completar la carga de una receta, disparar análisis automático contra historial
+    - Detectar y alertar sobre:
+        · Medicamentos faltantes (estaba en recetas anteriores y desapareció)
+        · Medicamentos nuevos (nunca recetados antes)
+        · Cambios de marca / laboratorio para el mismo principio activo
+        · Cambios de miligraje o concentración
+        · Cambios en cantidad/frecuencia
+    - El agente IA interpreta el significado clínico del cambio (ej: "subió la dosis
+      de metformina de 500mg a 850mg")
+    - Las alertas van al farmacéutico (para validación) y opcionalmente al cliente
+    - Preguntas abiertas:
+        · ¿Qué modelo/API de IA se usa para la interpretación?
+        · ¿Las alertas bloquean el flujo o son informativas?
+        · ¿Cuántos meses de historial se consideran para la comparación?
+        · ¿El farmacéutico puede marcar una alerta como "esperada" para no repetirla?
+
+[M10] Gestión sin receta — trámites PAMI (farmacéutico carga en nombre del cliente)
+  Contexto:
+    - En PAMI el farmacéutico puede descargar las recetas directamente desde la web
+      de PAMI; el cliente no necesita (ni puede) cargarlas él mismo.
+    - El flujo actual asume que siempre es el cliente quien inicia la receta.
+  ⚠️  PENDIENTE DE DISEÑO — ideas iniciales:
+    - El farmacéutico inicia la receta asociándola a un cliente por DNI/persona_id
+    - El cliente ve la receta en "Mis recetas" como si la hubiera cargado él
+    - Distinguir origen: "cargada por farmacia" vs "cargada por cliente"
+    - Posible integración futura: descarga automática vía API PAMI (si existe)
+    - Preguntas abiertas:
+        · ¿El cliente puede editar/cancelar recetas cargadas por el farmacéutico?
+        · ¿Se notifica al cliente cuando el farmacéutico carga una receta nueva?
+        · ¿Aplica solo a PAMI o también a otras obras sociales?
+
+[M9] Consultas / reclamos — tickets con recordatorio automático a 24h
+  Problema:
+    - No existe canal estructurado para que el cliente registre consultas o reclamos
+      y reciba seguimiento.
+  Propuesta:
+    - Flujo de creación de ticket: descripción libre + categoría (consulta / reclamo)
+    - Si el ticket no recibe respuesta en 24h, disparar recordatorio automático al staff
+    - Estado del ticket visible para el cliente (abierto / en curso / resuelto)
+
+[M8] Sistema de alertas de vencimiento de recetas
+  Problema:
+    - Las recetas vencen sin que el cliente ni el staff reciban aviso previo.
+  Propuesta:
+    - Job/scheduler que detecte recetas próximas a vencer (configurable: ej. 7 días antes)
+    - Notificación push al cliente y alerta en panel de staff
+    - Config en farmacia_config.json: días_aviso_vencimiento
+
+[M7] Acciones del cliente por medicamento — esperar / agendar recordatorio
+  Problema:
+    - Cuando un medicamento está sin stock o tiene alternativa, el cliente solo puede
+      aceptar o rechazar; no puede pedir que se le recuerde cuando haya stock.
+  Propuesta:
+    - Nueva acción disponible en el hilo de chat del medicamento: "Agendar recordatorio"
+    - El cliente elige una fecha; se valida que sea anterior al vencimiento de la receta
+    - Al llegar la fecha, se envía push al cliente retomando el hilo de ese medicamento
+
+[M6] Horarios como enlatado (módulo independiente o asociado a persona)
+  Problema:
+    - No existe forma de registrar horarios de atención, turnos o disponibilidad
+      ni para sucursales ni para personas (ej. médico de cabecera).
+  Propuesta:
+    - Enlatado "horarios" reutilizable: puede asociarse a una entidad (persona, local)
+      o existir de forma independiente
+    - Config en JSON: días, franjas horarias, excepciones
+    - Consulta desde el chatbot: "¿Cuándo atiende?"
+  ⚠️  Prerequisito de: R4 Agenda y R3 Turnos — deben implementarse después.
+
+[M1] Sistema de navegación global — reemplazar "cancelar" y retorno secuencial
+  Problema:
+    - "cancelar" como palabra de escape es larga e inconsistente con el resto del UX
+    - No hay forma de saltar a un nodo superior sin hacer retorno secuencial paso a paso
+  Propuesta:
+    - Reemplazar "cancelar" por tecla corta (ej: "A") o mini-submenu con letras
+    - Definir nodos de navegación globales: menu_principal / staff / receta
+    - Desde cualquier punto del flujo, el usuario puede saltar a cualquier nodo
+    - Inspirado en el patrón outflow/inflow de recetas: config-driven
+    - Aplica a farmacia y auxilio
+
+──────────────────────────────────────────────────────
+ROADMAP — enlatados futuros reservados
+──────────────────────────────────────────────────────
+
+[R1] Tienda mascotas
+  - Enlatado de gestión de productos, stock y pedidos para tiendas de mascotas.
+  - Sin diseño todavía.
+
+[R2] Celulares
+  - Enlatado para gestión de servicio técnico, ventas o reparaciones de celulares.
+  - Sin diseño todavía.
+
+[R4] Agenda (enlatado independiente — prerequisito de Turnos)
+  - Gestión de agenda/calendario como módulo autónomo, NO asociado a persona.
+  - Prerequisito: M6 Horarios (no se puede reservar fuera de horario habilitado).
+  - Prerequisito de: R3 Turnos (turnos se apoyan sobre agenda).
+  - Sin diseño todavía.
+
+[R3] Turnos
+  - Enlatado de reserva de turnos/citas para el cliente vía chatbot.
+  - ⚠️  Depende de R4 Agenda y M6 Horarios — no puede implementarse antes.
+  - Sin diseño todavía.
+

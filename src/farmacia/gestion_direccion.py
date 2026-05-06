@@ -2,8 +2,8 @@
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.farmacia.farmacia_config_loader import FarmaciaConfigLoader
-from src.cliente.persona_manager import PersonaManager
-from src.cliente.direccion_manager import DireccionManager
+from src.persona.persona_manager import PersonaManager
+from src.persona.direccion_manager import DireccionManager
 from src.maps.buscador_direccion import BuscadorDireccion
 
 

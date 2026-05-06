@@ -2,8 +2,10 @@
 from src.send_wpp import SendWPP
 from src.sesiones.session_manager import SessionManager
 from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
-from src.cliente.persona_manager import PersonaManager
+from src.persona.persona_manager import PersonaManager
 from src.registro.validadores import Validadores
+from src.persona import telefono_manager
+from src.config_loader import ConfigLoader
 
 class GestionConductores(Validadores):
     """
@@ -42,6 +44,12 @@ class GestionConductores(Validadores):
             self._procesar_seleccion(comando, sesiones)
         elif campo == "conductor_confirmar_elimina":
             self._procesar_confirmacion_elimina(comando, sesiones)
+        elif campo == "conductor_telefono_confirmar":
+            self._procesar_conductor_telefono_confirmar(comando, sesiones)
+        elif campo == "conductor_telefono_pais":
+            self._procesar_conductor_telefono_pais(comando, sesiones)
+        elif campo == "conductor_telefono_pais_iso":
+            self._procesar_conductor_telefono_pais_iso(comando, sesiones)
         elif campo and campo.startswith("conductor_agregar_"):
             self._procesar_campo(comando, sesiones)
 
@@ -145,8 +153,30 @@ class GestionConductores(Validadores):
         if not es_obligatorio and comando.strip() == "-":
             return self._guardar_campo_y_continuar(campo, "", sesiones)
 
-        # Validación
-        from src.config_loader import ConfigLoader
+        # Intercepción especial para teléfono
+        if campo == "telefono":
+            config_global = ConfigLoader()
+            pais_defecto = config_global.get("telefonia", {}).get("pais_defecto", "AR")
+            e164 = telefono_manager.parse_e164(comando.strip(), pais_defecto)
+            if not e164:
+                reintentos += 1
+                sesiones[self.numero].auxilios_reintentos = reintentos
+                if reintentos >= self.config.data.get("reintentos_input", 3):
+                    sesiones[self.numero].auxilios_campo_actual = None
+                    sesiones[self.numero].auxilios_dato_temporal = {}
+                    sesiones[self.numero].auxilios_reintentos = 0
+                    self.sw.enviar("❌ Se canceló la carga. Volviendo al menú de conductores...")
+                    self.iniciar(sesiones)
+                else:
+                    self.sw.enviar("⚠️ Número no reconocido. Ingresá solo el número local (ej: 1155557777):")
+                return
+            sesiones[self.numero].auxilios_telefono_raw = comando.strip()
+            sesiones[self.numero].auxilios_telefono_e164 = e164
+            sesiones[self.numero].auxilios_reintentos = 0
+            self._mostrar_preview_telefono_conductor(sesiones)
+            return
+
+        # Validación estándar
         config_global = ConfigLoader()
         config_validadores = config_global.data.get("validadores", {})
         resultado = self._validar(tipo, comando, validadores_campo, config_validadores)
@@ -230,6 +260,85 @@ class GestionConductores(Validadores):
                 self.iniciar(sesiones)
             else:
                 self.sw.enviar("⚠️ Respondé *si* o *no*:")
+
+    # ── FLUJO TELÉFONO ────────────────────────────────────────────────────────
+
+    def _mostrar_preview_telefono_conductor(self, sesiones):
+        e164 = getattr(sesiones[self.numero], "auxilios_telefono_e164", "")
+        display = telefono_manager.format_display(e164)
+        lineas = [
+            f"📱 {display} — ¿es correcto?\n",
+            "1. ✅ Confirmar",
+            "2. 🔄 Cambiar número",
+            "3. 🌍 Cambiar país",
+            "4. ❌ Cancelar"
+        ]
+        sesiones[self.numero].auxilios_campo_actual = "conductor_telefono_confirmar"
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_conductor_telefono_confirmar(self, comando, sesiones):
+        c = comando.strip()
+        if c == "1":
+            e164 = getattr(sesiones[self.numero], "auxilios_telefono_e164", "")
+            self._guardar_campo_y_continuar("telefono", e164, sesiones)
+        elif c == "2":
+            config_campo = self.config.get_campos("conductor").get("telefono", {})
+            self.sw.enviar(config_campo.get("msj_pedido", "📱 Ingresá el teléfono del conductor:"))
+            sesiones[self.numero].auxilios_campo_actual = "conductor_agregar_telefono"
+        elif c == "3":
+            self._mostrar_lista_paises_conductor(sesiones)
+        elif c == "4":
+            sesiones[self.numero].auxilios_campo_actual = None
+            sesiones[self.numero].auxilios_dato_temporal = {}
+            self.sw.enviar("❌ Carga cancelada.")
+            self.iniciar(sesiones)
+        else:
+            self.sw.enviar("❌ Opción no válida.")
+
+    def _mostrar_lista_paises_conductor(self, sesiones):
+        config_global = ConfigLoader()
+        paises = config_global.get("telefonia", {}).get("paises_frecuentes", [])
+        lineas = ["🌍 Seleccioná el país:\n"]
+        for i, p in enumerate(paises, 1):
+            lineas.append(f"{i}. {p['label']}")
+        lineas.append(f"{len(paises) + 1}. Otro (escribí el código ISO, ej: DE, IT, MX)")
+        sesiones[self.numero].auxilios_campo_actual = "conductor_telefono_pais"
+        sesiones[self.numero].auxilios_telefono_paises_lista = paises
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_conductor_telefono_pais(self, comando, sesiones):
+        paises = getattr(sesiones[self.numero], "auxilios_telefono_paises_lista", [])
+        c = comando.strip()
+        try:
+            idx = int(c) - 1
+            if idx < 0 or idx > len(paises):
+                raise ValueError
+            if idx == len(paises):
+                self.sw.enviar("Escribí el código ISO del país (ej: DE, IT, MX):")
+                sesiones[self.numero].auxilios_campo_actual = "conductor_telefono_pais_iso"
+                return
+            nuevo_pais = paises[idx]["codigo"]
+        except ValueError:
+            self.sw.enviar("❌ Opción no válida.")
+            return
+        self._reparsear_conductor_con_pais(nuevo_pais, sesiones)
+
+    def _procesar_conductor_telefono_pais_iso(self, comando, sesiones):
+        codigo = comando.strip().upper()
+        if len(codigo) != 2 or not codigo.isalpha():
+            self.sw.enviar("⚠️ Código inválido. Ingresá un código ISO de 2 letras (ej: DE, IT, MX):")
+            return
+        self._reparsear_conductor_con_pais(codigo, sesiones)
+
+    def _reparsear_conductor_con_pais(self, pais, sesiones):
+        raw = getattr(sesiones[self.numero], "auxilios_telefono_raw", "")
+        e164 = telefono_manager.parse_e164(raw, pais)
+        if not e164:
+            self.sw.enviar(f"⚠️ El número no es válido para {pais}. Intentá con otro país o cambiá el número.")
+            self._mostrar_lista_paises_conductor(sesiones)
+            return
+        sesiones[self.numero].auxilios_telefono_e164 = e164
+        self._mostrar_preview_telefono_conductor(sesiones)
 
     # ── HELPER ────────────────────────────────────────────────────────────────
 

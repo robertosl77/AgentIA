@@ -3,12 +3,13 @@ from src.send_wpp import SendWPP
 from src.sesiones.session_manager import SessionManager
 from src.config_loader import ConfigLoader
 from src.auxilios.auxilios_config_loader import AuxiliosConfigLoader
+from src.persona import telefono_manager
 from src.auxilios.auxilios_data_loader import AuxiliosDataLoader
 from src.auxilios.calculo_tarifas import CalculoTarifas
 from src.registro.validadores import Validadores
 from src.maps.buscador_direccion import BuscadorDireccion
-from src.cliente.persona_manager import PersonaManager
-from src.cliente.direccion_manager import DireccionManager
+from src.persona.persona_manager import PersonaManager
+from src.persona.direccion_manager import DireccionManager
 from src.auxilios.vehiculo_manager import VehiculoManager
 from datetime import datetime
 
@@ -70,6 +71,9 @@ class RegistroServicio(Validadores):
             "servicio_conductor_seleccion": self._procesar_conductor_seleccion,
             "servicio_conductor_carga_nombre": self._procesar_conductor_campo,
             "servicio_conductor_carga_telefono": self._procesar_conductor_campo,
+            "servicio_conductor_telefono_confirmar": self._procesar_servicio_conductor_telefono_confirmar,
+            "servicio_conductor_telefono_pais": self._procesar_servicio_conductor_telefono_pais,
+            "servicio_conductor_telefono_pais_iso": self._procesar_servicio_conductor_telefono_pais_iso,
             "servicio_conductor_carga_dni": self._procesar_conductor_campo,
             "servicio_vpropio_seleccion": self._procesar_vpropio_seleccion,
             "servicio_vpropio_carga_patente": self._procesar_vpropio_campo,
@@ -230,26 +234,25 @@ class RegistroServicio(Validadores):
                 self._finalizar_carga_conductor(sesiones)
 
         elif campo_actual == "servicio_conductor_carga_telefono":
-            temp = sesiones[self.numero].auxilios_dato_temporal.get("_conductor_temp", {})
             config_campo = self.config.get_campos("conductor").get("telefono", {})
             es_obligatorio = config_campo.get("obligatorio", False)
 
             if not es_obligatorio and comando.strip() == "-":
+                temp = sesiones[self.numero].auxilios_dato_temporal.get("_conductor_temp", {})
                 temp["telefono"] = ""
-            elif self.valida_telefono(comando):
-                temp["telefono"] = comando.strip()
-            else:
-                self.sw.enviar("⚠️ Teléfono no válido. Intentá nuevamente:")
+                sesiones[self.numero].auxilios_dato_temporal["_conductor_temp"] = temp
+                self._continuar_despues_de_telefono_conductor(sesiones)
                 return
 
-            sesiones[self.numero].auxilios_dato_temporal["_conductor_temp"] = temp
-            campos_conductor = self.config.get_campos("conductor")
-            if "dni" in campos_conductor:
-                sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_carga_dni"
-                config = campos_conductor["dni"]
-                self.sw.enviar(config.get("msj_pedido", "🪪 Ingresá el DNI:"))
-            else:
-                self._finalizar_carga_conductor(sesiones)
+            pais_defecto = self.config_global.get("telefonia", {}).get("pais_defecto", "AR")
+            e164 = telefono_manager.parse_e164(comando.strip(), pais_defecto)
+            if not e164:
+                self.sw.enviar("⚠️ Número no reconocido. Ingresá solo el número local (ej: 1155557777):")
+                return
+
+            sesiones[self.numero].auxilios_servicio_telefono_raw = comando.strip()
+            sesiones[self.numero].auxilios_servicio_telefono_e164 = e164
+            self._mostrar_preview_telefono_servicio(sesiones)
 
         elif campo_actual == "servicio_conductor_carga_dni":
             temp = sesiones[self.numero].auxilios_dato_temporal.get("_conductor_temp", {})
@@ -956,6 +959,92 @@ class RegistroServicio(Validadores):
                 return result[1].get("direccion_formateada", "") if result else ""
             return direccion.get("direccion_formateada", "")
         return direccion
+
+    # ── FLUJO TELÉFONO CONDUCTOR (inline en servicio) ─────────────────────────
+
+    def _mostrar_preview_telefono_servicio(self, sesiones):
+        e164 = getattr(sesiones[self.numero], "auxilios_servicio_telefono_e164", "")
+        display = telefono_manager.format_display(e164)
+        lineas = [
+            f"📱 {display} — ¿es correcto?\n",
+            "1. ✅ Confirmar",
+            "2. 🔄 Cambiar número",
+            "3. 🌍 Cambiar país",
+            "4. ❌ Cancelar"
+        ]
+        sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_telefono_confirmar"
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_servicio_conductor_telefono_confirmar(self, comando, sesiones):
+        c = comando.strip()
+        if c == "1":
+            e164 = getattr(sesiones[self.numero], "auxilios_servicio_telefono_e164", "")
+            temp = sesiones[self.numero].auxilios_dato_temporal.get("_conductor_temp", {})
+            temp["telefono"] = e164
+            sesiones[self.numero].auxilios_dato_temporal["_conductor_temp"] = temp
+            self._continuar_despues_de_telefono_conductor(sesiones)
+        elif c == "2":
+            config = self.config.get_campos("conductor").get("telefono", {})
+            self.sw.enviar(config.get("msj_pedido", "📱 Ingresá el teléfono:"))
+            sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_carga_telefono"
+        elif c == "3":
+            self._mostrar_lista_paises_servicio(sesiones)
+        elif c == "4":
+            self._cancelar(sesiones)
+        else:
+            self.sw.enviar("❌ Opción no válida.")
+
+    def _mostrar_lista_paises_servicio(self, sesiones):
+        paises = self.config_global.get("telefonia", {}).get("paises_frecuentes", [])
+        lineas = ["🌍 Seleccioná el país:\n"]
+        for i, p in enumerate(paises, 1):
+            lineas.append(f"{i}. {p['label']}")
+        lineas.append(f"{len(paises) + 1}. Otro (escribí el código ISO, ej: DE, IT, MX)")
+        sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_telefono_pais"
+        sesiones[self.numero].auxilios_servicio_telefono_paises_lista = paises
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_servicio_conductor_telefono_pais(self, comando, sesiones):
+        paises = getattr(sesiones[self.numero], "auxilios_servicio_telefono_paises_lista", [])
+        try:
+            idx = int(comando.strip()) - 1
+            if idx < 0 or idx > len(paises):
+                raise ValueError
+            if idx == len(paises):
+                self.sw.enviar("Escribí el código ISO del país (ej: DE, IT, MX):")
+                sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_telefono_pais_iso"
+                return
+            nuevo_pais = paises[idx]["codigo"]
+        except ValueError:
+            self.sw.enviar("❌ Opción no válida.")
+            return
+        self._reparsear_servicio_telefono(nuevo_pais, sesiones)
+
+    def _procesar_servicio_conductor_telefono_pais_iso(self, comando, sesiones):
+        codigo = comando.strip().upper()
+        if len(codigo) != 2 or not codigo.isalpha():
+            self.sw.enviar("⚠️ Código inválido. Ingresá un código ISO de 2 letras (ej: DE, IT, MX):")
+            return
+        self._reparsear_servicio_telefono(codigo, sesiones)
+
+    def _reparsear_servicio_telefono(self, pais, sesiones):
+        raw = getattr(sesiones[self.numero], "auxilios_servicio_telefono_raw", "")
+        e164 = telefono_manager.parse_e164(raw, pais)
+        if not e164:
+            self.sw.enviar(f"⚠️ El número no es válido para {pais}. Intentá con otro país o cambiá el número.")
+            self._mostrar_lista_paises_servicio(sesiones)
+            return
+        sesiones[self.numero].auxilios_servicio_telefono_e164 = e164
+        self._mostrar_preview_telefono_servicio(sesiones)
+
+    def _continuar_despues_de_telefono_conductor(self, sesiones):
+        campos_conductor = self.config.get_campos("conductor")
+        if "dni" in campos_conductor:
+            sesiones[self.numero].auxilios_campo_actual = "servicio_conductor_carga_dni"
+            config = campos_conductor["dni"]
+            self.sw.enviar(config.get("msj_pedido", "🪪 Ingresá el DNI:"))
+        else:
+            self._finalizar_carga_conductor(sesiones)
 
     def _manejar_reintento(self, comando, sesiones, config_campo, resultado):
         """Maneja reintentos con mensaje de error."""

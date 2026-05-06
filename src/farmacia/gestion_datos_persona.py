@@ -2,7 +2,8 @@
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.farmacia.farmacia_config_loader import FarmaciaConfigLoader
-from src.cliente.persona_manager import PersonaManager
+from src.persona.persona_manager import PersonaManager
+from src.persona import telefono_manager
 
 
 class GestionDatosPersona:
@@ -26,9 +27,10 @@ class GestionDatosPersona:
     # ── CONFIGURACIÓN DINÁMICA ────────────────────────────────────────────────
 
     def _get_campos(self):
-        """Retorna el dict de campos simples (sin contactos)."""
+        """Retorna el dict de campos simples (sin contactos ni campos ocultos)."""
         todos = self.farmacia_config.get_estructura_persona()
-        return {k: v for k, v in todos.items() if k != self.CAMPO_CONTACTOS}
+        return {k: v for k, v in todos.items()
+                if k != self.CAMPO_CONTACTOS and not v.get("oculto")}
 
     def _get_campos_ordenados(self):
         """Retorna la lista de nombres de campos simples en orden."""
@@ -163,6 +165,12 @@ class GestionDatosPersona:
             self._procesar_contacto_etiqueta(comando, sesiones)
         elif estado == "contacto_confirmar_eliminar":
             self._procesar_contacto_confirmar_eliminar(comando, sesiones)
+        elif estado == "contacto_telefono_confirmar":
+            self._procesar_contacto_telefono_confirmar(comando, sesiones)
+        elif estado == "contacto_telefono_pais":
+            self._procesar_contacto_telefono_pais(comando, sesiones)
+        elif estado == "contacto_telefono_pais_iso":
+            self._procesar_contacto_telefono_pais_iso(comando, sesiones)
 
     # ── RESUMEN ───────────────────────────────────────────────────────────────
 
@@ -174,7 +182,7 @@ class GestionDatosPersona:
 
         datos = persona[1]
         campos = self._get_campos()
-        contactos = datos.get("contactos", [])
+        contactos = sorted(datos.get("contactos", []), key=lambda c: (0 if c["tipo"] == "telefono" else 1))
 
         lineas = ["📋 *Datos registrados:*\n"]
 
@@ -187,11 +195,14 @@ class GestionDatosPersona:
                 lineas.append(f"  {label}: — ❌")
 
         # Contactos
-        cant = len(contactos)
-        if cant > 0:
-            lineas.append(f"  📇 Contactos: {cant} registrado(s) ✅")
+        if contactos:
+            lineas.append("  📇 Contactos: ✅")
+            for c in contactos:
+                icono = "📱" if c["tipo"] == "telefono" else "📧"
+                etiqueta = f" ({c['etiqueta']})" if c.get("etiqueta") else ""
+                lineas.append(f"    {icono} {c['valor']}{etiqueta}")
         else:
-            lineas.append(f"  📇 Contactos: ninguno ❌")
+            lineas.append("  📇 Contactos: ninguno ❌")
 
         lineas.append("")
         lineas.append("1. ✏️ Editar un campo")
@@ -337,7 +348,10 @@ class GestionDatosPersona:
     def _iniciar_contactos(self, sesiones):
         """Muestra lista de contactos con opciones."""
         beneficiario_id = getattr(sesiones[self.numero], "dp_beneficiario_id", None)
-        contactos = self.persona_manager.get_contactos(beneficiario_id)
+        contactos = sorted(
+            self.persona_manager.get_contactos(beneficiario_id),
+            key=lambda c: (0 if c["tipo"] == "telefono" else 1)
+        )
 
         sesiones[self.numero].dp_estado = "contactos_menu"
         sesiones[self.numero].dp_contactos_lista = contactos
@@ -480,6 +494,24 @@ class GestionDatosPersona:
                 self.sw.enviar(msj)
             return
 
+        if tipo_contacto == "telefono":
+            pais_defecto = self.config.get("telefonia", {}).get("pais_defecto", "AR")
+            e164 = telefono_manager.parse_e164(comando.strip(), pais_defecto)
+            if not e164:
+                reintentos += 1
+                sesiones[self.numero].dp_reintentos = reintentos
+                if reintentos >= reintentos_max:
+                    self.sw.enviar("❌ Se canceló la operación.")
+                    self._iniciar_contactos(sesiones)
+                else:
+                    self.sw.enviar("⚠️ Número no reconocido. Ingresá solo el número local (ej: 1155557777):")
+                return
+            sesiones[self.numero].dp_contacto_telefono_raw = comando.strip()
+            sesiones[self.numero].dp_contacto_telefono_e164 = e164
+            sesiones[self.numero].dp_reintentos = 0
+            self._mostrar_preview_telefono(sesiones)
+            return
+
         sesiones[self.numero].dp_contacto_datos["valor"] = comando.strip()
         sesiones[self.numero].dp_estado = "contacto_etiqueta"
         sesiones[self.numero].dp_reintentos = 0
@@ -555,6 +587,85 @@ class GestionDatosPersona:
                 self._iniciar_contactos(sesiones)
             else:
                 self.sw.enviar("⚠️ Respondé *si* o *no*:")
+
+    # ── FLUJO TELÉFONO ────────────────────────────────────────────────────────
+
+    def _mostrar_preview_telefono(self, sesiones):
+        e164 = getattr(sesiones[self.numero], "dp_contacto_telefono_e164", "")
+        display = telefono_manager.format_display(e164)
+        lineas = [
+            f"📱 {display} — ¿es correcto?\n",
+            "1. ✅ Confirmar",
+            "2. 🔄 Cambiar número",
+            "3. 🌍 Cambiar país",
+            "4. ❌ Cancelar"
+        ]
+        sesiones[self.numero].dp_estado = "contacto_telefono_confirmar"
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_contacto_telefono_confirmar(self, comando, sesiones):
+        c = comando.strip()
+        if c == "1":
+            e164 = getattr(sesiones[self.numero], "dp_contacto_telefono_e164", "")
+            sesiones[self.numero].dp_contacto_datos["valor"] = e164
+            sesiones[self.numero].dp_estado = "contacto_etiqueta"
+            config_etiqueta = self._get_config_contactos().get("etiqueta", {})
+            self.sw.enviar(config_etiqueta.get("msj_pedido", "Ingresá una etiqueta o '-' para omitir:"))
+        elif c == "2":
+            config_valor = self._get_config_contactos().get("valor", {})
+            msj = config_valor.get("validadores_por_tipo", {}).get("telefono", {}).get("msj_pedido", "Ingresá el número de teléfono:")
+            sesiones[self.numero].dp_estado = "contacto_valor"
+            self.sw.enviar(msj)
+        elif c == "3":
+            self._mostrar_lista_paises(sesiones)
+        elif c == "4":
+            self._iniciar_contactos(sesiones)
+        else:
+            self.sw.enviar("❌ Opción no válida.")
+
+    def _mostrar_lista_paises(self, sesiones):
+        paises = self.config.get("telefonia", {}).get("paises_frecuentes", [])
+        lineas = ["🌍 Seleccioná el país:\n"]
+        for i, p in enumerate(paises, 1):
+            lineas.append(f"{i}. {p['label']}")
+        lineas.append(f"{len(paises) + 1}. Otro (escribí el código ISO, ej: DE, IT, MX)")
+        sesiones[self.numero].dp_estado = "contacto_telefono_pais"
+        sesiones[self.numero].dp_telefono_paises_lista = paises
+        self.sw.enviar("\n".join(lineas))
+
+    def _procesar_contacto_telefono_pais(self, comando, sesiones):
+        paises = getattr(sesiones[self.numero], "dp_telefono_paises_lista", [])
+        c = comando.strip()
+        try:
+            idx = int(c) - 1
+            if idx < 0 or idx > len(paises):
+                raise ValueError
+            if idx == len(paises):
+                self.sw.enviar("Escribí el código ISO del país (ej: DE, IT, MX):")
+                sesiones[self.numero].dp_estado = "contacto_telefono_pais_iso"
+                return
+            nuevo_pais = paises[idx]["codigo"]
+        except ValueError:
+            self.sw.enviar("❌ Opción no válida.")
+            return
+        self._reparsear_con_pais(nuevo_pais, sesiones)
+
+    def _procesar_contacto_telefono_pais_iso(self, comando, sesiones):
+        codigo = comando.strip().upper()
+        if len(codigo) != 2 or not codigo.isalpha():
+            self.sw.enviar("⚠️ Código inválido. Ingresá un código ISO de 2 letras (ej: DE, IT, MX):")
+            return
+        self._reparsear_con_pais(codigo, sesiones)
+
+    def _reparsear_con_pais(self, pais, sesiones):
+        raw = getattr(sesiones[self.numero], "dp_contacto_telefono_raw", "")
+        e164 = telefono_manager.parse_e164(raw, pais)
+        if not e164:
+            self.sw.enviar(f"⚠️ El número no es válido para {pais}. Intentá con otro país o cambiá el número.")
+            self._mostrar_lista_paises(sesiones)
+            return
+        sesiones[self.numero].dp_contacto_telefono_e164 = e164
+        self._mostrar_preview_telefono(sesiones)
 
     # ── HELPERS ───────────────────────────────────────────────────────────────
 

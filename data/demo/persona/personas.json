@@ -19,11 +19,27 @@
       "numero_documento": "25784362",
       "nombre": "roberto",
       "apellido": "sl",
-      "fecha_nacimiento": "",
+      "fecha_nacimiento": "10/02/1977",
       "lids": [
         "231400003358774@lid"
       ],
-      "contactos": [],
+      "contactos": [
+        {
+          "tipo": "telefono",
+          "valor": "1151069392",
+          "etiqueta": "personal"
+        },
+        {
+          "tipo": "telefono",
+          "valor": "+541177778888",
+          "etiqueta": "laboral"
+        },
+        {
+          "tipo": "email",
+          "valor": "robertosl77@gmail.com",
+          "etiqueta": "personal"
+        }
+      ],
       "direcciones": [
         {
           "direccion_id": "2cfe00aa-8eab-42dd-a82c-ef5d5aa57ad1",
@@ -31,14 +47,23 @@
         }
       ]
     },
-    "c9a8a4a4-c6f6-4e37-9235-2bc96e97cd98": {
+    "809bd6d4-dfd5-4048-b3d1-ad34831c4c6a": {
       "tipo_documento": "DNI",
-      "numero_documento": "4701054",
-      "nombre": "rosa",
-      "apellido": "l",
+      "numero_documento": "22555777",
+      "nombre": "sebastian montero",
+      "apellido": "",
       "fecha_nacimiento": "",
       "lids": [],
-      "contactos": []
+      "contactos": [
+        {
+          "tipo": "telefono",
+          "valor": "+542392559036",
+          "etiqueta": ""
+        }
+      ],
+      "tipo_persona": [
+        "auxilio_conductor"
+      ]
     }
   }
 }

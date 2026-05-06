@@ -4,6 +4,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 from src.tenant import data_path
+from src.farmacia.constants import ESTADO_OMITIDO
 
 _instancia = None
 
@@ -86,6 +87,7 @@ class RecetaManager:
             "operador_id": operador_id,
             "receta_url": receta_url,
             "notas": [],
+            "chat": [],
             "historial_estados": [
                 {
                     "estado": "pendiente",
@@ -281,6 +283,217 @@ class RecetaManager:
                 self._guardar_archivo()
                 return True
         return False
+
+    def desestimar_todas_notas(self, receta_id):
+        """Desestima todas las notas pendientes de la receta (ambas direcciones)."""
+        if receta_id not in self.data["recetas"]:
+            return
+        for nota in self.data["recetas"][receta_id]["notas"]:
+            if nota["estado"] == "pendiente":
+                nota["estado"] = "respondida"
+                nota["respuesta"] = "Desestimada automáticamente por retroceso de estado."
+                nota["timestamp_respuesta"] = datetime.now().isoformat()
+        self._guardar_archivo()
+
+    def desestimar_solicitud_token(self, receta_id):
+        """Desestima mensajes de solicitud_token pendientes para el usuario de la receta."""
+        resultado = self.get_receta(receta_id)
+        if not resultado:
+            return
+        _, receta = resultado
+        persona_id = receta.get("persona_id", "")
+        for msg in receta.get("chat", []):
+            if (msg["autor"] == "farmacia"
+                    and msg.get("tipo") == "solicitud_token"
+                    and persona_id not in msg.get("leido_por", [])):
+                self.marcar_mensaje_leido(receta_id, msg["id"], persona_id)
+
+    def reset_items(self, receta_id, estado_item="pendiente"):
+        """Resetea todos los items no omitidos al estado dado."""
+        if receta_id not in self.data["recetas"]:
+            return
+        for item in self.data["recetas"][receta_id]["items"]:
+            if item["estado_item"] != ESTADO_OMITIDO:
+                item["estado_item"] = estado_item
+        self._guardar_archivo()
+
+    # ── CHAT ──────────────────────────────────────────────────────────────────
+
+    def agregar_mensaje_chat(self, receta_id, autor, mensaje, tipo="mensaje", medicamento_id=None):
+        """Agrega un mensaje al hilo de chat de la receta. Retorna el id del mensaje."""
+        if receta_id not in self.data["recetas"]:
+            return None
+        receta = self.data["recetas"][receta_id]
+        if "chat" not in receta:
+            receta["chat"] = []
+        msg_id = str(uuid.uuid4())[:8]
+        msg = {
+            "id": msg_id,
+            "autor": autor,
+            "tipo": tipo,
+            "mensaje": mensaje,
+            "timestamp": datetime.now().isoformat(),
+            "leido_por": [autor]
+        }
+        if medicamento_id is not None:
+            msg["medicamento_id"] = medicamento_id
+        receta["chat"].append(msg)
+        self._guardar_archivo()
+        return msg_id
+
+    def get_chat(self, receta_id):
+        """Retorna el hilo de chat completo de la receta."""
+        receta = self.data["recetas"].get(receta_id)
+        if not receta:
+            return []
+        return receta.get("chat", [])
+
+    def marcar_mensaje_leido(self, receta_id, msg_id, lector):
+        """Marca un mensaje específico del chat como leído por lector."""
+        receta = self.data["recetas"].get(receta_id)
+        if not receta:
+            return
+        for msg in receta.get("chat", []):
+            if msg["id"] == msg_id and lector not in msg["leido_por"]:
+                msg["leido_por"].append(lector)
+                self._guardar_archivo()
+                return
+
+    def marcar_chat_leido(self, receta_id, lector):
+        """Marca como leídos por lector todos los mensajes que no escribió él mismo."""
+        if receta_id not in self.data["recetas"]:
+            return
+        receta = self.data["recetas"][receta_id]
+        changed = False
+        for msg in receta.get("chat", []):
+            if msg["autor"] != lector and lector not in msg["leido_por"]:
+                msg["leido_por"].append(lector)
+                changed = True
+        if changed:
+            self._guardar_archivo()
+
+    def contar_no_leidos_chat(self, receta_id, lector):
+        """Cuenta mensajes del chat donde lector no está en leido_por."""
+        receta = self.data["recetas"].get(receta_id)
+        if not receta:
+            return 0
+        return sum(
+            1 for msg in receta.get("chat", [])
+            if msg["autor"] != lector and lector not in msg["leido_por"]
+        )
+
+    def _get_meds_en_consulta(self, chat):
+        """Retorna set de medicamento_ids con consulta activa (sin respuesta_consulta posterior)."""
+        meds = set()
+        for idx, msg in enumerate(chat):
+            if msg.get("tipo") == "consulta":
+                med_id = msg.get("medicamento_id")
+                if med_id:
+                    tiene_respuesta = any(
+                        r.get("tipo") == "respuesta_consulta" and r.get("medicamento_id") == med_id
+                        for r in chat[idx + 1:]
+                    )
+                    if not tiene_respuesta:
+                        meds.add(med_id)
+        return meds
+
+    def _tipos_accion_cliente(self):
+        return set(self.config.get("recetas", {}).get("tipos_accion_cliente", []))
+
+    def contar_chat_no_leidos_usuario(self, persona_id):
+        """Cuenta acciones pendientes (tipos accionables) no leídas por el usuario."""
+        tipos_accion = self._tipos_accion_cliente()
+        total = 0
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
+                for msg in datos.get("chat", []):
+                    if (msg["autor"] != persona_id
+                            and persona_id not in msg["leido_por"]
+                            and msg.get("tipo") in tipos_accion):
+                        med_id = msg.get("medicamento_id")
+                        if med_id and med_id in meds_en_consulta:
+                            continue
+                        total += 1
+        return total
+
+    def get_primer_chat_no_leido_usuario(self, persona_id):
+        """
+        Retorna (receta_id, msg) del primer mensaje accionable no leído,
+        ordenado cronológicamente. Omite mensajes de medicamentos con consulta activa.
+        """
+        tipos_accion = self._tipos_accion_cliente()
+        candidatos = []
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
+                for msg in datos.get("chat", []):
+                    if (msg["autor"] != persona_id
+                            and persona_id not in msg["leido_por"]
+                            and msg.get("tipo") in tipos_accion):
+                        med_id = msg.get("medicamento_id")
+                        if med_id and med_id in meds_en_consulta:
+                            continue
+                        candidatos.append((msg["timestamp"], rid, msg))
+        if not candidatos:
+            return None
+        candidatos.sort(key=lambda x: x[0])
+        _, rid, msg = candidatos[0]
+        return (rid, msg)
+
+    def contar_mensajes_no_leidos_usuario(self, persona_id):
+        """Cuenta mensajes tipo 'mensaje' de farmacia no leídos — aparecen en Chat."""
+        total = 0
+        for rid, datos in self.data["recetas"].items():
+            if datos["persona_id"] == persona_id:
+                for msg in datos.get("chat", []):
+                    if (msg["autor"] != persona_id
+                            and persona_id not in msg["leido_por"]
+                            and msg.get("tipo") == "mensaje"):
+                        total += 1
+        return total
+
+    def migrar_notas_a_chat(self, receta_id):
+        """
+        Convierte las notas existentes de una receta al modelo chat.
+        Idempotente: no migra si ya hay mensajes en chat o no hay notas.
+        """
+        if receta_id not in self.data["recetas"]:
+            return
+        receta = self.data["recetas"][receta_id]
+        if "chat" not in receta:
+            receta["chat"] = []
+        if receta["chat"] or not receta.get("notas"):
+            return
+        for nota in receta["notas"]:
+            autor = nota.get("autor", "farmacia")
+            msg = {
+                "id": nota.get("id", str(uuid.uuid4())[:8]),
+                "autor": autor,
+                "tipo": self._inferir_tipo_nota(nota.get("mensaje", ""), autor),
+                "mensaje": nota.get("mensaje", ""),
+                "timestamp": nota.get("timestamp", datetime.now().isoformat()),
+                "leido_por": [autor]
+            }
+            if nota.get("estado") in ("respondida", "leida"):
+                dirigida_a = nota.get("dirigida_a", "")
+                if dirigida_a and dirigida_a not in msg["leido_por"]:
+                    msg["leido_por"].append(dirigida_a)
+            receta["chat"].append(msg)
+        self._guardar_archivo()
+
+    def _inferir_tipo_nota(self, mensaje, autor):
+        """Infiere el tipo de chat a partir del contenido de una nota migrada."""
+        if autor != "farmacia":
+            return "accion"
+        msg_lower = mensaje.lower()
+        if "alternativa" in msg_lower:
+            return "alternativa"
+        if "stock" in msg_lower or "no tenemos" in msg_lower:
+            return "sin_stock"
+        if "token" in msg_lower:
+            return "solicitud_token"
+        return "mensaje"
 
     # ── VENCIMIENTO ───────────────────────────────────────────────────────────
 

@@ -4,10 +4,11 @@ import os
 from datetime import datetime
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
-from src.cliente.persona_manager import PersonaManager
+from src.persona.persona_manager import PersonaManager
 from src.agente_ia.agente_ia import AgenteIA
 from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.receta_manager import RecetaManager
+from src.farmacia.constants import ESTADO_OMITIDO
 from src.farmacia.obra_social_manager import ObraSocialManager
 from src.file_services.image_manager import ImageManager
 from src.tenant import data_path
@@ -497,7 +498,7 @@ class GestionRecetas:
             else:
                 cantidad_max = med.get("cantidad", 0)
                 cantidad_solicitada = 0
-                estado = "omitido_usuario"
+                estado = ESTADO_OMITIDO
 
             items.append({
                 "medicamento_id": med_id,

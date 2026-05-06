@@ -2,8 +2,8 @@
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.farmacia.farmacia_config_loader import FarmaciaConfigLoader
-from src.cliente.persona_manager import PersonaManager
-from src.cliente.registro_persona import RegistroPersona
+from src.persona.persona_manager import PersonaManager
+from src.persona.registro_persona import RegistroPersona
 from src.farmacia.vinculacion_manager import VinculacionManager
 from src.farmacia.gestion_obra_social import GestionObraSocial
 

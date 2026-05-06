@@ -2,6 +2,7 @@
 import json
 import os
 import glob
+import uuid
 from datetime import datetime, timedelta
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -194,6 +195,36 @@ def reset_horarios_data():
     guardar(path, data)
 
 
+def reset_estado_recetas():
+    """
+    Resetea recetas existentes a estado inicial:
+    - estado → "pendiente"
+    - chat → []
+    - notas → []
+    - historial_estados → solo entrada inicial
+    - items: estado_item → "pendiente" (excepto omitido_usuario), sin alternativa_medicamento_id
+    """
+    path = get_tenant_path("farmacia", "recetas.json")
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    ts = datetime.now().isoformat()
+    for rid, receta in data["recetas"].items():
+        receta["estado"] = "pendiente"
+        receta["chat"] = []
+        receta["notas"] = []
+        receta["historial_estados"] = [
+            {"estado": "pendiente", "timestamp": ts, "motivo": "Reset manual"}
+        ]
+        for item in receta.get("items", []):
+            if item.get("estado_item") != "omitido_usuario":
+                item["estado_item"] = "pendiente"
+            item.pop("alternativa_medicamento_id", None)
+
+    guardar(path, data)
+    print(f"   └ {len(data['recetas'])} receta(s) reseteadas a pendiente")
+
+
 def reset_archivos_recetas():
     carpeta = get_tenant_path("archivos", "recetas")
     if not os.path.exists(carpeta):
@@ -202,6 +233,85 @@ def reset_archivos_recetas():
     for archivo in archivos:
         os.remove(archivo)
     print(f"✅ archivos/recetas/ — {len(archivos)} archivo(s) eliminado(s)")
+
+
+def seed_recetas_testing():
+    """
+    Genera recetas de prueba como recién cargadas por el cliente (estado pendiente).
+
+    Receta A: 2 medicamentos (para testear flujo con múltiples items).
+    Receta B: 1 medicamento (para testear flujo simple).
+
+    Requiere que exista al menos una persona en personas.json.
+    """
+    personas_path = get_tenant_path("persona", "personas.json")
+    with open(personas_path, encoding="utf-8") as f:
+        personas_data = json.load(f)
+    if not personas_data["personas"]:
+        print("⚠️  seed_recetas_testing — no hay personas, se omite")
+        return
+    persona_id = next(iter(personas_data["personas"]))
+
+    med_path = get_tenant_path("farmacia", "medicamentos.json")
+    with open(med_path, encoding="utf-8") as f:
+        med_data = json.load(f)
+
+    def get_or_create_med(farmaco, dosis, presentacion):
+        for mid, m in med_data["medicamentos"].items():
+            if m["farmaco"] == farmaco and m["dosis"] == dosis:
+                return mid
+        mid = str(uuid.uuid4())
+        med_data["medicamentos"][mid] = {
+            "farmaco": farmaco, "dosis": dosis, "presentacion": presentacion,
+            "label": f"{farmaco} {dosis} {presentacion}"
+        }
+        return mid
+
+    mid_a = get_or_create_med("HIDROTISONA", "10 mg", "comp.x 30")
+    mid_b = get_or_create_med("LIPOMAX 105", "105 mg", "comp.x 30")
+    guardar(med_path, med_data)
+
+    ahora = datetime.now()
+    ts = ahora.isoformat()
+    fecha_hoy = ahora.strftime("%d/%m/%Y")
+    fecha_venc = (ahora + timedelta(days=28)).strftime("%d/%m/%Y")
+
+    def make_receta(diagnostico, items_mids):
+        return {
+            "persona_id": persona_id,
+            "obra_social_id": None,
+            "credencial_validada": False,
+            "fecha_creacion": fecha_hoy,
+            "fecha_validez_desde": fecha_hoy,
+            "fecha_vencimiento": fecha_venc,
+            "medico": {"nombre": "Dr. Testing", "matricula": "00000", "especialidad": "Clínica"},
+            "diagnostico": diagnostico,
+            "items": [
+                {"medicamento_id": mid, "cantidad_receta": 1,
+                 "cantidad_solicitada": 1, "estado_item": "pendiente"}
+                for mid in items_mids
+            ],
+            "estado": "pendiente",
+            "operador_id": None,
+            "receta_url": None,
+            "notas": [],
+            "chat": [],
+            "historial_estados": [
+                {"estado": "pendiente", "timestamp": ts, "motivo": "Receta cargada por usuario"}
+            ]
+        }
+
+    receta_id_a = str(uuid.uuid4())
+    receta_id_b = str(uuid.uuid4())
+
+    recetas_path = get_tenant_path("farmacia", "recetas.json")
+    with open(recetas_path, encoding="utf-8") as f:
+        recetas_data = json.load(f)
+    recetas_data["recetas"][receta_id_a] = make_receta("Testing 2 medicamentos", [mid_a, mid_b])
+    recetas_data["recetas"][receta_id_b] = make_receta("Testing 1 medicamento", [mid_b])
+    guardar(recetas_path, recetas_data)
+    print(f"   ├ Receta A (2 meds): {receta_id_a[:8]}...")
+    print(f"   └ Receta B (1 med):  {receta_id_b[:8]}...")
 
 
 if __name__ == "__main__":
@@ -216,6 +326,8 @@ if __name__ == "__main__":
     reset_medicamentos()
     reset_horarios_data()
     reset_archivos_recetas()
+    print("── seed testing ─────────────────────────")
+    seed_recetas_testing()
 
     print("── auxilio ──────────────────────────────")
     reset_servicios_data()
