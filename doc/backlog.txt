@@ -26,14 +26,6 @@ MEJORAS / FEATURES
     - Agregar "Cargar receta" y "Mis recetas" directamente como opciones del menú
       farmacia (ítems 4 y 5), sin subgrupo intermedio
 
-[B3] Teléfono WhatsApp deprecado — eliminar del perfil de datos
-  Problema:
-    - El campo "Teléfono WhatsApp" aparece en la vista "Datos registrados" marcado
-      como faltante (❌), pero el campo está deprecado y no debería mostrarse.
-  Propuesta:
-    - Identificar dónde se renderiza ese campo en gestion_datos_persona.py
-    - Eliminarlo de la vista o marcarlo como oculto en la estructura_persona del config
-
 [M3] Quitar beneficiario desde el grupo Beneficiario
   Problema:
     - El grupo "Beneficiario" tiene Registrar y Cambiar, pero no hay opción para

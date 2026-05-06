@@ -55,6 +55,7 @@
       },
       "telefono_wpp": {
         "obligatorio": false,
+        "oculto": true,
         "tipo": "telefono",
         "validadores": [],
         "label": "Teléfono WhatsApp",

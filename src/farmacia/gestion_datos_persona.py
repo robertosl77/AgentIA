@@ -26,9 +26,10 @@ class GestionDatosPersona:
     # ── CONFIGURACIÓN DINÁMICA ────────────────────────────────────────────────
 
     def _get_campos(self):
-        """Retorna el dict de campos simples (sin contactos)."""
+        """Retorna el dict de campos simples (sin contactos ni campos ocultos)."""
         todos = self.farmacia_config.get_estructura_persona()
-        return {k: v for k, v in todos.items() if k != self.CAMPO_CONTACTOS}
+        return {k: v for k, v in todos.items()
+                if k != self.CAMPO_CONTACTOS and not v.get("oculto")}
 
     def _get_campos_ordenados(self):
         """Retorna la lista de nombres de campos simples en orden."""
