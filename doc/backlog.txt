@@ -182,5 +182,7 @@ ROADMAP — enlatados futuros reservados
 [R3] Turnos
   - Enlatado de reserva de turnos/citas para el cliente vía chatbot.
   - ⚠️  Depende de R4 Agenda y M6 Horarios — no puede implementarse antes.
+  - Requiere email del cliente: si la persona no tiene uno registrado, solicitarlo
+    durante el flujo de reserva y guardarlo en personas/contactos antes de continuar.
   - Sin diseño todavía.
 
