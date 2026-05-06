@@ -4,7 +4,7 @@ import os
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.sesiones.session_manager import SessionManager
-from src.cliente.persona_manager import PersonaManager
+from src.persona.persona_manager import PersonaManager
 from src.farmacia.receta_manager import RecetaManager
 from src.farmacia.constants import ESTADO_OMITIDO
 from src.farmacia.medicamento_manager import MedicamentoManager

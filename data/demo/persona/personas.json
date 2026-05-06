@@ -33,6 +33,16 @@
           "tipo": "email",
           "valor": "robertosl77@gmail.com",
           "etiqueta": "personal"
+        },
+        {
+          "tipo": "telefono",
+          "valor": "+541155556667",
+          "etiqueta": "personal"
+        },
+        {
+          "tipo": "telefono",
+          "valor": "+541177778888",
+          "etiqueta": "laboral"
         }
       ],
       "direcciones": [
@@ -40,6 +50,24 @@
           "direccion_id": "2cfe00aa-8eab-42dd-a82c-ef5d5aa57ad1",
           "tipo": "trabajo"
         }
+      ]
+    },
+    "809bd6d4-dfd5-4048-b3d1-ad34831c4c6a": {
+      "tipo_documento": "DNI",
+      "numero_documento": "22555777",
+      "nombre": "sebastian montero",
+      "apellido": "",
+      "fecha_nacimiento": "",
+      "lids": [],
+      "contactos": [
+        {
+          "tipo": "telefono",
+          "valor": "+542392559036",
+          "etiqueta": ""
+        }
+      ],
+      "tipo_persona": [
+        "auxilio_conductor"
       ]
     }
   }

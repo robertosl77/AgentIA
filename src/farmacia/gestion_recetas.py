@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
-from src.cliente.persona_manager import PersonaManager
+from src.persona.persona_manager import PersonaManager
 from src.agente_ia.agente_ia import AgenteIA
 from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.receta_manager import RecetaManager

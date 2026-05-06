@@ -2,7 +2,7 @@
 from src.send_wpp import SendWPP
 from src.config_loader import ConfigLoader
 from src.sesiones.session_manager import SessionManager
-from src.cliente.persona_manager import PersonaManager
+from src.persona.persona_manager import PersonaManager
 from src.farmacia.submenu_farmacia import SubMenuFarmacia
 from src.auxilios import SubMenuAuxilios
 

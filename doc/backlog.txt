@@ -6,6 +6,25 @@ BACKLOG — módulo farmacia
 FIXES
 ──────────────────────────────────────────────────────
 
+[B8] Conductores (auxilio) — detectar persona existente en lugar de duplicar
+  Problema:
+    - Al registrar un conductor, si ya existe una persona con ese DNI en el sistema
+      (ej: registrada en farmacia), se crea un duplicado en vez de reutilizar el
+      registro existente y agregarle el tipo "auxilio_conductor".
+    - Además, el conductor recién agregado no aparece en la lista (posible falla
+      silenciosa al guardar).
+  Propuesta:
+    - En _guardar_campo_y_continuar (gestion_conductores) y _finalizar_carga_conductor
+      (registro_servicio): antes de crear_persona, buscar por tipo_documento + número.
+    - Si existe → agregar_tipo_persona(persona_id, "auxilio_conductor") sin duplicar.
+    - Si no existe → crear_persona normalmente.
+
+[B7] Contactos — ordenar lista por tipo al mostrar
+  Problema:
+    - Los contactos se muestran en orden de inserción, mezclando teléfonos y emails.
+  Propuesta:
+    - Ordenar la lista por tipo antes de mostrarla (teléfonos primero, luego emails).
+
 [B6] Chat cliente — mostrar solo el último mensaje accionable por medicamento
   Problema:
     - El hilo de chat muestra todos los mensajes históricos de tipo sin_stock,

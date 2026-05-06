@@ -12,6 +12,9 @@ class ConfigLoader:
         with open(self.path, "r", encoding="utf-8") as f:
             return json.load(f)
 
+    def get(self, key, default=None):
+        return self.data.get(key, default)
+
     def tiene_permiso(self, rol, propiedad_json):
         """Verifica en 'permisos_edicion' si el rol puede tocar esa propiedad."""
         permisos = self.data.get("permisos_edicion", {})

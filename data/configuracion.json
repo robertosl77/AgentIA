@@ -1,6 +1,17 @@
 {
   "tenant_id": "demo",
   "nombre_negocio": "Proyecto ChatBot",
+  "telefonia": {
+    "pais_defecto": "AR",
+    "paises_frecuentes": [
+      {"codigo": "AR", "label": "Argentina (+54)"},
+      {"codigo": "UY", "label": "Uruguay (+598)"},
+      {"codigo": "PY", "label": "Paraguay (+595)"},
+      {"codigo": "CL", "label": "Chile (+56)"},
+      {"codigo": "BR", "label": "Brasil (+55)"},
+      {"codigo": "US", "label": "Estados Unidos (+1)"}
+    ]
+  },
   "configuracion_bot": {
     "bloquear_fuera_de_horario": true,
     "palabra_escape": "horarios",

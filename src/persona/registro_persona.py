@@ -1,5 +1,5 @@
 # src/cliente/registro_persona.py
-from src.cliente.persona_manager import PersonaManager
+from src.persona.persona_manager import PersonaManager
 from src.config_loader import ConfigLoader
 from src.farmacia.farmacia_config_loader import FarmaciaConfigLoader
 from src.send_wpp import SendWPP
