@@ -61,19 +61,6 @@ MEJORAS / FEATURES
     - Implementar handler quitar_beneficiario en submenu_farmacia.py
     - El flujo debe pedir confirmación antes de desvincular
 
-[M4] Contactos — número de teléfono con país + código de área + número
-  Alcance: TRANSVERSAL (no solo farmacia — aplica a todo módulo que use contactos)
-  Problema:
-    - El teléfono se guarda como string libre sin estructura (ej: "1151069392").
-    - No hay distinción de país ni código de área, lo que complica validación,
-      formateo y uso futuro (ej: envío por WhatsApp, normalización internacional).
-  Propuesta:
-    - Estructurar el ingreso en 3 pasos: país → código de área → número
-    - Guardar como objeto: {"pais": "AR", "cod_area": "11", "numero": "51069392"}
-      o como E.164 normalizado: "+541151069392"
-    - Analizar si "Gestionar contactos" debe separarse como enlatado propio,
-      desacoplado de farmacia, reutilizable por otros módulos
-
 [M1] Sistema de navegación global — reemplazar "cancelar" y retorno secuencial
   Problema:
     - "cancelar" como palabra de escape es larga e inconsistente con el resto del UX

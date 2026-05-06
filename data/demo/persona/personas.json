@@ -30,19 +30,14 @@
           "etiqueta": "personal"
         },
         {
-          "tipo": "email",
-          "valor": "robertosl77@gmail.com",
-          "etiqueta": "personal"
-        },
-        {
-          "tipo": "telefono",
-          "valor": "+541155556667",
-          "etiqueta": "personal"
-        },
-        {
           "tipo": "telefono",
           "valor": "+541177778888",
           "etiqueta": "laboral"
+        },
+        {
+          "tipo": "email",
+          "valor": "robertosl77@gmail.com",
+          "etiqueta": "personal"
         }
       ],
       "direcciones": [

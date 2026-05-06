@@ -182,7 +182,7 @@ class GestionDatosPersona:
 
         datos = persona[1]
         campos = self._get_campos()
-        contactos = datos.get("contactos", [])
+        contactos = sorted(datos.get("contactos", []), key=lambda c: (0 if c["tipo"] == "telefono" else 1))
 
         lineas = ["📋 *Datos registrados:*\n"]
 
@@ -348,7 +348,10 @@ class GestionDatosPersona:
     def _iniciar_contactos(self, sesiones):
         """Muestra lista de contactos con opciones."""
         beneficiario_id = getattr(sesiones[self.numero], "dp_beneficiario_id", None)
-        contactos = self.persona_manager.get_contactos(beneficiario_id)
+        contactos = sorted(
+            self.persona_manager.get_contactos(beneficiario_id),
+            key=lambda c: (0 if c["tipo"] == "telefono" else 1)
+        )
 
         sesiones[self.numero].dp_estado = "contactos_menu"
         sesiones[self.numero].dp_contactos_lista = contactos
