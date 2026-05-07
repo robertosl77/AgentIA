@@ -272,13 +272,17 @@ class RegistroServicio(Validadores):
         dni = temp.get("dni", "")
         telefono = temp.get("telefono", "")
         contactos = [{"tipo": "telefono", "valor": telefono, "etiqueta": ""}] if telefono else []
-        persona_id = self.personas.crear_persona(
-            tipo_documento="DNI",
-            numero_documento=dni,
-            nombre=nombre,
-            apellido="",
-            contactos=contactos
-        )
+        existente = self.personas.buscar_por_documento("DNI", dni)
+        if existente:
+            persona_id = existente[0]
+        else:
+            persona_id = self.personas.crear_persona(
+                tipo_documento="DNI",
+                numero_documento=dni,
+                nombre=nombre,
+                apellido="",
+                contactos=contactos
+            )
         if persona_id:
             self.personas.agregar_tipo_persona(persona_id, "auxilio_conductor")
         sesiones[self.numero].auxilios_dato_temporal["conductor"] = nombre

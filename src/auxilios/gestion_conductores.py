@@ -201,6 +201,21 @@ class GestionConductores(Validadores):
         """Guarda el campo en temporal y avanza al siguiente o finaliza."""
         sesiones[self.numero].auxilios_dato_temporal[campo] = valor
 
+        # Detección temprana: si acaba de ingresar el DNI y la persona ya existe,
+        # vincular directamente sin pedir más campos.
+        if campo == "dni":
+            existente = self.personas.buscar_por_documento("DNI", valor)
+            if existente:
+                persona_id, datos_persona = existente
+                self.personas.agregar_tipo_persona(persona_id, "auxilio_conductor")
+                nombre_existente = datos_persona.get("nombre", "").title()
+                sesiones[self.numero].auxilios_campo_actual = None
+                sesiones[self.numero].auxilios_dato_temporal = {}
+                sesiones[self.numero].auxilios_reintentos = 0
+                self.sw.enviar(f"✅ *{nombre_existente}* ya estaba registrado/a. Vinculado como conductor correctamente.")
+                self.iniciar(sesiones)
+                return
+
         campos = self._get_campos_ordenados()
         idx_actual = campos.index(campo)
 
@@ -218,13 +233,17 @@ class GestionConductores(Validadores):
             dni = datos.get("dni", "")
             telefono = datos.get("telefono", "")
             contactos = [{"tipo": "telefono", "valor": telefono, "etiqueta": ""}] if telefono else []
-            persona_id = self.personas.crear_persona(
-                tipo_documento="DNI",
-                numero_documento=dni,
-                nombre=nombre,
-                apellido="",
-                contactos=contactos
-            )
+            existente = self.personas.buscar_por_documento("DNI", dni)
+            if existente:
+                persona_id = existente[0]
+            else:
+                persona_id = self.personas.crear_persona(
+                    tipo_documento="DNI",
+                    numero_documento=dni,
+                    nombre=nombre,
+                    apellido="",
+                    contactos=contactos
+                )
             if persona_id:
                 self.personas.agregar_tipo_persona(persona_id, "auxilio_conductor")
             sesiones[self.numero].auxilios_campo_actual = None

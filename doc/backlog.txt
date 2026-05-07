@@ -6,18 +6,6 @@ BACKLOG — módulo farmacia
 FIXES
 ──────────────────────────────────────────────────────
 
-[B8] Conductores (auxilio) — detectar persona existente en lugar de duplicar
-  Problema:
-    - Al registrar un conductor, si ya existe una persona con ese DNI en el sistema
-      (ej: registrada en farmacia), se crea un duplicado en vez de reutilizar el
-      registro existente y agregarle el tipo "auxilio_conductor".
-    - Además, el conductor recién agregado no aparece en la lista (posible falla
-      silenciosa al guardar).
-  Propuesta:
-    - En _guardar_campo_y_continuar (gestion_conductores) y _finalizar_carga_conductor
-      (registro_servicio): antes de crear_persona, buscar por tipo_documento + número.
-    - Si existe → agregar_tipo_persona(persona_id, "auxilio_conductor") sin duplicar.
-    - Si no existe → crear_persona normalmente.
 
 [B6] Chat cliente — mostrar solo el último mensaje accionable por medicamento
   Problema:
@@ -160,6 +148,27 @@ MEJORAS / FEATURES
     - Desde cualquier punto del flujo, el usuario puede saltar a cualquier nodo
     - Inspirado en el patrón outflow/inflow de recetas: config-driven
     - Aplica a farmacia y auxilio
+
+──────────────────────────────────────────────────────
+ARQUITECTURA — refactors estructurales pendientes
+──────────────────────────────────────────────────────
+
+[A1] Handler de persona compartido — GestionPersonaShared
+  Contexto:
+    - Cada enlatado (farmacia, auxilio) tiene su propia lógica inline de carga y
+      edición de persona: auxilio crea personas directamente en código, farmacia
+      tiene gestion_datos_persona.py. Son dos implementaciones del mismo problema.
+    - A futuro, la persona auxiliada y otros enlatados (turnos, etc.) necesitarán
+      el mismo flujo conversacional de carga de datos.
+  Propuesta:
+    - Crear GestionPersonaShared en src/persona/: handler conversacional genérico
+      que acepta una config de campos como parámetro y un callback al terminar.
+    - Cada enlatado le pasa su JSON de campos (qué pedir, validadores, obligatorio)
+      y la función a ejecutar cuando el formulario está completo.
+    - El flujo campo-por-campo, validación y persistencia viven en un solo lugar.
+    - Los tenants siguen configurando sus propios campos en sus JSON — no se pierde
+      la flexibilidad multi-tenant.
+  ⚠️  Refactor transversal — hacer junto con el refactor multi-tenant pendiente (ver project_multitenant.md).
 
 ──────────────────────────────────────────────────────
 ROADMAP — enlatados futuros reservados

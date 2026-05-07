@@ -58,6 +58,14 @@
       "reglamental": false,
       "habilitado": true,
       "campos": {
+        "dni": {
+          "valor": "",
+          "obligatorio": true,
+          "tipo": "numero",
+          "validadores": [],
+          "msj_pedido": "🪪 Ingresá el *DNI* del conductor:",
+          "msj_reintento": "⚠️ El DNI ingresado no es válido. Intentá nuevamente:"
+        },
         "nombre": {
           "valor": "",
           "obligatorio": true,
@@ -76,14 +84,6 @@
           "validadores": [],
           "msj_pedido": "📱 Ingresá el *teléfono* del conductor:",
           "msj_reintento": "⚠️ El teléfono ingresado no es válido. Intentá nuevamente:"
-        },
-        "dni": {
-          "valor": "",
-          "obligatorio": true,
-          "tipo": "numero",
-          "validadores": [],
-          "msj_pedido": "🪪 Ingresá el *DNI* del conductor:",
-          "msj_reintento": "⚠️ El DNI ingresado no es válido. Intentá nuevamente:"
         }
       }
     },
