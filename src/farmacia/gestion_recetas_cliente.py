@@ -458,22 +458,44 @@ class GestionRecetasCliente:
                 else:
                     generales.append(msg)
 
+            TIPOS_ACCIONABLES_HILO = {"sin_stock", "alternativa", "solicitud_token"}
+            TIPOS_RESPUESTA_DIRECTA = {"accion", "token_respuesta"}
+
             # Hilo por medicamento
             for mid in meds_order:
                 med_label = self.med_manager.get_label(mid)
                 lineas.append(f"💊 *{med_label}*")
+
+                msgs = meds_msgs[mid]
+                n = len(msgs)
+
+                # Último índice de cada tipo accionable
+                ultimo_idx_por_tipo = {}
+                for i, msg in enumerate(msgs):
+                    if msg.get("tipo") in TIPOS_ACCIONABLES_HILO:
+                        ultimo_idx_por_tipo[msg["tipo"]] = i
+
+                # Ocultar accionables no-últimos y su respuesta inmediata
+                ids_ocultar = set()
+                for i, msg in enumerate(msgs):
+                    tipo = msg.get("tipo")
+                    if tipo in TIPOS_ACCIONABLES_HILO and ultimo_idx_por_tipo.get(tipo) != i:
+                        ids_ocultar.add(msg["id"])
+                        if i + 1 < n and msgs[i + 1].get("tipo") in TIPOS_RESPUESTA_DIRECTA:
+                            ids_ocultar.add(msgs[i + 1]["id"])
+
                 consumed = set()
-                for i, msg in enumerate(meds_msgs[mid]):
-                    if msg["id"] in consumed:
+                for i, msg in enumerate(msgs):
+                    if msg["id"] in consumed or msg["id"] in ids_ocultar:
                         continue
                     tipo = msg.get("tipo", "mensaje")
                     autor = msg["autor"]
-                    if tipo in ("sin_stock", "alternativa", "solicitud_token"):
+                    if tipo in TIPOS_ACCIONABLES_HILO:
                         lineas.append(f" 🏥 {msg['mensaje']}")
                     elif tipo == "consulta":
                         lineas.append(f"  └ 👤 {msg['mensaje']}")
                         respuesta = next(
-                            (r for r in meds_msgs[mid][i + 1:]
+                            (r for r in msgs[i + 1:]
                              if r.get("tipo") == "respuesta_consulta" and r["id"] not in consumed),
                             None
                         )
@@ -482,7 +504,7 @@ class GestionRecetasCliente:
                             consumed.add(respuesta["id"])
                     elif tipo == "respuesta_consulta":
                         pass  # ya mostrado bajo su consulta
-                    elif tipo in ("accion", "token_respuesta"):
+                    elif tipo in TIPOS_RESPUESTA_DIRECTA:
                         lineas.append(f"  └ 👤 {msg['mensaje']}")
                     else:
                         prefix = "🏥" if autor == "farmacia" else "👤"
