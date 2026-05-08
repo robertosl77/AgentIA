@@ -355,9 +355,10 @@
             "subgrupo": {
               "consulta": "📋 *Mis datos de {beneficiario}:*",
               "opciones": [
-                {"id": "1", "activacion": ["1"], "texto": "1. 📋 Completar datos", "handler": "completar_datos"},
-                {"id": "2", "activacion": ["2"], "texto": "2. 🏠 Gestionar direcciones", "handler": "gestionar_direccion"},
-                {"id": "3", "activacion": ["3"], "texto": "3. 🏥 Administrar obra social", "handler": "administrar_obra_social"}
+                {"id": "1", "activacion": ["1"], "texto": "1. 👤 Ver todos mis datos", "handler": "ver_mis_datos"},
+                {"id": "2", "activacion": ["2"], "texto": "2. 📋 Completar datos", "handler": "completar_datos"},
+                {"id": "3", "activacion": ["3"], "texto": "3. 🏠 Gestionar direcciones", "handler": "gestionar_direccion"},
+                {"id": "4", "activacion": ["4"], "texto": "4. 🏥 Administrar obra social", "handler": "administrar_obra_social"}
               ]
             }
           },

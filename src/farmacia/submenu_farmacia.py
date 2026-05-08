@@ -6,8 +6,10 @@ from src.persona.persona_manager import PersonaManager
 from src.persona.registro_persona import RegistroPersona
 from src.farmacia.vinculacion_manager import VinculacionManager
 from src.farmacia.gestion_obra_social import GestionObraSocial
+from src.farmacia.obra_social_manager import ObraSocialManager
 from src.farmacia.gestion_datos_persona import GestionDatosPersona
 from src.farmacia.gestion_direccion import GestionDireccion
+from src.persona.direccion_manager import DireccionManager
 from src.farmacia.gestion_beneficiario import GestionBeneficiario
 from src.farmacia.gestion_recetas import GestionRecetas
 from src.farmacia.gestion_recetas_cliente import GestionRecetasCliente
@@ -38,8 +40,10 @@ class SubMenuFarmacia:
         self.vinculacion_manager = VinculacionManager()
         self.registro_persona = RegistroPersona(numero)
         self.gestion_os = GestionObraSocial(numero)
+        self.os_manager = ObraSocialManager()
         self.gestion_datos = GestionDatosPersona(numero)
         self.gestion_dir = GestionDireccion(numero)
+        self.dir_manager = DireccionManager()
         self.gestion_beneficiario = GestionBeneficiario(numero)
         self.gestion_recetas = GestionRecetas(numero)
         self.gestion_recetas_cliente = GestionRecetasCliente(numero)
@@ -446,6 +450,111 @@ class SubMenuFarmacia:
         sesiones[self.numero].farmacia_estado = "seleccion_beneficiario"
         sesiones[self.numero].farmacia_vinculados = vinculados
         self.sw.enviar(self._armar_lista_beneficiarios(operador_id, vinculados))
+
+    def ver_mis_datos(self, sesiones):
+        """Muestra el perfil completo del beneficiario activo (solo lectura)."""
+        beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
+        if not beneficiario_id:
+            self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
+            self._mostrar_menu_farmacia(sesiones)
+            return
+        self.sw.enviar(self._armar_perfil_completo(beneficiario_id))
+        # Re-mostrar el subgrupo "Mis datos" para mantener el contexto de navegación
+        subgrupo = self._get_subgrupo_con_handler("ver_mis_datos")
+        if subgrupo:
+            sesiones[self.numero].farmacia_subgrupo_activo = subgrupo
+            self._mostrar_subgrupo(sesiones, subgrupo)
+
+    def _get_subgrupo_con_handler(self, handler_nombre):
+        """Busca en el menú farmacia el subgrupo que contiene el handler dado."""
+        submenu_data = self.config.get_submenu("farmacia")
+        if not submenu_data:
+            return None
+        for op in submenu_data.get("opciones", []):
+            subgrupo = op.get("subgrupo")
+            if subgrupo:
+                for sub_op in subgrupo.get("opciones", []):
+                    if sub_op.get("handler") == handler_nombre:
+                        return subgrupo
+        return None
+
+    def _armar_perfil_completo(self, beneficiario_id):
+        persona = self.persona_manager.get_persona(beneficiario_id)
+        if not persona:
+            return "❌ No se encontraron datos."
+        _, datos = persona
+
+        nombre_completo = self.persona_manager.get_nombre_completo(beneficiario_id) or "—"
+        lineas = [f"👤 *Perfil completo — {nombre_completo.title()}*", ""]
+
+        # Datos personales
+        lineas.append("📋 *Datos personales:*")
+        campos_simples = [
+            ("Nombre",   datos.get("nombre", "—").title()),
+            ("Apellido", datos.get("apellido", "—").title()),
+            ("Documento", f"{datos.get('tipo_documento', '')} {datos.get('numero_documento', '')}".strip() or "—"),
+            ("Fecha de nacimiento", datos.get("fecha_nacimiento", "—") or "—"),
+        ]
+        for label, valor in campos_simples:
+            lineas.append(f"  {label}: {valor}")
+
+        # Contactos
+        lineas.append("")
+        lineas.append("📇 *Contactos:*")
+        contactos = sorted(self.persona_manager.get_contactos(beneficiario_id),
+                           key=lambda c: (0 if c["tipo"] == "telefono" else 1))
+        if contactos:
+            for c in contactos:
+                icono = "📱" if c["tipo"] == "telefono" else "📧"
+                etiqueta = f" ({c['etiqueta']})" if c.get("etiqueta") else ""
+                lineas.append(f"  {icono} {c['valor']}{etiqueta}")
+        else:
+            lineas.append("  — Sin contactos registrados")
+
+        # Direcciones
+        lineas.append("")
+        lineas.append("🏠 *Direcciones:*")
+        links = self.persona_manager.get_direcciones(beneficiario_id)
+        if links:
+            for link in links:
+                dir_data = self.dir_manager.get(link["direccion_id"])
+                if dir_data:
+                    d = dir_data[1]
+                    label = d.get("direccion_formateada") or f"{d.get('calle','').title()} {d.get('altura','')}"
+                    lineas.append(f"  [{link['tipo'].upper()}] {label}")
+        else:
+            lineas.append("  — Sin direcciones registradas")
+
+        # Obra social
+        lineas.append("")
+        lineas.append("🏥 *Obra social:*")
+        obras = self.os_manager.buscar_por_persona(beneficiario_id)
+        if obras:
+            for os in obras:
+                plan = f" | Plan {os['plan']}" if os.get("plan") else ""
+                lineas.append(f"  {os['entidad']} — N° {os['numero']}{plan}")
+        else:
+            lineas.append("  — Sin obra social registrada")
+
+        # Mis beneficiarios
+        vinculados = self.vinculacion_manager.get_vinculados_visibles(beneficiario_id)
+        if vinculados:
+            lineas.append("")
+            lineas.append("👥 *Mis beneficiarios:*")
+            for v in vinculados:
+                nombre_v = self.persona_manager.get_nombre_completo(v["persona_id"]) or v["mi_alias"]
+                lineas.append(f"  • {nombre_v.title()} (alias: {v['mi_alias']})")
+
+        # Titular de quién soy
+        titulares = self.vinculacion_manager.buscar_titulares(beneficiario_id)
+        if titulares:
+            lineas.append("")
+            lineas.append("🔗 *Titular de:*")
+            for t_id in titulares:
+                nombre_t = self.persona_manager.get_nombre_completo(t_id) or t_id
+                lineas.append(f"  • {nombre_t.title()}")
+
+        return "\n".join(lineas)
 
     def completar_datos(self, sesiones):
         """Dispara el flujo de gestión de datos para el beneficiario activo."""

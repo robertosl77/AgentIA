@@ -12,16 +12,6 @@ FIXES
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 
-[M5] Subgrupo "Mis datos" — opción "Ver todos mis datos" como ítem 1
-  Problema:
-    - El subgrupo "Mis datos" solo ofrece acciones de edición; no hay forma de
-      ver el perfil completo sin entrar a "Completar datos".
-  Propuesta:
-    - Agregar opción "1. 👤 Ver todos mis datos" como primer ítem del subgrupo
-    - Muestra toda la información de la persona (campos simples + contactos),
-      básicamente la salida de _armar_resumen sin las opciones de edición
-    - Las opciones existentes se renumeran: Completar datos → 2, Direcciones → 3,
-      Obra social → 4
 
 [M3] Quitar beneficiario desde el grupo Beneficiario
   Problema:
