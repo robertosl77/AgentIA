@@ -99,7 +99,18 @@ class SubMenuFarmacia:
 
     def procesar(self, comando, sesiones, media_base64=None):
         """Dispatcher según estado actual de farmacia."""
-        # Subflujo de obra social tiene prioridad
+        # Subflujo de registro de beneficiario — tiene prioridad sobre OS porque
+        # puede iniciar su propio subflujo de OS internamente; cederle el control
+        # evita que gestion_os intercepte esos comandos y deje ben_estado colgado.
+        if self.gestion_beneficiario.esta_en_flujo(sesiones):
+            self.gestion_beneficiario.procesar(comando, sesiones)
+            if not self.gestion_beneficiario.esta_en_flujo(sesiones):
+                estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
+                if estado_farmacia == "menu_farmacia":
+                    self._mostrar_menu_farmacia(sesiones)
+            return
+
+        # Subflujo de obra social (iniciado directamente desde el menú)
         if self.gestion_os.esta_en_flujo(sesiones):
             self.gestion_os.procesar(comando, sesiones)
             if not self.gestion_os.esta_en_flujo(sesiones):
@@ -121,15 +132,6 @@ class SubMenuFarmacia:
         if self.gestion_dir.esta_en_flujo(sesiones):
             self.gestion_dir.procesar(comando, sesiones)
             if not self.gestion_dir.esta_en_flujo(sesiones):
-                estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
-                if estado_farmacia == "menu_farmacia":
-                    self._mostrar_menu_farmacia(sesiones)
-            return
-
-        # Subflujo de registro de beneficiario
-        if self.gestion_beneficiario.esta_en_flujo(sesiones):
-            self.gestion_beneficiario.procesar(comando, sesiones)
-            if not self.gestion_beneficiario.esta_en_flujo(sesiones):
                 estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
                 if estado_farmacia == "menu_farmacia":
                     self._mostrar_menu_farmacia(sesiones)
@@ -167,6 +169,12 @@ class SubMenuFarmacia:
 
         elif estado == "seleccion_beneficiario":
             self._procesar_seleccion_beneficiario(comando, sesiones)
+
+        elif estado == "quitar_beneficiario_lista":
+            self._procesar_quitar_lista(comando, sesiones)
+
+        elif estado == "quitar_beneficiario_confirmar":
+            self._procesar_quitar_confirmar(comando, sesiones)
 
         elif estado == "menu_farmacia":
             # Verificar si estamos en el sub-submenú de staff
@@ -450,6 +458,86 @@ class SubMenuFarmacia:
         sesiones[self.numero].farmacia_estado = "seleccion_beneficiario"
         sesiones[self.numero].farmacia_vinculados = vinculados
         self.sw.enviar(self._armar_lista_beneficiarios(operador_id, vinculados))
+
+    def quitar_beneficiario(self, sesiones):
+        """Inicia el flujo para quitar un beneficiario vinculado."""
+        operador_id = getattr(sesiones[self.numero], "farmacia_operador_id", None)
+        vinculados = self.vinculacion_manager.get_vinculados_visibles(operador_id)
+
+        if not vinculados:
+            self.sw.enviar("No tenés beneficiarios registrados.")
+            subgrupo = self._get_subgrupo_con_handler("quitar_beneficiario")
+            if subgrupo:
+                sesiones[self.numero].farmacia_subgrupo_activo = subgrupo
+                self._mostrar_subgrupo(sesiones, subgrupo)
+            return
+
+        sesiones[self.numero].farmacia_quitar_vinculados = vinculados
+
+        if len(vinculados) == 1:
+            # Solo uno — ir directo a confirmación
+            self._iniciar_quitar_confirmar(sesiones, vinculados[0])
+        else:
+            lineas = ["👥 ¿A quién querés quitar?\n"]
+            for i, v in enumerate(vinculados, 1):
+                nombre = self.persona_manager.get_nombre_completo(v["persona_id"]) or v["mi_alias"]
+                lineas.append(f"{i}. {nombre.title()} (alias: {v['mi_alias']})")
+            lineas.append("\nIngresá el número o *cancelar* para volver:")
+            sesiones[self.numero].farmacia_estado = "quitar_beneficiario_lista"
+            self.sw.enviar("\n".join(lineas))
+
+    def _procesar_quitar_lista(self, comando, sesiones):
+        if comando.strip() == "cancelar":
+            sesiones[self.numero].farmacia_estado = "menu_farmacia"
+            subgrupo = self._get_subgrupo_con_handler("quitar_beneficiario")
+            if subgrupo:
+                sesiones[self.numero].farmacia_subgrupo_activo = subgrupo
+                self._mostrar_subgrupo(sesiones, subgrupo)
+            return
+
+        vinculados = getattr(sesiones[self.numero], "farmacia_quitar_vinculados", [])
+        try:
+            idx = int(comando.strip()) - 1
+            if idx < 0 or idx >= len(vinculados):
+                raise ValueError
+        except ValueError:
+            self.sw.enviar("❌ Opción no válida. Ingresá el número o *cancelar*:")
+            return
+
+        self._iniciar_quitar_confirmar(sesiones, vinculados[idx])
+
+    def _iniciar_quitar_confirmar(self, sesiones, vinculado):
+        nombre = self.persona_manager.get_nombre_completo(vinculado["persona_id"]) or vinculado["mi_alias"]
+        sesiones[self.numero].farmacia_quitar_seleccionado = vinculado
+        sesiones[self.numero].farmacia_estado = "quitar_beneficiario_confirmar"
+        self.sw.enviar(
+            f"⚠️ ¿Estás seguro que deseas quitar a *{nombre.title()}* (alias: {vinculado['mi_alias']})?\n\n"
+            "Respondé *si* para confirmar o *no* para cancelar:"
+        )
+
+    def _procesar_quitar_confirmar(self, comando, sesiones):
+        c = comando.strip().lower()
+        sesiones[self.numero].farmacia_estado = "menu_farmacia"
+        subgrupo = self._get_subgrupo_con_handler("quitar_beneficiario")
+
+        if c == "si":
+            vinculado = getattr(sesiones[self.numero], "farmacia_quitar_seleccionado", None)
+            if vinculado:
+                self.vinculacion_manager.borrar_vinculacion(vinculado["vinculacion_id"])
+                nombre = self.persona_manager.get_nombre_completo(vinculado["persona_id"]) or vinculado["mi_alias"]
+                self.sw.enviar(f"✅ *{nombre.title()}* fue quitado como beneficiario.")
+        elif c == "no":
+            self.sw.enviar("↩️ Operación cancelada.")
+        else:
+            sesiones[self.numero].farmacia_estado = "quitar_beneficiario_confirmar"
+            self.sw.enviar("❌ Respondé *si* o *no*:")
+            return
+
+        sesiones[self.numero].farmacia_quitar_vinculados = None
+        sesiones[self.numero].farmacia_quitar_seleccionado = None
+        if subgrupo:
+            sesiones[self.numero].farmacia_subgrupo_activo = subgrupo
+            self._mostrar_subgrupo(sesiones, subgrupo)
 
     def ver_mis_datos(self, sesiones):
         """Muestra el perfil completo del beneficiario activo (solo lectura)."""

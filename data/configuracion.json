@@ -338,20 +338,7 @@
             "id": "2",
             "roles": ["root", "admin", "usuario"],
             "activacion": ["2"],
-            "texto": "2. 👥 Beneficiario",
-            "subgrupo": {
-              "consulta": "👥 *Beneficiario:*",
-              "opciones": [
-                {"id": "1", "activacion": ["1"], "texto": "1. 👥 Registrar beneficiario", "handler": "registrar_beneficiario"},
-                {"id": "2", "activacion": ["2"], "texto": "2. 🔄 Cambiar beneficiario", "handler": "cambiar_beneficiario"}
-              ]
-            }
-          },
-          {
-            "id": "3",
-            "roles": ["root", "admin", "usuario"],
-            "activacion": ["3"],
-            "texto": "3. 📋 Mis datos",
+            "texto": "2. 📋 Mis datos",
             "subgrupo": {
               "consulta": "📋 *Mis datos de {beneficiario}:*",
               "opciones": [
@@ -359,6 +346,20 @@
                 {"id": "2", "activacion": ["2"], "texto": "2. 📋 Completar datos", "handler": "completar_datos"},
                 {"id": "3", "activacion": ["3"], "texto": "3. 🏠 Gestionar direcciones", "handler": "gestionar_direccion"},
                 {"id": "4", "activacion": ["4"], "texto": "4. 🏥 Administrar obra social", "handler": "administrar_obra_social"}
+              ]
+            }
+          },
+          {
+            "id": "3",
+            "roles": ["root", "admin", "usuario"],
+            "activacion": ["3"],
+            "texto": "3. 👥 Beneficiario",
+            "subgrupo": {
+              "consulta": "👥 *Beneficiario:*",
+              "opciones": [
+                {"id": "1", "activacion": ["1"], "texto": "1. 👥 Registrar beneficiario", "handler": "registrar_beneficiario"},
+                {"id": "2", "activacion": ["2"], "texto": "2. 🔄 Cambiar beneficiario", "handler": "cambiar_beneficiario"},
+                {"id": "3", "activacion": ["3"], "texto": "3. 🗑️ Quitar beneficiario", "handler": "quitar_beneficiario"}
               ]
             }
           },

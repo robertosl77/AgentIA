@@ -6,6 +6,7 @@ from src.persona.persona_manager import PersonaManager
 from src.persona.registro_persona import RegistroPersona
 from src.farmacia.vinculacion_manager import VinculacionManager
 from src.farmacia.gestion_obra_social import GestionObraSocial
+from src.farmacia.obra_social_manager import ObraSocialManager
 
 
 class GestionBeneficiario:
@@ -201,7 +202,11 @@ class GestionBeneficiario:
     # ── OBRA SOCIAL POST-REGISTRO ─────────────────────────────────────────────
 
     def _ofrecer_os(self, sesiones):
-        """Ofrece cargar obra social del beneficiario recién registrado."""
+        """Ofrece cargar obra social del beneficiario recién registrado, solo si no tiene."""
+        persona_id = getattr(sesiones[self.numero], "ben_persona_id", None)
+        if persona_id and ObraSocialManager().buscar_por_persona(persona_id):
+            self._salir(sesiones)
+            return
         sesiones[self.numero].ben_estado = "ofrecer_os"
         self.sw.enviar("¿Querés registrar la *obra social* de esta persona ahora? (si/no)")
 

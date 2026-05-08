@@ -50,22 +50,19 @@
         "auxilio_conductor"
       ]
     },
-    "809bd6d4-dfd5-4048-b3d1-ad34831c4c6a": {
+    "0a3dd901-8c0b-4601-a3b1-531ec7592300": {
       "tipo_documento": "DNI",
-      "numero_documento": "22555777",
-      "nombre": "sebastian montero",
-      "apellido": "",
+      "numero_documento": "11222333",
+      "nombre": "rosa m",
+      "apellido": "l",
       "fecha_nacimiento": "",
       "lids": [],
-      "contactos": [
+      "contactos": [],
+      "direcciones": [
         {
-          "tipo": "telefono",
-          "valor": "+542392559036",
-          "etiqueta": ""
+          "direccion_id": "7c1aa3e7-1ff7-4700-bfe8-1e9baa48a24c",
+          "tipo": "casa"
         }
-      ],
-      "tipo_persona": [
-        "auxilio_conductor"
       ]
     }
   }

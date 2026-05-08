@@ -13,14 +13,6 @@ MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 
 
-[M3] Quitar beneficiario desde el grupo Beneficiario
-  Problema:
-    - El grupo "Beneficiario" tiene Registrar y Cambiar, pero no hay opción para
-      desvincular/quitar un beneficiario existente.
-  Propuesta:
-    - Agregar opción "3. ❌ Quitar beneficiario" al subgrupo en configuracion.json
-    - Implementar handler quitar_beneficiario en submenu_farmacia.py
-    - El flujo debe pedir confirmación antes de desvincular
 
 [M12] Conversación directa con farmacia — modo passthrough
   Contexto:

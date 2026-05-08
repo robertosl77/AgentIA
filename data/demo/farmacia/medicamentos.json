@@ -1,28 +1,16 @@
 {
   "medicamentos": {
-    "08cbb512-f000-4b41-8520-efb69d86ff0c": {
+    "0947cfe4-8722-4b0e-9696-f4032470b6d6": {
       "farmaco": "HIDROTISONA",
       "dosis": "10 mg",
       "presentacion": "comp.x 30",
       "label": "HIDROTISONA 10 mg comp.x 30"
     },
-    "8b8ea27d-6c54-41c0-b83f-1845e391e5dd": {
+    "b75dd428-9465-44d4-8362-ec3c89c28970": {
       "farmaco": "LIPOMAX 105",
       "dosis": "105 mg",
       "presentacion": "comp.x 30",
       "label": "LIPOMAX 105 105 mg comp.x 30"
-    },
-    "802f59ae-688b-4ed6-9484-ecddca95a52c": {
-      "farmaco": "Hidrocortisona",
-      "nombre_comercial": "Hidrotisona",
-      "dosis": "10 mg",
-      "presentacion": "comp.x 30"
-    },
-    "730da71f-fda3-41eb-a8e4-3cab0e86569a": {
-      "farmaco": "Fenofíbrico,ác.",
-      "nombre_comercial": "Lipomax 105",
-      "dosis": "105 mg",
-      "presentacion": "comp.x 30"
     }
   }
 }
