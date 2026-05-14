@@ -31,15 +31,12 @@ class RecordatorioAutomaticoService:
     def _seguimiento_horas(self):
         return self.config.get("seguimiento_automatico_horas", {}).get(self.enlatado, 24)
 
-    def _flag(self, key):
-        return self.config.get("recordatorios_automaticos", {}).get(self.enlatado, {}).get(key, False)
-
     def _dt_a_str(self, dt):
         return dt.strftime("%d/%m/%Y"), dt.strftime("%H:%M")
 
     # ── B10 — vencimiento al cargar receta ────────────────────────────────────
 
-    def crear_recordatorios_vencimiento(self, receta_id, persona_id, fecha_vencimiento_str):
+    def crear_recordatorios_vencimiento(self, receta_id, persona_id, fecha_vencimiento_str, activo_r1=True, activo_r2=True):
         """
         Crea R1 y R2 al momento de crear la receta (B10).
         R1: fecha_vencimiento - margen_minimo_dias (si hay margen suficiente)
@@ -61,7 +58,7 @@ class RecordatorioAutomaticoService:
         hora = self._hora_defecto()
 
         # R1
-        if self._flag("vencimiento_r1"):
+        if activo_r1:
             f_r1 = f_venc - timedelta(days=margen)
             fecha_r1 = f_r1.strftime("%d/%m/%Y")
             ok, _ = validar_fecha_recordatorio(fecha_r1, hora, fecha_vencimiento_str, margen, modo="automatico")
@@ -80,7 +77,7 @@ class RecordatorioAutomaticoService:
 
         # R2 — dispara el mismo día del vencimiento; no pasa por validar_fecha_recordatorio
         # porque fecha == fecha_vencimiento es válido solo en este caso específico.
-        if self._flag("vencimiento_r2") and f_venc.date() >= hoy:
+        if activo_r2 and f_venc.date() >= hoy:
             fecha_r2 = f_venc.strftime("%d/%m/%Y")
             rid = self.agenda.crear(
                 persona_id=persona_id,
@@ -107,9 +104,6 @@ class RecordatorioAutomaticoService:
         Retorna dict: {"creado": bool, "rid": str|None, "push_urgente": bool, "msg_urgente": str}
         """
         resultado = {"creado": False, "rid": None, "push_urgente": False, "msg_urgente": ""}
-
-        if not self._flag(flag_key):
-            return resultado
 
         try:
             f_venc = datetime.strptime(fecha_vencimiento_str, "%d/%m/%Y")
@@ -159,9 +153,6 @@ class RecordatorioAutomaticoService:
         Retorna dict: {"creados": list, "push_urgente": bool, "msg_urgente": str}
         """
         resultado = {"creados": [], "push_urgente": False, "msg_urgente": ""}
-
-        if not self._flag(flag_key):
-            return resultado
 
         try:
             f_venc = datetime.strptime(fecha_vencimiento_str, "%d/%m/%Y")

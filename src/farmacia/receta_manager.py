@@ -103,8 +103,11 @@ class RecetaManager:
     def _crear_recordatorios_vencimiento(self, receta_id, persona_id, fecha_vencimiento_str):
         try:
             from src.agenda.recordatorio_automatico_service import RecordatorioAutomaticoService
+            cfg_venc = self.config.get("recetas", {}).get("recordatorios_vencimiento", {})
+            activo_r1 = cfg_venc.get("r1", {}).get("activo", True)
+            activo_r2 = cfg_venc.get("r2", {}).get("activo", True)
             RecordatorioAutomaticoService().crear_recordatorios_vencimiento(
-                receta_id, persona_id, fecha_vencimiento_str
+                receta_id, persona_id, fecha_vencimiento_str, activo_r1=activo_r1, activo_r2=activo_r2
             )
         except Exception as e:
             print(f"[B10] Error creando recordatorios de vencimiento: {e}")
@@ -239,6 +242,8 @@ class RecetaManager:
 
         for rec in (cfg if isinstance(cfg, list) else []):
             if rec.get("generacion") != "automatico":
+                continue
+            if not rec.get("activo", True):
                 continue
             condicion_item = rec.get("condicion_item")
             if condicion_item and not any(it.get("estado_item") == condicion_item for it in items):

@@ -249,6 +249,10 @@
     "tipos_accion_estado_valido": {
       "solicitud_token": "requiere_autorizacion"
     },
+    "recordatorios_vencimiento": {
+      "r1": {"activo": true},
+      "r2": {"activo": true}
+    },
     "alerta_preventiva_dias": 20,
     "alerta_urgente_dias": 28,
     "max_reintentos_token": 3,
@@ -308,6 +312,7 @@
             "flag": "seguimiento_espera",
             "descripcion": "📋 Tenés acciones pendientes en tu receta. Ingresá a *Mis recetas* para responder.",
             "generacion": "automatico",
+            "activo": true,
             "persiste_transicion": false
           }
         ],
@@ -356,6 +361,7 @@
             "flag": "seguimiento_espera_stock",
             "descripcion": "⏳ Un medicamento está en espera de stock — Receta de {persona_id}, vence {fecha_vencimiento}.",
             "generacion": "automatico",
+            "activo": true,
             "persiste_transicion": false
           },
           {
@@ -363,6 +369,7 @@
             "flag": "seguimiento_alternativa_aceptada",
             "descripcion": "🔄 El cliente aceptó una alternativa — Receta de {persona_id}, vence {fecha_vencimiento}.",
             "generacion": "automatico",
+            "activo": true,
             "persiste_transicion": false
           }
         ],
@@ -384,6 +391,7 @@
             "flag": "seguimiento_token",
             "descripcion": "🔐 Tenés pendiente enviar tu token de autorización de obra social.",
             "generacion": "automatico",
+            "activo": true,
             "persiste_transicion": false
           }
         ],
@@ -411,6 +419,7 @@
             "flag": "token_validar_staff",
             "descripcion": "🔑 Token pendiente de validar — Receta de {persona_id}, vence {fecha_vencimiento}.",
             "generacion": "automatico",
+            "activo": true,
             "persiste_transicion": false
           }
         ],
@@ -472,6 +481,7 @@
             "flag": "retiro_cliente",
             "descripcion": "📦 Tu medicación está lista. Recordá retirarla antes de que venza tu receta.",
             "generacion": "automatico",
+            "activo": false,
             "persiste_transicion": false
           }
         ],
