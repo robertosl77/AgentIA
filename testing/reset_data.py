@@ -195,6 +195,11 @@ def reset_horarios_data():
     guardar(path, data)
 
 
+def reset_recordatorios():
+    """Limpia todos los recordatorios de agenda."""
+    guardar(get_tenant_path("agenda", "recordatorios.json"), {"recordatorios": {}})
+
+
 def reset_estado_recetas():
     """
     Resetea recetas existentes a estado inicial:
@@ -203,6 +208,7 @@ def reset_estado_recetas():
     - notas → []
     - historial_estados → solo entrada inicial
     - items: estado_item → "pendiente" (excepto omitido_usuario), sin alternativa_medicamento_id
+    Limpia también todos los recordatorios (quedan huérfanos al resetear estados).
     """
     path = get_tenant_path("farmacia", "recetas.json")
     with open(path, encoding="utf-8") as f:
@@ -222,6 +228,7 @@ def reset_estado_recetas():
             item.pop("alternativa_medicamento_id", None)
 
     guardar(path, data)
+    reset_recordatorios()
     print(f"   └ {len(data['recetas'])} receta(s) reseteadas a pendiente")
 
 
@@ -313,6 +320,18 @@ def seed_recetas_testing():
     print(f"   ├ Receta A (2 meds): {receta_id_a[:8]}...")
     print(f"   └ Receta B (1 med):  {receta_id_b[:8]}...")
 
+    # Disparar B10 — recordatorios de vencimiento para recetas seeded
+    try:
+        import sys
+        sys.path.insert(0, os.path.join(ROOT))
+        from src.agenda.recordatorio_automatico_service import RecordatorioAutomaticoService
+        svc = RecordatorioAutomaticoService()
+        for rid, receta in [(receta_id_a, "Testing 2 medicamentos"), (receta_id_b, "Testing 1 medicamento")]:
+            svc.crear_recordatorios_vencimiento(rid, persona_id, fecha_venc)
+        print("   ✅ B10 — recordatorios de vencimiento creados")
+    except Exception as e:
+        print(f"   ⚠️  B10 — no se pudieron crear recordatorios: {e}")
+
 
 if __name__ == "__main__":
     print("🔄 Reseteando datos del tenant...\n")
@@ -326,6 +345,8 @@ if __name__ == "__main__":
     reset_medicamentos()
     reset_horarios_data()
     reset_archivos_recetas()
+    print("── agenda ───────────────────────────────")
+    reset_recordatorios()
     print("── seed testing ─────────────────────────")
     seed_recetas_testing()
 

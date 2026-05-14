@@ -246,6 +246,9 @@
   "recetas": {
     "dias_vencimiento": 30,
     "tipos_accion_cliente": ["sin_stock", "alternativa", "solicitud_token", "respuesta_consulta"],
+    "tipos_accion_estado_valido": {
+      "solicitud_token": "requiere_autorizacion"
+    },
     "alerta_preventiva_dias": 20,
     "alerta_urgente_dias": 28,
     "max_reintentos_token": 3,
@@ -259,21 +262,30 @@
         "camino_feliz": "en_gestion",
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": true,
+        "transicion": "automatico",
+        "auto_avanzar_al_abrir": true,
         "reset_items_al_entrar": true,
         "notificacion_push": null,
+        "responsable": ["staff"],
+        "recordatorio": [],
         "opciones_staff": ["avanzar", "cambiar_estado_receta"]
       },
       "en_gestion": {
         "label": "En gestión",
         "icono": "🔄",
-        "inflow": ["pendiente", "confirmando"],
-        "outflow": ["requiere_autorizacion", "a_la_espera", "rechazada"],
+        "inflow": ["pendiente", "confirmado"],
+        "outflow": ["requiere_autorizacion", "procesando", "a_la_espera", "rechazada"],
         "camino_feliz": "requiere_autorizacion",
+        "camino_feliz_sin_token": "procesando",
+        "bifurcacion_token": true,
+        "evaluar_items": true,
+        "destino_sin_resolver": "a_la_espera",
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": true,
+        "transicion": "automatico",
         "notificacion_push": null,
+        "responsable": ["staff"],
+        "recordatorio": [],
         "opciones_staff": [
           "confirmar_todos",
           "cambiar_estado_item",
@@ -286,11 +298,22 @@
         "label": "A la espera del cliente",
         "icono": "⏸️",
         "inflow": ["en_gestion"],
-        "outflow": ["confirmando", "en_consulta"],
-        "camino_feliz": "confirmando",
+        "outflow": ["confirmado", "en_consulta"],
+        "camino_feliz": "confirmado",
+        "evaluar_items": true,
+        "destino_retorno_gestion": "en_gestion",
+        "responsable": ["cliente"],
+        "recordatorio": [
+          {
+            "flag": "seguimiento_espera",
+            "descripcion": "📋 Tenés acciones pendientes en tu receta. Ingresá a *Mis recetas* para responder.",
+            "generacion": "automatico",
+            "persiste_transicion": false
+          }
+        ],
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": true,
+        "transicion": "automatico",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n📋 Hay novedades en tu receta que requieren tu atención.\nIngresá al menú *Mis recetas* para revisar.",
         "opciones_staff": [
           "confirmar_todos",
@@ -308,23 +331,43 @@
         "camino_feliz": "a_la_espera",
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": false,
+        "transicion": "manual",
         "reset_items_al_entrar": false,
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n💬 La farmacia respondió tu consulta.\nIngresá a *Mis recetas* para revisar y tomar una decisión.",
         "notificacion_push_staff": "🤖 *Asistente Virtual Informa:*\n\n❓ El cliente realizó una consulta sobre su receta. Ingresá para responder.",
+        "responsable": ["staff"],
+        "recordatorio": [],
         "opciones_staff": ["responder_consulta", "cambiar_estado_receta"]
       },
-      "confirmando": {
-        "label": "Cliente confirmando",
-        "icono": "👤",
+      "confirmado": {
+        "label": "Confirmado",
+        "icono": "✔️",
         "inflow": ["a_la_espera"],
-        "outflow": ["en_gestion"],
+        "outflow": [" "],
         "camino_feliz": "en_gestion",
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": true,
+        "transicion": "automatico",
         "notificacion_push": null,
+        "responsable": ["staff"],
+        "recordatorio": [
+          {
+            "condicion_item": "esperando_stock",
+            "flag": "seguimiento_espera_stock",
+            "descripcion": "⏳ Un medicamento está en espera de stock — Receta de {persona_id}, vence {fecha_vencimiento}.",
+            "generacion": "automatico",
+            "persiste_transicion": false
+          },
+          {
+            "condicion_item": "alternativa_aceptada",
+            "flag": "seguimiento_alternativa_aceptada",
+            "descripcion": "🔄 El cliente aceptó una alternativa — Receta de {persona_id}, vence {fecha_vencimiento}.",
+            "generacion": "automatico",
+            "persiste_transicion": false
+          }
+        ],
         "opciones_staff": [
+          "avanzar",
           "ver_chat",
           "cambiar_estado_receta"
         ]
@@ -335,9 +378,18 @@
         "inflow": ["en_gestion"],
         "outflow": ["token_enviado", "rechazada"],
         "camino_feliz": null,
+        "responsable": ["cliente"],
+        "recordatorio": [
+          {
+            "flag": "seguimiento_token",
+            "descripcion": "🔐 Tenés pendiente enviar tu token de autorización de obra social.",
+            "generacion": "automatico",
+            "persiste_transicion": false
+          }
+        ],
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": false,
+        "transicion": "manual",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n🔐 La farmacia necesita un *token de autorización* de tu obra social.\nIngresá al menú *Mis recetas* para enviarlo.",
         "mensaje_al_entrar": {"tipo": "solicitud_token", "clave_texto": "nota_solicitar_token"},
         "opciones_staff": [
@@ -350,14 +402,23 @@
         "label": "Token enviado",
         "icono": "🔑",
         "inflow": ["requiere_autorizacion"],
-        "outflow": ["procesando"],
-        "camino_feliz": null,
+        "outflow": ["procesando", "error_token"],
+        "camino_feliz": "procesando",
+        "destino_token_invalido": "error_token",
+        "responsable": ["staff"],
+        "recordatorio": [
+          {
+            "flag": "token_validar_staff",
+            "descripcion": "🔑 Token pendiente de validar — Receta de {persona_id}, vence {fecha_vencimiento}.",
+            "generacion": "automatico",
+            "persiste_transicion": false
+          }
+        ],
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": true,
+        "transicion": "automatico",
         "notificacion_push": null,
         "opciones_staff": [
-          "avanzar",
           "validar_token",
           "ver_chat",
           "cambiar_estado_receta"
@@ -371,8 +432,10 @@
         "camino_feliz": "pendiente_retiro",
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": false,
+        "transicion": "automatico",
         "notificacion_push": null,
+        "responsable": ["staff"],
+        "recordatorio": [],
         "opciones_staff": [
           "avanzar",
           "cambiar_estado_receta"
@@ -384,10 +447,13 @@
         "inflow": ["procesando"],
         "outflow": ["requiere_autorizacion", "rechazada"],
         "camino_feliz": "requiere_autorizacion",
+        "es_reintento_token": true,
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": false,
+        "transicion": "manual",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n⚠️ Tu token de autorización presentó un problema. La farmacia te solicitará uno nuevo a la brevedad.",
+        "responsable": ["staff"],
+        "recordatorio": [],
         "opciones_staff": [
           "avanzar",
           "ver_chat",
@@ -400,9 +466,18 @@
         "inflow": ["procesando"],
         "outflow": ["cerrada"],
         "camino_feliz": "cerrada",
+        "responsable": ["cliente"],
+        "recordatorio": [
+          {
+            "flag": "retiro_cliente",
+            "descripcion": "📦 Tu medicación está lista. Recordá retirarla antes de que venza tu receta.",
+            "generacion": "automatico",
+            "persiste_transicion": false
+          }
+        ],
         "requiere_motivo": false,
         "es_final": false,
-        "automatico": false,
+        "transicion": "manual",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n✅ Tu medicación está lista para retirar en la farmacia.",
         "opciones_staff": [
           "avanzar",
@@ -418,8 +493,10 @@
         "camino_feliz": null,
         "requiere_motivo": false,
         "es_final": true,
-        "automatico": false,
+        "transicion": "manual",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n📋 Tu receta fue entregada. ¡Gracias por confiar en nosotros!",
+        "responsable": ["staff"],
+        "recordatorio": [],
         "opciones_staff": []
       },
       "rechazada": {
@@ -429,9 +506,11 @@
         "outflow": ["en_gestion"],
         "camino_feliz": null,
         "requiere_motivo": true,
-        "es_final": false,
-        "automatico": false,
+        "es_final": true,
+        "transicion": "manual",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n❌ Tu receta fue rechazada por la farmacia.\nIngresá al menú *Mis recetas* para más información.",
+        "responsable": ["cliente", "staff"],
+        "recordatorio": [],
         "opciones_staff": [
           "cambiar_estado_receta"
         ]
@@ -440,7 +519,9 @@
     "estados_item": {
       "pendiente": {
         "label": "Pendiente",
-        "icono": "⏳"
+        "icono": "⏳",
+        "es_pendiente": true,
+        "confirmable_staff": true
       },
       "disponible": {
         "label": "Disponible",
@@ -449,12 +530,18 @@
       "sin_stock": {
         "label": "Sin stock",
         "icono": "❌",
-        "mostrar_acciones_cliente": true
+        "mostrar_acciones_cliente": true,
+        "sin_resolver": true,
+        "requiere_respuesta_cliente": true,
+        "confirmable_staff": true
       },
       "alternativa_ofrecida": {
         "label": "Alternativa ofrecida",
         "icono": "🔄",
-        "mostrar_acciones_cliente": true
+        "mostrar_acciones_cliente": true,
+        "sin_resolver": true,
+        "requiere_respuesta_cliente": true,
+        "confirmable_staff": true
       },
       "alternativa_aceptada": {
         "label": "Alternativa aceptada",
@@ -467,6 +554,13 @@
       "omitido_usuario": {
         "label": "Omitido",
         "icono": "⏭️"
+      },
+      "esperando_stock": {
+        "label": "Esperando stock",
+        "icono": "⏳",
+        "mostrar_acciones_cliente": true,
+        "sin_resolver": false,
+        "confirmable_staff": true
       }
     },
     "opciones_cambiar_estado_item": [
@@ -520,6 +614,7 @@
       "receta_en_consulta": "❓ Tu consulta está siendo respondida por la farmacia. Volvé más tarde."
     },
     "mensajes_staff": {
+      "anomalia_tipo_accion": "⚠️ Anomalía detectada en receta {receta_id}: hay una acción pendiente de tipo '{tipo}' pero el estado de la receta no corresponde. Por favor revisá manualmente.",
       "sin_recetas_pendientes": "📋 No hay recetas pendientes de procesar.",
       "receta_no_encontrada": "⚠️ Receta no encontrada.",
       "numero_invalido": "❌ Número no válido.",
@@ -594,8 +689,9 @@
           "key": "esperar",
           "label": "⏳ Esperar / agendar",
           "texto_accion": "Voy a esperar.",
+          "estado_item_destino": "esperando_stock",
           "msg_confirmacion": "⏳ Registrado. La farmacia será notificada.",
-          "post_accion": "recordatorio_y_siguiente"
+          "post_accion": "evaluar_y_siguiente"
         },
         {
           "key": "consultar",
@@ -617,8 +713,9 @@
           "key": "esperar",
           "label": "⏳ Esperar / agendar",
           "texto_accion": "Voy a esperar.",
+          "estado_item_destino": "esperando_stock",
           "msg_confirmacion": "⏳ Registrado. La farmacia será notificada.",
-          "post_accion": "recordatorio_y_siguiente"
+          "post_accion": "evaluar_y_siguiente"
         },
         {
           "key": "consultar",
@@ -649,8 +746,9 @@
             "key": "esperar",
             "label": "⏳ Esperar / agendar",
             "texto_accion": "Voy a esperar.",
+            "estado_item_destino": "esperando_stock",
             "msg_confirmacion": "⏳ Registrado. La farmacia será notificada.",
-            "post_accion": "recordatorio_y_siguiente"
+            "post_accion": "evaluar_y_siguiente"
           },
           {
             "key": "consultar",
@@ -672,8 +770,9 @@
             "key": "esperar",
             "label": "⏳ Esperar / agendar",
             "texto_accion": "Voy a esperar.",
+            "estado_item_destino": "esperando_stock",
             "msg_confirmacion": "⏳ Registrado. La farmacia será notificada.",
-            "post_accion": "recordatorio_y_siguiente"
+            "post_accion": "evaluar_y_siguiente"
           },
           {
             "key": "consultar",

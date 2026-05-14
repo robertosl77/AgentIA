@@ -1,0 +1,27 @@
+{
+  "entornos": ["dv", "qa", "pr"],
+  "entorno": "dv",
+  "hora_defecto": {
+    "farmacia": "10:00"
+  },
+  "margen_minimo_dias": {
+    "farmacia": 2
+  },
+  "seguimiento_automatico_horas": {
+    "farmacia": 24
+  },
+  "eliminacion_automatica": true,
+  "recordatorios_automaticos": {
+    "farmacia": {
+      "vencimiento_r1": true,
+      "vencimiento_r2": true,
+      "seguimiento_espera": true,
+      "seguimiento_token": true,
+      "token_validar_staff": true,
+      "procesando_staff": false,
+      "retiro_cliente": false,
+      "seguimiento_espera_stock": true,
+      "seguimiento_alternativa_aceptada": true
+    }
+  }
+}

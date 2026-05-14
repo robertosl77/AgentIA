@@ -1,16 +1,3 @@
 {
-  "vinculaciones": {
-    "83061c1b-0c10-4091-8ecc-91b6511dc4e4": {
-      "persona_a": {
-        "persona_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
-        "alias": "mama",
-        "visible": true
-      },
-      "persona_b": {
-        "persona_id": "0a3dd901-8c0b-4601-a3b1-531ec7592300",
-        "alias": "",
-        "visible": false
-      }
-    }
-  }
+  "vinculaciones": {}
 }

@@ -97,7 +97,17 @@ class RecetaManager:
             ]
         }
         self._guardar_archivo()
+        self._crear_recordatorios_vencimiento(receta_id, persona_id, f_vencimiento.strftime("%d/%m/%Y"))
         return receta_id
+
+    def _crear_recordatorios_vencimiento(self, receta_id, persona_id, fecha_vencimiento_str):
+        try:
+            from src.agenda.recordatorio_automatico_service import RecordatorioAutomaticoService
+            RecordatorioAutomaticoService().crear_recordatorios_vencimiento(
+                receta_id, persona_id, fecha_vencimiento_str
+            )
+        except Exception as e:
+            print(f"[B10] Error creando recordatorios de vencimiento: {e}")
 
     # ── BUSCAR ────────────────────────────────────────────────────────────────
 
@@ -164,6 +174,12 @@ class RecetaManager:
             return False
 
         receta = self.data["recetas"][receta_id]
+        estado_anterior = receta["estado"]
+
+        from src.agenda.agenda_manager import AgendaManager
+        inflow = self.get_inflow(nuevo_estado)
+        AgendaManager().cancelar_por_entidad_y_vinculo(receta_id, inflow, origen="automatico")
+
         receta["estado"] = nuevo_estado
         receta["historial_estados"].append({
             "estado": nuevo_estado,
@@ -192,6 +208,75 @@ class RecetaManager:
 
         self._guardar_archivo()
         return True
+
+    # ── RECORDATORIOS AUTOMÁTICOS ─────────────────────────────────────────────
+
+    def crear_recordatorio_automatico(self, receta_id, estado_id):
+        """Crea recordatorios automáticos al entrar a un estado, según config JSON."""
+        resultado = self.get_receta(receta_id)
+        if not resultado:
+            return
+        _, receta = resultado
+        fecha_venc = receta.get("fecha_vencimiento", "")
+        if not fecha_venc:
+            return
+
+        estado_config = self.get_estado_config(estado_id)
+        cfg = estado_config.get("recordatorio")
+        if not cfg:
+            return
+
+        try:
+            from src.agenda.recordatorio_automatico_service import RecordatorioAutomaticoService
+            svc = RecordatorioAutomaticoService()
+        except Exception as e:
+            print(f"[RECORDATORIO_AUTO] Error cargando servicio: {e}")
+            return
+
+        responsable = estado_config.get("responsable", [])
+        persona_id = receta.get("persona_id", "")
+        items = receta.get("items", [])
+
+        for rec in (cfg if isinstance(cfg, list) else []):
+            if rec.get("generacion") != "automatico":
+                continue
+            condicion_item = rec.get("condicion_item")
+            if condicion_item and not any(it.get("estado_item") == condicion_item for it in items):
+                continue
+            descripcion = rec["descripcion"].format(
+                persona_id=persona_id,
+                fecha_vencimiento=fecha_venc,
+            )
+            if "cliente" in responsable:
+                from src.persona.persona_manager import PersonaManager
+                persona_result = PersonaManager().get_persona(persona_id)
+                lids = persona_result[1].get("lids", []) if persona_result else []
+                res = svc.crear_seguimiento_cliente(
+                    receta_id=receta_id,
+                    persona_id=persona_id,
+                    fecha_vencimiento_str=fecha_venc,
+                    estado_vinculado=estado_id,
+                    descripcion=descripcion,
+                    flag_key=rec["flag"],
+                )
+                if res["push_urgente"]:
+                    from src.send_wpp import SendWPP
+                    for lid in lids:
+                        SendWPP(lid).enviar(res["msg_urgente"])
+            if "staff" in responsable:
+                operadores = self.config.get("operadores_notificacion", [])
+                res = svc.crear_seguimiento_staff(
+                    receta_id=receta_id,
+                    fecha_vencimiento_str=fecha_venc,
+                    estado_vinculado=estado_id,
+                    descripcion=descripcion,
+                    flag_key=rec["flag"],
+                    operadores_lids=operadores,
+                )
+                if res["push_urgente"]:
+                    from src.send_wpp import SendWPP
+                    for lid in operadores:
+                        SendWPP(lid).enviar(res["msg_urgente"])
 
     # ── NOTAS ─────────────────────────────────────────────────────────────────
 
@@ -359,6 +444,19 @@ class RecetaManager:
                 self._guardar_archivo()
                 return
 
+    def marcar_tipo_como_leido(self, receta_id, tipo, lector):
+        """Marca todos los mensajes de un tipo como leídos por lector."""
+        receta = self.data["recetas"].get(receta_id)
+        if not receta:
+            return
+        modificado = False
+        for msg in receta.get("chat", []):
+            if msg.get("tipo") == tipo and lector not in msg["leido_por"]:
+                msg["leido_por"].append(lector)
+                modificado = True
+        if modificado:
+            self._guardar_archivo()
+
     def marcar_chat_leido(self, receta_id, lector):
         """Marca como leídos por lector todos los mensajes que no escribió él mismo."""
         if receta_id not in self.data["recetas"]:
@@ -400,41 +498,78 @@ class RecetaManager:
     def _tipos_accion_cliente(self):
         return set(self.config.get("recetas", {}).get("tipos_accion_cliente", []))
 
+    def _validacion_estado_por_tipo(self):
+        return self.config.get("recetas", {}).get("tipos_accion_estado_valido", {})
+
     def contar_chat_no_leidos_usuario(self, persona_id):
         """Cuenta acciones pendientes (tipos accionables) no leídas por el usuario."""
         tipos_accion = self._tipos_accion_cliente()
+        validacion = self._validacion_estado_por_tipo()
         total = 0
+
         for rid, datos in self.data["recetas"].items():
-            if datos["persona_id"] == persona_id:
-                meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
-                for msg in datos.get("chat", []):
-                    if (msg["autor"] != persona_id
-                            and persona_id not in msg["leido_por"]
-                            and msg.get("tipo") in tipos_accion):
-                        med_id = msg.get("medicamento_id")
-                        if med_id and med_id in meds_en_consulta:
+            if datos["persona_id"] != persona_id:
+                continue
+            meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
+            contados_unico = set()
+            for msg in datos.get("chat", []):
+                if (msg["autor"] != persona_id
+                        and persona_id not in msg["leido_por"]
+                        and msg.get("tipo") in tipos_accion):
+                    med_id = msg.get("medicamento_id")
+                    if med_id and med_id in meds_en_consulta:
+                        continue
+                    tipo = msg.get("tipo")
+                    estado_valido = validacion.get(tipo)
+                    if estado_valido:
+                        if datos["estado"] != estado_valido:
                             continue
-                        total += 1
+                        key = (rid, tipo)
+                        if key in contados_unico:
+                            continue
+                        contados_unico.add(key)
+                    total += 1
         return total
 
     def get_primer_chat_no_leido_usuario(self, persona_id):
         """
-        Retorna (receta_id, msg) del primer mensaje accionable no leído,
-        ordenado cronológicamente. Omite mensajes de medicamentos con consulta activa.
+        Retorna (receta_id, msg) del primer mensaje accionable no leído.
+        Ordena por primera aparición del medicamento en chat, no por timestamp del mensaje.
+        Omite mensajes de medicamentos con consulta activa sin respuesta.
         """
         tipos_accion = self._tipos_accion_cliente()
+        validacion = self._validacion_estado_por_tipo()
         candidatos = []
+
         for rid, datos in self.data["recetas"].items():
             if datos["persona_id"] == persona_id:
-                meds_en_consulta = self._get_meds_en_consulta(datos.get("chat", []))
-                for msg in datos.get("chat", []):
+                chat = datos.get("chat", [])
+                meds_en_consulta = self._get_meds_en_consulta(chat)
+                primer_ts_med = {}
+                for m in chat:
+                    mid = m.get("medicamento_id")
+                    if mid and mid not in primer_ts_med:
+                        primer_ts_med[mid] = m["timestamp"]
+                vistos_unico = set()
+                for msg in chat:
                     if (msg["autor"] != persona_id
                             and persona_id not in msg["leido_por"]
                             and msg.get("tipo") in tipos_accion):
                         med_id = msg.get("medicamento_id")
                         if med_id and med_id in meds_en_consulta:
                             continue
-                        candidatos.append((msg["timestamp"], rid, msg))
+                        tipo = msg.get("tipo")
+                        estado_valido = validacion.get(tipo)
+                        if estado_valido:
+                            if datos["estado"] != estado_valido:
+                                self._push_anomalia_staff(rid, tipo, anomalias_enviadas)
+                                continue
+                            key = (rid, tipo)
+                            if key in vistos_unico:
+                                continue
+                            vistos_unico.add(key)
+                        sort_key = primer_ts_med.get(med_id, msg["timestamp"])
+                        candidatos.append((sort_key, rid, msg))
         if not candidatos:
             return None
         candidatos.sort(key=lambda x: x[0])

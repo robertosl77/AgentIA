@@ -22,23 +22,6 @@
         "lat": -34.5848054,
         "lng": -58.4667537
       }
-    },
-    "7c1aa3e7-1ff7-4700-bfe8-1e9baa48a24c": {
-      "direccion_formateada": "Gascón 888, B1766AIP La Tablada, Provincia de Buenos Aires",
-      "calle": "gascón",
-      "altura": "888",
-      "entre_calle_1": "guayaquil",
-      "entre_calle_2": "catriel",
-      "piso": "",
-      "depto": "",
-      "localidad": "la tablada",
-      "codigo_postal": "B1766",
-      "provincia": "provincia de buenos aires",
-      "place_id": "EkZHYXNjw7NuIDg4OCwgQjE3NjZBSVAgTGEgVGFibGFkYSwgUHJvdmluY2lhIGRlIEJ1ZW5vcyBBaXJlcywgQXJnZW50aW5hIjESLwoUChIJpd6_t5XIvJURfOiicoUWrEYQ-AYqFAoSCckylMKUyLyVEekFumIlPmhr",
-      "coordenadas": {
-        "lat": -34.6793828,
-        "lng": -58.535244999999996
-      }
     }
   }
 }

@@ -253,8 +253,7 @@ class GestionRecetasCliente:
         if post_accion == "evaluar_y_siguiente":
             self._evaluar_estado_post_respuesta(receta_id, sesiones)
         elif post_accion == "recordatorio_y_siguiente":
-            print(f"[PLACEHOLDER] Agendar recordatorio para receta {receta_id}")
-            self._mostrar_siguiente_notificacion(sesiones)
+            self._iniciar_recordatorio_m7(sesiones, receta_id, med_id, beneficiario_id, opcion)
         elif post_accion == "siguiente":
             self._mostrar_siguiente_notificacion(sesiones)
         elif post_accion == "sub_flujo":
@@ -266,6 +265,51 @@ class GestionRecetasCliente:
                 ).replace("{medicamento}", med_label)
                 sesiones[self.numero].cliente_receta_estado = flujo
                 self.sw.enviar(msj)
+
+    def _iniciar_recordatorio_m7(self, sesiones, receta_id, med_id, beneficiario_id, opcion=None):
+        """M7 — inicia el flujo de creación de recordatorio desde esperar/agendar."""
+        from src.agenda.recordatorio_service import RecordatorioService
+        resultado_receta = self.receta_manager.get_receta(receta_id)
+        fecha_venc = ""
+        receta_data = {}
+        if resultado_receta:
+            _, receta_data = resultado_receta
+            fecha_venc = receta_data.get("fecha_vencimiento", "")
+
+        estados_config = self.farm_config.get("recetas", {}).get("estados_receta", {})
+        estado_actual_cfg = estados_config.get(receta_data.get("estado", ""), {})
+        estado_vinculado = estado_actual_cfg.get("camino_feliz", "")
+        condicion_item = (opcion or {}).get("estado_item_destino", "")
+        dest_recs = estados_config.get(estado_vinculado, {}).get("recordatorio", [])
+        rec_cfg = next((r for r in dest_recs if r.get("condicion_item") == condicion_item), {})
+        origen = rec_cfg.get("generacion")
+
+        med_label = self.med_manager.get_label(med_id) if med_id else "el medicamento"
+        rs = RecordatorioService(self.numero)
+        rs.iniciar_crear(
+            sesiones=sesiones,
+            persona_id=beneficiario_id,
+            enlatado="farmacia",
+            entidad_id=receta_id,
+            descripcion=f"🔔 {med_label} — revisá si llegó al stock",
+            fecha_max=fecha_venc,
+            estado_vinculado=estado_vinculado,
+            origen=origen,
+        )
+        if not rs.esta_en_flujo(sesiones):
+            self._evaluar_estado_post_respuesta(receta_id, sesiones)
+        else:
+            sesiones[self.numero].agenda_receta_id_pendiente = receta_id
+            sesiones[self.numero].agenda_post_flujo_accion = "siguiente_notificacion_cliente"
+
+    def continuar_siguiente_notificacion(self, sesiones):
+        """Permite a submenu_farmacia reanudar las acciones tras un subflujo de agenda."""
+        receta_id = getattr(sesiones[self.numero], "agenda_receta_id_pendiente", None)
+        sesiones[self.numero].agenda_receta_id_pendiente = None
+        if receta_id:
+            self._evaluar_estado_post_respuesta(receta_id, sesiones)
+        else:
+            self._mostrar_siguiente_notificacion(sesiones)
 
     def _procesar_escribir_consulta(self, comando, sesiones):
         """El cliente escribe su consulta sobre un medicamento — transiciona H→M."""
@@ -313,7 +357,7 @@ class GestionRecetasCliente:
         prefijo_chat = flujo.get("prefijo_chat", "Token de autorización: ")
         msg_key = flujo.get("msg_confirmacion", "token_enviado_cliente")
 
-        self.receta_manager.marcar_mensaje_leido(receta_id, msg_id, beneficiario_id)
+        self.receta_manager.marcar_tipo_como_leido(receta_id, "solicitud_token", beneficiario_id)
         self.receta_manager.cambiar_estado(receta_id, estado_destino, "Token enviado por paciente")
         self.receta_manager.agregar_mensaje_chat(
             receta_id, beneficiario_id,
@@ -566,11 +610,21 @@ class GestionRecetasCliente:
             _, receta = resultado
             beneficiario_id = getattr(sesiones[self.numero], "cliente_receta_beneficiario_id", None)
             items_activos = [it for it in receta["items"] if it["estado_item"] != ESTADO_OMITIDO]
-            estados_resueltos = ("disponible", "alternativa_aceptada", "rechazado_usuario")
-            todos_resueltos = all(it["estado_item"] in estados_resueltos for it in items_activos)
+            items_cfg = self.farm_config.get("recetas", {}).get("estados_item", {})
+            todos_resueltos = all(
+                not items_cfg.get(it["estado_item"], {}).get("es_pendiente") and
+                not items_cfg.get(it["estado_item"], {}).get("requiere_respuesta_cliente")
+                for it in items_activos
+            )
 
-            if todos_resueltos and receta["estado"] in ("a_la_espera", "confirmando"):
-                self.receta_manager.cambiar_estado(receta_id, "en_gestion", "Cliente confirmó — vuelve a farmacia")
+            estado_receta_id = receta["estado"]
+            estado_receta_cfg = self.farm_config.get("recetas", {}).get("estados_receta", {}).get(estado_receta_id, {})
+            if todos_resueltos and estado_receta_cfg.get("evaluar_items"):
+                from src.agenda.agenda_manager import AgendaManager
+                AgendaManager().cancelar_por_entidad_y_vinculo(receta_id, [estado_receta_id], origen="automatico")
+                cf = estado_receta_cfg.get("camino_feliz")
+                self.receta_manager.cambiar_estado(receta_id, cf, "Cliente respondió todas las novedades")
+                self.receta_manager.crear_recordatorio_automatico(receta_id, cf)
                 self.receta_manager.agregar_mensaje_chat(
                     receta_id, beneficiario_id,
                     "Respondí a todas las novedades. La receta está lista para continuar.",
@@ -613,3 +667,4 @@ class GestionRecetasCliente:
         sesiones[self.numero].cliente_receta_opciones_keys = None
         sesiones[self.numero].cliente_receta_lista = None
         sesiones[self.numero].cliente_receta_chat_receta_id = None
+        sesiones[self.numero].agenda_receta_id_pendiente = None

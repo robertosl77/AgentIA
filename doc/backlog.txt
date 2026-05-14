@@ -6,13 +6,199 @@ BACKLOG — módulo farmacia
 FIXES
 ──────────────────────────────────────────────────────
 
+[B20] ✅ Hardcodeo: estado_vinculado y origen hardcodeados en gestion_recetas_cliente.py — RESUELTO
 
+[B19] Hardcodeo: post_accion interpretado con if/elif en Python en lugar de config
+  Problema:
+    - Los valores de post_accion ("recordatorio_y_siguiente", "evaluar_y_siguiente",
+      "siguiente", "sub_flujo") están hardcodeados en Python como if/elif.
+    - Viola la regla de que toda lógica de negocio va en el JSON.
+  Propuesta:
+    - Definir un mapa de handlers en config o en un registro Python puro,
+      de modo que post_accion sea una clave que resuelve a una función,
+      sin if/elif por valor de negocio.
+  ⚠️  PENDIENTE DE DISEÑO
+
+[B18] Push incorrecto al avanzar G→B cuando ítems están en "esperando_stock"
+  Problema:
+    - Al avanzar confirmado → en_gestion, si los ítems quedan en esperando_stock,
+      _evaluar_estado_post_cambio_item auto-transiciona a a_la_espera.
+    - El push de a_la_espera dice "Hay novedades que requieren tu atención", pero
+      el cliente ya respondió todo — no hay novedad nueva.
+  Propuesta:
+    - Configurar notificacion_push en en_gestion con mensaje tipo
+      "El farmacéutico está procesando tu receta" (dispara al entrar desde confirmado).
+    - Evaluar si el push de a_la_espera debe suprimirse cuando todos los ítems
+      son esperando_stock (cliente no tiene nueva acción pendiente).
+  ⚠️  PENDIENTE DE DISEÑO — definir mensaje exacto y criterio de supresión.
+
+[B17] ✅ Vista "Mis recordatorios" — ocultar recordatorios automáticos al cliente
+  - AgendaManager.crear() agrega param origen="manual"|"automatico".
+  - RecordatorioAutomaticoService pasa origen="automatico" en todos sus crear().
+  - RecordatorioService filtra origen="manual" en _mostrar_ver() y contar_pendientes().
+
+[B15] Vista de recetas pendientes para staff — revisar y mejorar
+  Problema:
+    - El icono de estado aparece al final de la línea y pierde relevancia en esa
+      posición; no es lo primero que ve el farmacéutico al escanear la lista.
+    - Revisar si la vista muestra TODAS las recetas activas o solo un subconjunto.
+  Propuesta:
+    - Rediseñar el formato de cada ítem para que el icono/estado quede en una
+      posición más prominente (ej. al inicio).
+    - Evaluar qué información es realmente útil para el staff en esta vista.
+  ⚠️  PENDIENTE DE DISEÑO — relevar con el usuario antes de implementar.
+
+[B16] Seguimiento automático al pasar a "Pendiente de retiro" (recordatorio al cliente)
+  Problema:
+    - Cuando la receta queda lista para retirar, el cliente no recibe seguimiento
+      si no pasa a buscarla antes del vencimiento.
+  Propuesta (flag: "retiro_cliente": false en agenda_config.json — default deshabilitado):
+    - Al entrar al estado "pendiente_retiro", si delta >= seguimiento_automatico_horas
+      → recordatorio al cliente en ahora + seguimiento_automatico_horas:
+      "📦 Tu medicación está lista. Recordá retirarla antes del [fecha_vencimiento]."
+    - Si delta < seguimiento_automatico_horas → push inmediato.
+    - Al cambiar de estado → B13 cancela el recordatorio automáticamente.
+  ⚠️  Default false — en la mayoría de los casos el push de "lista para retirar"
+      ya es suficiente aviso.
+
+[B14] Seguimiento automático al pasar a "Token enviado" (recordatorio al staff)
+  Problema:
+    - Cuando el cliente envía el token, la receta pasa a "token_enviado" pero el
+      farmacéutico no recibe ningún seguimiento si no valida el token a tiempo.
+  Propuesta (flag: "token_validar_staff" en agenda_config.json):
+    - Al entrar al estado "token_enviado", calcular delta entre fecha actual y
+      fecha_vencimiento de la receta.
+    - Si delta >= seguimiento_automatico_horas → recordatorio a TODOS los operadores
+      del tenant en ahora + seguimiento_automatico_horas:
+      "🔑 Tenés un token pendiente de validar — Receta de [Cliente], vence [fecha]."
+    - Si delta < seguimiento_automatico_horas → push inmediato de alerta a todos.
+    - Al cambiar de estado (farmacéutico avanza la receta) → B13 cancela el
+      recordatorio automáticamente.
+
+[B13] Cancelación automática de recordatorios al cambiar estado de receta
+  Problema:
+    - Cuando una receta avanza de estado, los recordatorios pendientes (automáticos
+      y manuales) asociados a esa receta quedan huérfanos: siguen activos en local
+      y en Google Calendar aunque ya no tengan sentido.
+    - Ej: recordatorio de token pendiente sigue vigente aunque el cliente ya lo envió.
+    - Ej: recordatorio de vencimiento sigue vigente aunque la receta ya fue entregada.
+  Diseño (aprobado):
+    Nuevo campo en el modelo de recordatorio: "estado_vinculado"
+      - B11 → "a_la_espera"
+      - B12 → "requiere_autorizacion"
+      - B14 → "token_enviado"
+      - B16 → "pendiente_retiro"
+      - B10 R1/R2 → "*final*" (se cancelan solo cuando el nuevo estado es es_final: true)
+      - M7/M14 (manuales) → "*final*" (sobreviven cambios intermedios)
+    Lógica en _acciones_al_entrar(receta_id, nuevo_estado):
+      si eliminacion_automatica == true:
+        1. cancelar recordatorios donde estado_vinculado está en nuevo_estado.inflow
+        2. si nuevo_estado.es_final == true → cancelar TODOS los pendientes restantes
+    - cancelar(rid) llama calendar.cancelar_evento(google_event_id) → cubre
+      local + Google Calendar en una sola operación.
+    - Nueva clave en agenda_config.json: "eliminacion_automatica": true/false
+    - Nueva clave en agenda_config.json: "seguimiento_automatico_horas": { "farmacia": 24 }
+      Usada por B11, B12, B14, B16 para calcular cuándo crear el recordatorio de seguimiento.
+    - Nueva sección en agenda_config.json: "recordatorios_automaticos": { "farmacia": {
+        "vencimiento_r1": true, "vencimiento_r2": true, "seguimiento_espera": true,
+        "seguimiento_token": true, "token_validar_staff": true,
+        "procesando_staff": false, "retiro_cliente": false } }
+  Nuevo método requerido en AgendaManager:
+    cancelar_por_entidad_y_vinculo(entidad_id, estados_inflow, es_final)
+      → cancela por estado_vinculado + limpieza total si es_final
+
+[B12] Seguimiento automático al pasar a "Requiere autorización"
+  Problema:
+    - Cuando la receta pasa al estado "requiere_autorizacion", el cliente debe
+      enviar el token de obra social, pero no hay límite ni alerta si no lo hace.
+  Propuesta (flag: "seguimiento_token" en agenda_config.json):
+    - Lógica idéntica a B11: al entrar al estado "requiere_autorizacion", calcular
+      delta entre fecha actual y fecha_vencimiento.
+    - Si delta >= seguimiento_automatico_horas → recordatorio en ahora + seguimiento_automatico_horas:
+      "Tenés pendiente enviar tu token de autorización de obra social."
+    - Si delta < seguimiento_automatico_horas → push inmediato de alerta al cliente.
+    - Al cambiar de estado (token enviado u otro avance) → B13 cancela el
+      recordatorio automáticamente.
+
+[B10] Recordatorio automático de vencimiento al cargar receta
+  Problema:
+    - Cuando el cliente carga una receta y la envía a la farmacia, no se genera
+      ningún aviso automático sobre su fecha de vencimiento.
+  Diseño (aprobado):
+    Cada recordatorio automático tiene un flag en agenda_config.json bajo
+    "recordatorios_automaticos.farmacia" (true/false) para que cada farmacéutico
+    pueda habilitarlo o deshabilitarlo sin tocar código.
+    Al crear la receta se generan automáticamente 2 recordatorios para el cliente:
+    R1: fecha = fecha_vencimiento - margen_minimo_dias, hora = hora_defecto
+        - Solo si (fecha_vencimiento - hoy) > margen_minimo_dias; si ya estamos
+          dentro del margen → se omite R1.
+    R2: fecha = fecha_vencimiento mismo día, hora = hora_defecto
+        - Siempre se crea.
+    Si la receta se cierra antes de vencer → cancelar ambos recordatorios.
+    Configuración: margen_minimo_dias y hora_defecto en agenda_config.json.
+
+[B11] Seguimiento automático al pasar a "A la espera del cliente"
+  Problema:
+    - Cuando la receta pasa al estado "a_la_espera", el cliente debe responder
+      sobre alternativas o sin_stock, pero no hay límite ni alerta si no lo hace.
+  Propuesta (flag: "seguimiento_espera" en agenda_config.json):
+    - Al entrar al estado "a_la_espera", calcular delta entre fecha actual y
+      fecha_vencimiento de la receta.
+    - Si delta >= seguimiento_automatico_horas → recordatorio en ahora + seguimiento_automatico_horas
+      ("Tenés pendiente responder sobre tu receta").
+    - Si delta < seguimiento_automatico_horas → push inmediato de alerta:
+      "⚠️ Tu receta está por vencer y tiene medicamentos sin resolver."
+    - Si la receta avanza de estado → B13 cancela el recordatorio automáticamente.
+
+[B9] Gestión de horarios — validar agenda antes de configurar día no laborable
+  Problema:
+    - Al marcar un día como no laborable en el enlatado de horarios, no se verifica
+      si existen turnos o recordatorios agendados en el enlatado de agenda (Google
+      Calendar) para ese día.
+    - Puede generar conflictos: el cliente tiene un turno confirmado pero la farmacia
+      lo cierra sin aviso.
+  Propuesta:
+    - Al intentar configurar un día no laborable, consultar el enlatado de agenda
+      del contexto actual (farmacia, auxilio, etc.) vía Google Calendar freebusy/events.
+    - Si hay eventos en ese rango → alertar al operador con detalle y pedir confirmación
+      explícita antes de aplicar el cierre.
+    - Si no hay eventos → proceder normalmente.
+  ⚠️  Depende de: R4 Agenda (enlatado de agenda debe estar implementado primero).
 
 ──────────────────────────────────────────────────────
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 
+[M14] Staff — Agendar recordatorio desde receta en estado "en_gestion"
+  Contexto:
+    - El farmacéutico puede agendar un recordatorio libre desde el detalle de
+      una receta en estado "en_gestion" (opción ya existe como placeholder).
+  Diseño (pseudocódigo aprobado):
+    INPUTS:
+      1. ¿Para qué es el recordatorio? (texto libre)
+      2. ¿Para qué fecha? (DD/MM/YYYY) — pasa por validar_fecha_recordatorio(modo="manual")
+      3. ¿A qué hora? (HH:MM) — default: hora_defecto de agenda_config
+      4. Confirmar
+    PROCESO AL CREAR:
+      - agenda_manager.crear(persona_id=staff_lid, enlatado="farmacia",
+          entidad_id=receta_id, descripcion=[texto libre])
+      - calendar_provider.crear_evento(...)
+    CUANDO DISPARA:
+      - Google Calendar notifica al farmacéutico nativamente.
+      - Push WPP: "🔔 [descripción] — Receta de [Cliente], vence [fecha_vencimiento]."
 
+[M13] Integración Google Calendar — OAuth2 + sincronización de recordatorios
+  Contexto:
+    - Los recordatorios se almacenan localmente en recordatorios.json.
+    - No hay integración con Google Calendar; las notificaciones al cliente no se envían.
+    - El OAuth2 de Google Drive está pendiente; Calendar comparte el mismo flujo de autorización.
+  Propuesta:
+    - Implementar OAuth2 de Google (Drive + Calendar con mismo token).
+    - Al crear un recordatorio, registrarlo también como evento en Google Calendar
+      del tenant (calendar.google.com) para aprovechar las notificaciones nativas.
+    - Al cancelar o modificar, sincronizar el cambio en Calendar (borrar/actualizar evento).
+  ⚠️  Prerequisito de: B9 (validar agenda antes de día no laborable).
+  ⚠️  Depende de: OAuth2 Google pendiente (ver project_file_services.md).
 
 [M12] Conversación directa con farmacia — modo passthrough
   Contexto:
@@ -81,22 +267,35 @@ MEJORAS / FEATURES
     - Si el ticket no recibe respuesta en 24h, disparar recordatorio automático al staff
     - Estado del ticket visible para el cliente (abierto / en curso / resuelto)
 
-[M8] Sistema de alertas de vencimiento de recetas
-  Problema:
-    - Las recetas vencen sin que el cliente ni el staff reciban aviso previo.
-  Propuesta:
-    - Job/scheduler que detecte recetas próximas a vencer (configurable: ej. 7 días antes)
-    - Notificación push al cliente y alerta en panel de staff
-    - Config en farmacia_config.json: días_aviso_vencimiento
-
 [M7] Acciones del cliente por medicamento — esperar / agendar recordatorio
   Problema:
     - Cuando un medicamento está sin stock o tiene alternativa, el cliente solo puede
       aceptar o rechazar; no puede pedir que se le recuerde cuando haya stock.
-  Propuesta:
-    - Nueva acción disponible en el hilo de chat del medicamento: "Agendar recordatorio"
-    - El cliente elige una fecha; se valida que sea anterior al vencimiento de la receta
-    - Al llegar la fecha, se envía push al cliente retomando el hilo de ese medicamento
+  Diseño (aprobado):
+    INPUTS:
+      1. ¿Para qué fecha? (DD/MM/YYYY) — pasa por validar_fecha_recordatorio
+      2. ¿A qué hora? (HH:MM) — default: hora_defecto de agenda_config
+      3. Confirmar
+    PROCESO AL CREAR:
+      - recordatorio_service.iniciar_crear(persona_id=beneficiario_id,
+          enlatado="farmacia", entidad_id=receta_id+medicamento_id,
+          descripcion="[Medicamento] — revisá si llegó al stock",
+          fecha_max=fecha_vencimiento)
+      - calendar_provider.crear_evento(...)
+    CUANDO DISPARA:
+      - Push WPP: "🔔 ¿Llegó [Medicamento]? Tu receta vence el [fecha_vencimiento].
+        Entrá a Acciones para ver el estado."
+    FUNCIÓN COMPARTIDA: validar_fecha_recordatorio(fecha, hora, fecha_vencimiento, modo)
+      modo: "manual" | "automatico"
+      - [solo manual] horarios_service.es_dia_laborable(fecha)?
+          si no → sugerir días cercanos al usuario
+          (omitir si el negocio no tiene horarios configurados)
+      - fecha > ahora (si hoy: hora > hora actual)
+      - fecha < fecha_vencimiento
+      - (fecha_vencimiento - fecha) >= margen_minimo_dias → si no: negativa con aviso
+      En modo "manual": falla → mensaje al usuario, no se crea el recordatorio.
+      En modo "automatico": falla → skip silencioso, no se crea el recordatorio.
+      Transversal a TODOS los recordatorios (manuales y automáticos).
 
 [M6] Horarios como enlatado (módulo independiente o asociado a persona)
   Problema:
@@ -108,6 +307,31 @@ MEJORAS / FEATURES
     - Config en JSON: días, franjas horarias, excepciones
     - Consulta desde el chatbot: "¿Cuándo atiende?"
   ⚠️  Prerequisito de: R4 Agenda y R3 Turnos — deben implementarse después.
+
+[M6b] Horarios — configurar bloqueos eventuales con granularidad (día, rango horario)
+  Contexto:
+    - Actualmente horarios_service considera "cierres eventuales" pero no hay
+      interfaz para configurarlos con granularidad parcial.
+    - Un negocio puede necesitar bloquear un rango específico sin cerrar el día
+      completo: ej. "el lunes que viene libre de 14 a 16hs".
+  Propuesta:
+    - Permitir configurar eventuales con los siguientes niveles de granularidad:
+        · Día completo: cierre total (ya existe como concepto)
+        · Día + hora exacta: bloqueo puntual
+        · Rango horario dentro de un día: ej. 14:00–16:00
+    - El sistema "tapa" ese hueco: en ese día/rango, el slot queda no disponible
+      para turnos y se evita crear recordatorios en ese horario.
+    - Guardia sigue siendo excepción: si hay guardia ese día, cubre 0–24 y el
+      bloqueo eventual no aplica (o se evalúa prioridad configurable).
+  Diseño transversal de horarios en agenda:
+    - La validación de horarios dentro de validar_fecha_recordatorio aplica SOLO
+      en modo "manual" (usuario elige la fecha). En modo "automatico" se omite.
+    - Los recordatorios automáticos se crean en la fecha calculada sin restricción
+      de horarios — son avisos, no turnos.
+    - Si el negocio no tiene horarios configurados → la capa se omite.
+    - Los recordatorios NO ocupan slots (pueden ser N en el mismo día/hora).
+    - Guardia = disponibilidad 0–24; cualquier hora del día es válida.
+  ⚠️  PENDIENTE DE DISEÑO — analizar interfaz conversacional para configurar eventuales.
 
 [M1] Sistema de navegación global — reemplazar "cancelar" y retorno secuencial
   Problema:
@@ -140,6 +364,26 @@ ARQUITECTURA — refactors estructurales pendientes
     - Los tenants siguen configurando sus propios campos en sus JSON — no se pierde
       la flexibilidad multi-tenant.
   ⚠️  Refactor transversal — hacer junto con el refactor multi-tenant pendiente (ver project_multitenant.md).
+
+──────────────────────────────────────────────────────
+TECNOLOGÍA — para analizar / evaluar
+──────────────────────────────────────────────────────
+
+[T1] Gemini API — webhooks event-driven
+  Fuente: notificación Google AI Studio (2026-05-10)
+  Qué es:
+    - En vez de polling ("¿terminaste?"), se registra una URL propia y Google
+      envía un HTTP POST en el momento en que un job termina.
+    - Basado en Standard Webhooks spec: requests firmados, entrega "at-least-once"
+      con backoff automático.
+    - Soporta registro estático (nivel proyecto) y dinámico (por request).
+  Casos potenciales en este proyecto:
+    - M11 (agente IA análisis de historial de medicamentos): si el análisis vía
+      Gemini tarda segundos, webhook evita que el bot quede en espera activa.
+    - Agenda con agente IA: si algún día el scheduler de recordatorios o el
+      seguimiento automático se delega a un agente Gemini, webhook dispara la
+      acción local al completar.
+  ⚠️  Sin urgencia — evaluar cuando M11 o un agente IA esté en diseño activo.
 
 ──────────────────────────────────────────────────────
 ROADMAP — enlatados futuros reservados

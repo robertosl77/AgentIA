@@ -64,6 +64,10 @@ class SubMenuStaff:
         elif self.recetas_staff.esta_en_flujo(sesiones):
             self.recetas_staff.procesar(comando, sesiones)
 
+    def mostrar_detalle_receta_activa(self, sesiones):
+        """Expuesto para que submenu_farmacia retome el detalle tras un subflujo de agenda."""
+        self.recetas_staff.mostrar_detalle_receta_activa(sesiones)
+
     # ── HANDLERS ──────────────────────────────────────────────────────────────
 
     def gestionar_guardias(self, sesiones):

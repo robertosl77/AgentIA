@@ -10,7 +10,7 @@ from src.farmacia.constants import ESTADO_OMITIDO
 from src.farmacia.medicamento_manager import MedicamentoManager
 from src.farmacia.obra_social_manager import ObraSocialManager
 from src.farmacia.vinculacion_manager import VinculacionManager
-
+from src.agenda.agenda_manager import AgendaManager
 
 from src.tenant import data_path
 
@@ -108,8 +108,9 @@ class GestionRecetasStaff:
             sesiones[self.numero].staff_receta_lista = pendientes
             receta = pendientes[0]
             sesiones[self.numero].staff_receta_id = receta["receta_id"]
-            if receta["estado"] == "pendiente":
-                self.receta_manager.cambiar_estado(receta["receta_id"], "en_gestion", "Farmacia procesando")
+            config = self._get_estado_receta_config(receta["estado"])
+            if config.get("auto_avanzar_al_abrir"):
+                self.receta_manager.cambiar_estado(receta["receta_id"], config["camino_feliz"], "Farmacia procesando")
             self._mostrar_detalle(sesiones)
             return
 
@@ -159,12 +160,17 @@ class GestionRecetasStaff:
         receta = pendientes[idx]
         sesiones[self.numero].staff_receta_id = receta["receta_id"]
 
-        if receta["estado"] == "pendiente":
-            self.receta_manager.cambiar_estado(receta["receta_id"], "en_gestion", "Farmacia procesando")
+        config = self._get_estado_receta_config(receta["estado"])
+        if config.get("auto_avanzar_al_abrir"):
+            self.receta_manager.cambiar_estado(receta["receta_id"], config["camino_feliz"], "Farmacia procesando")
 
         self._mostrar_detalle(sesiones)
 
     # ── DETALLE DE RECETA ─────────────────────────────────────────────────────
+
+    def mostrar_detalle_receta_activa(self, sesiones):
+        """Público — permite que el orquestador retome el detalle tras un subflujo externo."""
+        self._mostrar_detalle(sesiones)
 
     def _mostrar_detalle(self, sesiones):
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
@@ -217,21 +223,30 @@ class GestionRecetasStaff:
         self.receta_manager.migrar_notas_a_chat(receta_id)
         chat = self.receta_manager.get_chat(receta_id)
 
-        # Acciones del cliente por medicamento (solo tipo "accion")
-        acciones_por_med = {}
-        for msg in chat:
-            if msg["autor"] != "farmacia" and msg.get("tipo") == "accion":
-                med_id = msg.get("medicamento_id")
-                if med_id:
-                    acciones_por_med.setdefault(med_id, []).append(msg)
+        # Último mensaje del cliente por medicamento (accion o consulta vinculada al ítem)
+        # Solo se consideran mensajes posteriores al último mensaje de farmacia para ese ítem.
+        ultimo_farmacia_idx = {}
+        for i, msg in enumerate(chat):
+            if (msg["autor"] == "farmacia"
+                    and msg.get("medicamento_id")
+                    and msg.get("tipo") in ("sin_stock", "alternativa")):
+                ultimo_farmacia_idx[msg["medicamento_id"]] = i
 
-        # Consultas sin respuesta (tipo "consulta" sin "respuesta_consulta" posterior)
+        ultimo_cliente_por_med = {}
+        for i, msg in enumerate(chat):
+            if (msg["autor"] != "farmacia"
+                    and msg.get("tipo") in ("accion", "consulta")
+                    and msg.get("medicamento_id")):
+                med_id = msg["medicamento_id"]
+                if i > ultimo_farmacia_idx.get(med_id, -1):
+                    ultimo_cliente_por_med[med_id] = msg
+
+        # Consultas genéricas sin respuesta (sin medicamento_id — van al pie, no bajo el ítem)
         consultas_sin_respuesta = []
         for idx, msg in enumerate(chat):
-            if msg.get("tipo") == "consulta":
-                med_id = msg.get("medicamento_id")
+            if msg.get("tipo") == "consulta" and not msg.get("medicamento_id"):
                 tiene_respuesta = any(
-                    r.get("tipo") == "respuesta_consulta" and r.get("medicamento_id") == med_id
+                    r.get("tipo") == "respuesta_consulta" and not r.get("medicamento_id")
                     for r in chat[idx + 1:]
                 )
                 if not tiene_respuesta:
@@ -254,9 +269,19 @@ class GestionRecetasStaff:
             cant_str = f"{cant_sol}" if cant_sol == cant_rec else f"{cant_sol} de {cant_rec}"
             lineas.append(f"• {icono} {label} — Cant: {cant_str} ({estado_label_item})")
             if item_config.get("mostrar_acciones_cliente"):
-                msgs_accion = acciones_por_med.get(item["medicamento_id"], [])
-                if msgs_accion:
-                    lineas.append(f"   └ {msgs_accion[-1]['mensaje']}")
+                ultimo = ultimo_cliente_por_med.get(item["medicamento_id"])
+                if ultimo:
+                    lineas.append(f"   └ 👤 {ultimo['mensaje']}")
+                    if ultimo.get("tipo") == "consulta":
+                        med_id = item["medicamento_id"]
+                        idx_ultimo = next((i for i, m in enumerate(chat) if m["id"] == ultimo["id"]), -1)
+                        respuesta = next(
+                            (m for m in chat[idx_ultimo + 1:]
+                             if m.get("tipo") == "respuesta_consulta" and m.get("medicamento_id") == med_id),
+                            None
+                        )
+                        if respuesta:
+                            lineas.append(f"      └ 🏥 {respuesta['mensaje']}")
             items_visibles_idx.append(i)
 
         if consultas_sin_respuesta:
@@ -369,9 +394,10 @@ class GestionRecetasStaff:
 
         _, receta = resultado
         items = receta.get("items", [])
+        estados_item_cfg = self.farm_config.get("recetas", {}).get("estados_item", {})
         count = 0
         for i, item in enumerate(items):
-            if item["estado_item"] in ("pendiente", "sin_stock", "alternativa_ofrecida"):
+            if estados_item_cfg.get(item["estado_item"], {}).get("confirmable_staff"):
                 self.receta_manager.cambiar_estado_item(receta_id, i, "disponible")
                 count += 1
 
@@ -395,14 +421,17 @@ class GestionRecetasStaff:
 
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
 
+        en_gestion_cfg = self._get_estado_receta_config("en_gestion")
         if comando.strip() == "1":
-            self.receta_manager.cambiar_estado(receta_id, "requiere_autorizacion", "Farmacia solicita token")
+            destino = en_gestion_cfg.get("camino_feliz")
+            self.receta_manager.cambiar_estado(receta_id, destino, "Farmacia solicita token")
             self.sw.enviar(self._msg("token_si"))
-            self._acciones_al_entrar(receta_id, "requiere_autorizacion")
+            self._acciones_al_entrar(receta_id, destino)
             self._mostrar_detalle(sesiones)
 
         elif comando.strip() == "2":
-            self.receta_manager.cambiar_estado(receta_id, "procesando", "No requiere token — avance directo")
+            destino = en_gestion_cfg.get("camino_feliz_sin_token")
+            self.receta_manager.cambiar_estado(receta_id, destino, "No requiere token — avance directo")
             self.sw.enviar(self._msg("token_no"))
             self._mostrar_detalle(sesiones)
 
@@ -772,7 +801,7 @@ class GestionRecetasStaff:
 
         for estado_id in outflow:
             config = estados_config.get(estado_id, {})
-            if not config.get("automatico", False):
+            if config.get("transicion") != "automatico":
                 opciones.append(estado_id)
 
         for estado_id in inflow:
@@ -815,6 +844,7 @@ class GestionRecetasStaff:
             resultado_previo = self.receta_manager.get_receta(receta_id)
             estado_previo = resultado_previo[1]["estado"] if resultado_previo else ""
 
+            self._limpiar_si_rollback(receta_id, estado_previo, nuevo_estado)
             self.receta_manager.cambiar_estado(receta_id, nuevo_estado, comando.strip())
             self._reset_items_si_corresponde(receta_id, nuevo_estado)
             self._desestimar_si_rollback(receta_id, estado_previo, nuevo_estado)
@@ -853,6 +883,7 @@ class GestionRecetasStaff:
         resultado_previo = self.receta_manager.get_receta(receta_id)
         estado_previo = resultado_previo[1]["estado"] if resultado_previo else ""
 
+        self._limpiar_si_rollback(receta_id, estado_previo, nuevo_estado)
         self.receta_manager.cambiar_estado(receta_id, nuevo_estado, config.get("label", ""))
         self._reset_items_si_corresponde(receta_id, nuevo_estado)
         self._desestimar_si_rollback(receta_id, estado_previo, nuevo_estado)
@@ -886,25 +917,23 @@ class GestionRecetasStaff:
             self._mostrar_detalle(sesiones)
             return
 
-        # Desde en_gestion, el avance pasa por la pregunta de token
-        if estado_actual == "en_gestion":
-            # Desestimar notas pendientes
+        # Si el estado tiene bifurcacion_token, el avance pasa por la pregunta de token
+        if estado_config.get("bifurcacion_token"):
             self._desestimar_notas_items(receta_id)
-            print(f"[PLACEHOLDER] Cancelar recordatorios para receta {receta_id}")
             sesiones[self.numero].staff_receta_estado = "confirmar_token"
             self.sw.enviar(self._msg("pregunta_token"))
             return
 
-        # Desde error_token, reintento limitado → vuelve a requiere_autorizacion (C)
-        if estado_actual == "error_token":
+        # Si el estado tiene es_reintento_token, reintento limitado → vuelve al camino_feliz
+        if estado_config.get("es_reintento_token"):
             max_reintentos = self.farm_config.get("recetas", {}).get("max_reintentos_token", 3)
             historial = receta.get("historial_estados", [])
             ultimo_req = next(
                 (i for i in range(len(historial) - 1, -1, -1)
-                 if historial[i]["estado"] == "requiere_autorizacion"),
+                 if historial[i]["estado"] == camino_feliz),
                 0
             )
-            reintentos = sum(1 for h in historial[ultimo_req:] if h["estado"] == "error_token")
+            reintentos = sum(1 for h in historial[ultimo_req:] if h["estado"] == estado_actual)
 
             if reintentos >= max_reintentos:
                 self.sw.enviar(self._msg("reintentos_agotados", max=max_reintentos))
@@ -912,11 +941,11 @@ class GestionRecetasStaff:
                 return
 
             self.receta_manager.cambiar_estado(
-                receta_id, "requiere_autorizacion",
+                receta_id, camino_feliz,
                 f"Reintento {reintentos}/{max_reintentos} — solicitud de nuevo token"
             )
             self.sw.enviar(self._msg("reintento_token", reintento=reintentos, max=max_reintentos))
-            self._acciones_al_entrar(receta_id, "requiere_autorizacion")
+            self._acciones_al_entrar(receta_id, camino_feliz)
             self._mostrar_detalle(sesiones)
             return
 
@@ -934,6 +963,7 @@ class GestionRecetasStaff:
         self.sw.enviar(self._msg("avance_exitoso", label=cf_label))
 
         self._acciones_al_entrar(receta_id, camino_feliz)
+        self._evaluar_estado_post_cambio_item(receta_id, sesiones)
 
         if cf_config.get("es_final", False):
             self.iniciar(sesiones)
@@ -989,23 +1019,54 @@ class GestionRecetasStaff:
             tipo="respuesta_consulta", medicamento_id=med_id
         )
 
-        # Notificar al cliente por esta respuesta
-        self._acciones_al_entrar(receta_id, "en_consulta")
+        # Notificar al cliente por esta respuesta (usa config del estado actual)
+        resultado_actual = self.receta_manager.get_receta(receta_id)
+        estado_consulta = resultado_actual[1]["estado"] if resultado_actual else "en_consulta"
+        self._acciones_al_entrar(receta_id, estado_consulta)
 
         # Transición M→H solo si no quedan más consultas sin respuesta
         chat = self.receta_manager.get_chat(receta_id)
         meds_en_consulta = self.receta_manager._get_meds_en_consulta(chat)
         if not meds_en_consulta:
-            self.receta_manager.cambiar_estado(receta_id, "a_la_espera", "Farmacia respondió todas las consultas")
+            cf = self._get_estado_receta_config(estado_consulta).get("camino_feliz")
+            self.receta_manager.cambiar_estado(receta_id, cf, "Farmacia respondió todas las consultas")
 
         self.sw.enviar(self._msg("respuesta_consulta_enviada"))
         self._mostrar_detalle(sesiones)
 
-    # ── PLACEHOLDERS ──────────────────────────────────────────────────────────
+    # ── M14 — AGENDAR RECORDATORIO DESDE EN_GESTION ───────────────────────────
 
     def _placeholder_agendar_recordatorio(self, sesiones):
-        self.sw.enviar(self._msg("agendar_recordatorio"))
-        self._mostrar_detalle(sesiones)
+        """M14 — inicia el flujo de creación de recordatorio libre para el staff."""
+        receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
+        if not receta_id:
+            self._mostrar_detalle(sesiones)
+            return
+
+        resultado_receta = self.receta_manager.get_receta(receta_id)
+        fecha_venc = ""
+        if resultado_receta:
+            _, receta_data = resultado_receta
+            fecha_venc = receta_data.get("fecha_vencimiento", "")
+            cliente_nombre = receta_data.get("persona_id", "")
+        else:
+            cliente_nombre = ""
+
+        from src.agenda.recordatorio_service import RecordatorioService
+        rs = RecordatorioService(self.numero)
+        rs.iniciar_crear(
+            sesiones=sesiones,
+            persona_id=self.numero,
+            enlatado="farmacia",
+            entidad_id=receta_id,
+            descripcion=f"🔔 Seguimiento — Receta de {cliente_nombre}, vence {fecha_venc}.",
+            fecha_max=fecha_venc,
+            pedir_descripcion=True,
+        )
+        if not rs.esta_en_flujo(sesiones):
+            self._mostrar_detalle(sesiones)
+        else:
+            sesiones[self.numero].agenda_post_flujo_accion = "detalle_receta_staff"
 
     def _iniciar_validar_token(self, sesiones):
         sesiones[self.numero].staff_receta_estado = "validar_token_resp"
@@ -1018,15 +1079,16 @@ class GestionRecetasStaff:
 
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
 
+        token_cfg = self._get_estado_receta_config("token_enviado")
         if comando.strip() == "1":
-            # Token correcto → procesando
-            self.receta_manager.cambiar_estado(receta_id, "procesando", "Token validado")
+            destino = token_cfg.get("camino_feliz")
+            self.receta_manager.cambiar_estado(receta_id, destino, "Token validado")
             self.sw.enviar(self._msg("token_validado"))
             self._mostrar_detalle(sesiones)
 
         elif comando.strip() == "2":
-            # Token inválido → error_token → reintento (lógica en _avanzar_camino_feliz)
-            self.receta_manager.cambiar_estado(receta_id, "error_token", "Token inválido")
+            destino = token_cfg.get("destino_token_invalido")
+            self.receta_manager.cambiar_estado(receta_id, destino, "Token inválido")
             self._avanzar_camino_feliz(sesiones)
 
         else:
@@ -1059,16 +1121,32 @@ class GestionRecetasStaff:
     def _acciones_al_entrar(self, receta_id, estado_id):
         """
         Ejecuta las acciones declaradas en la config al entrar a un estado:
-        1. Agrega mensaje al chat si mensaje_al_entrar está definido.
-        2. Envía push al cliente si notificacion_push está definida.
+        1. Cancela recordatorios vinculados al estado saliente (B13).
+        2. Crea recordatorios automáticos de seguimiento (B11/B12/B14/B16).
+        3. Agrega mensaje al chat si mensaje_al_entrar está definido.
+        4. Envía push al cliente si notificacion_push está definida.
         """
         config = self._get_estado_receta_config(estado_id)
+
+        inflow = config.get("inflow", [])
+        es_final = config.get("es_final", False)
+        manager = AgendaManager()
+        manager.cancelar_por_entidad_y_vinculo(receta_id, inflow, es_final)
+        manager.cancelar_por_entidad_y_vinculo(receta_id, inflow, es_final, origen="manual")
+        manager.cancelar_por_entidad_y_vinculo(receta_id, [estado_id], origen="manual")
+
+        self._crear_recordatorio_automatico(receta_id, estado_id)
+
         msg_config = config.get("mensaje_al_entrar")
         if msg_config:
             texto = self._msg(msg_config["clave_texto"])
             tipo = msg_config["tipo"]
             self.receta_manager.agregar_mensaje_chat(receta_id, "farmacia", texto, tipo=tipo)
         self._enviar_notificacion_push(receta_id, estado_id)
+
+    def _crear_recordatorio_automatico(self, receta_id, estado_id):
+        """Crea recordatorio automático de seguimiento según el estado (B11/B12/B14/B16)."""
+        self.receta_manager.crear_recordatorio_automatico(receta_id, estado_id)
 
     def _enviar_notificacion_push(self, receta_id, estado_id):
         """
@@ -1133,43 +1211,39 @@ class GestionRecetasStaff:
         _, receta = resultado
         estado_actual = receta.get("estado", "")
 
-        # Evaluar solo desde en_gestion o a_la_espera
-        if estado_actual not in ("en_gestion", "a_la_espera"):
+        estado_config = self._get_estado_receta_config(estado_actual)
+        if not estado_config.get("evaluar_items"):
             return
 
         items_activos = [it for it in receta["items"] if it["estado_item"] != ESTADO_OMITIDO]
+        items_cfg = self.farm_config.get("recetas", {}).get("estados_item", {})
 
-        hay_pendientes = any(it["estado_item"] == "pendiente" for it in items_activos)
-        hay_sin_resolver = any(
-            it["estado_item"] in ("sin_stock", "alternativa_ofrecida")
-            for it in items_activos
-        )
-        todos_resueltos = all(
-            it["estado_item"] in ("disponible", "alternativa_aceptada", "rechazado_usuario")
-            for it in items_activos
-        ) if items_activos else False
+        hay_pendientes = any(items_cfg.get(it["estado_item"], {}).get("es_pendiente") for it in items_activos)
+        hay_sin_resolver = any(items_cfg.get(it["estado_item"], {}).get("sin_resolver") for it in items_activos)
+        todos_resueltos = bool(items_activos) and not hay_pendientes and not hay_sin_resolver
+
+        destino_retorno = estado_config.get("destino_retorno_gestion")
+        destino_espera = estado_config.get("destino_sin_resolver")
 
         if hay_pendientes:
-            # Escenario 1: aún hay items por procesar
-            # Si estábamos en a_la_espera, volver a en_gestion
-            if estado_actual == "a_la_espera":
-                self.receta_manager.cambiar_estado(receta_id, "en_gestion", "Farmacia retomó gestión")
+            # Escenario 1: aún hay items por procesar — si aplica, retornar a gestión
+            if destino_retorno and estado_actual != destino_retorno:
+                self.receta_manager.cambiar_estado(receta_id, destino_retorno, "Farmacia retomó gestión")
             return
 
         if hay_sin_resolver:
-            # Escenario 2: no hay pendientes pero hay sin_stock/alternativa → a_la_espera
-            if estado_actual != "a_la_espera":
+            # Escenario 2: items sin resolver → estado espera cliente
+            if destino_espera and estado_actual != destino_espera:
                 self.receta_manager.desestimar_solicitud_token(receta_id)
-                self.receta_manager.cambiar_estado(receta_id, "a_la_espera", "Items procesados — esperando respuesta del cliente")
+                self.receta_manager.cambiar_estado(receta_id, destino_espera, "Items procesados — esperando respuesta del cliente")
                 self.sw.enviar(self._msg("cambio_automatico_a_la_espera"))
-                self._acciones_al_entrar(receta_id, "a_la_espera")
+                self._acciones_al_entrar(receta_id, destino_espera)
             return
 
         if todos_resueltos:
-            # Escenario 3: todos resueltos
-            # Si estábamos en a_la_espera, volver a en_gestion
-            if estado_actual == "a_la_espera":
-                self.receta_manager.cambiar_estado(receta_id, "en_gestion", "Todos los items resueltos — listo para avanzar")
+            # Escenario 3: todos resueltos — si aplica, retornar a gestión
+            if destino_retorno and estado_actual != destino_retorno:
+                self.receta_manager.cambiar_estado(receta_id, destino_retorno, "Todos los items resueltos — listo para avanzar")
             self.sw.enviar(self._msg("todos_resueltos"))
 
     def _desestimar_notas_items(self, receta_id):
@@ -1205,6 +1279,16 @@ class GestionRecetasStaff:
         config = self._get_estado_receta_config(nuevo_estado)
         if config.get("reset_items_al_entrar", False):
             self.receta_manager.reset_items(receta_id, "pendiente")
+
+    def _limpiar_si_rollback(self, receta_id, estado_previo, nuevo_estado):
+        """Si es retroceso (nuevo_estado en inflow de estado_previo), cancela todos los
+        recordatorios del nodo actual antes de transicionar."""
+        config_previo = self._get_estado_receta_config(estado_previo)
+        if nuevo_estado not in config_previo.get("inflow", []):
+            return
+        manager = AgendaManager()
+        manager.cancelar_por_entidad_y_vinculo(receta_id, [estado_previo], origen="automatico")
+        manager.cancelar_por_entidad_y_vinculo(receta_id, [estado_previo], origen="manual")
 
     def _desestimar_si_rollback(self, receta_id, estado_previo, nuevo_estado):
         """Si la transición es un retroceso (nuevo_estado en inflow de estado_previo),

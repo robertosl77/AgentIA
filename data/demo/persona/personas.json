@@ -49,21 +49,6 @@
       "tipo_persona": [
         "auxilio_conductor"
       ]
-    },
-    "0a3dd901-8c0b-4601-a3b1-531ec7592300": {
-      "tipo_documento": "DNI",
-      "numero_documento": "11222333",
-      "nombre": "rosa m",
-      "apellido": "l",
-      "fecha_nacimiento": "",
-      "lids": [],
-      "contactos": [],
-      "direcciones": [
-        {
-          "direccion_id": "7c1aa3e7-1ff7-4700-bfe8-1e9baa48a24c",
-          "tipo": "casa"
-        }
-      ]
     }
   }
 }

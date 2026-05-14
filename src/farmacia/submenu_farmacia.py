@@ -15,6 +15,7 @@ from src.farmacia.gestion_recetas import GestionRecetas
 from src.farmacia.gestion_recetas_cliente import GestionRecetasCliente
 from src.farmacia.staff import SubMenuStaff
 from src.horarios import ConsultasHorarios
+from src.agenda.recordatorio_service import RecordatorioService
 
 
 class SubMenuFarmacia:
@@ -49,6 +50,7 @@ class SubMenuFarmacia:
         self.gestion_recetas_cliente = GestionRecetasCliente(numero)
         self.staff = SubMenuStaff(numero)
         self.horarios = ConsultasHorarios(numero)
+        self.recordatorio_service = RecordatorioService(numero)
 
     # ── FLUJO PRINCIPAL ───────────────────────────────────────────────────────
 
@@ -64,6 +66,7 @@ class SubMenuFarmacia:
                 self.gestion_beneficiario.esta_en_flujo(sesiones) or
                 self.gestion_recetas.esta_en_flujo(sesiones) or
                 self.gestion_recetas_cliente.esta_en_flujo(sesiones) or
+                self.recordatorio_service.esta_en_flujo(sesiones) or
                 self.staff.esta_en_flujo(sesiones))
 
     def iniciar(self, sesiones):
@@ -144,6 +147,29 @@ class SubMenuFarmacia:
                 estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
                 if estado_farmacia == "menu_farmacia":
                     self._mostrar_menu_farmacia(sesiones)
+            return
+
+        # Subflujo de recordatorios — va antes de gestion_recetas_cliente para que
+        # M7 (RecordatorioService iniciado desde acciones) tome prioridad sobre el
+        # cliente_receta_estado que sigue activo mientras dura el subflujo.
+        if self.recordatorio_service.esta_en_flujo(sesiones):
+            self.recordatorio_service.procesar(comando, sesiones)
+            if not self.recordatorio_service.esta_en_flujo(sesiones):
+                post_accion = getattr(sesiones[self.numero], "agenda_post_flujo_accion", None)
+                if post_accion == "siguiente_notificacion_cliente":
+                    sesiones[self.numero].agenda_post_flujo_accion = None
+                    self.gestion_recetas_cliente.continuar_siguiente_notificacion(sesiones)
+                    if not self.gestion_recetas_cliente.esta_en_flujo(sesiones):
+                        estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
+                        if estado_farmacia == "menu_farmacia":
+                            self._mostrar_menu_farmacia(sesiones)
+                elif post_accion == "detalle_receta_staff":
+                    sesiones[self.numero].agenda_post_flujo_accion = None
+                    self.staff.mostrar_detalle_receta_activa(sesiones)
+                else:
+                    estado_farmacia = getattr(sesiones[self.numero], "farmacia_estado", None)
+                    if estado_farmacia == "menu_farmacia":
+                        self._mostrar_menu_farmacia(sesiones)
             return
 
         # Subflujo de gestión de recetas del cliente (notificaciones, ver recetas)
@@ -380,9 +406,11 @@ class SubMenuFarmacia:
         cant_notif = self.gestion_recetas_cliente.contar_notificaciones(beneficiario_id)
         cant_acciones = self.gestion_recetas_cliente.contar_notificaciones(beneficiario_id)
         cant_chat = self.gestion_recetas_cliente.contar_chat_nuevos(beneficiario_id)
+        cant_record = self.recordatorio_service.contar_pendientes(beneficiario_id) if beneficiario_id else 0
         notif_badge = f" ({cant_notif} notificaciones)" if cant_notif > 0 else ""
         acciones_badge = f" ({cant_acciones})" if cant_acciones > 0 else ""
         chat_badge = f" ({cant_chat} nuevos)" if cant_chat > 0 else ""
+        record_badge = f" ({cant_record})" if cant_record > 0 else ""
 
         consulta = subgrupo.get("consulta", "").replace("{beneficiario}", nombre_beneficiario)
         lineas = [consulta, ""]
@@ -390,7 +418,7 @@ class SubMenuFarmacia:
             texto = op["texto"].replace("{beneficiario}", nombre_beneficiario)
             texto = texto.replace("{notificaciones}", notif_badge)
             texto = texto.replace("{acciones}", acciones_badge)
-            texto = texto.replace("{recordatorios}", "")
+            texto = texto.replace("{recordatorios}", record_badge)
             texto = texto.replace("{chat}", chat_badge)
             lineas.append(texto)
         lineas.append("Escribí 'salir' para volver:")
@@ -703,7 +731,13 @@ class SubMenuFarmacia:
             self.sw.enviar("⚠️ No hay beneficiario seleccionado.")
             self._mostrar_menu_farmacia(sesiones)
             return
-        self.gestion_recetas_cliente.iniciar_recordatorios(sesiones, beneficiario_id)
+        self.recordatorio_service.iniciar_ver(sesiones, beneficiario_id, enlatado="farmacia")
+        if not self.recordatorio_service.esta_en_flujo(sesiones):
+            # No había recordatorios — re-mostrar subgrupo "Mis recetas"
+            subgrupo = self._get_subgrupo_con_handler("mis_recordatorios")
+            if subgrupo:
+                sesiones[self.numero].farmacia_subgrupo_activo = subgrupo
+                self._mostrar_subgrupo(sesiones, subgrupo)
 
     def chat_receta(self, sesiones):
         beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)
