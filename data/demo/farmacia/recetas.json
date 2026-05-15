@@ -18,16 +18,16 @@
           "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "sin_stock"
+          "estado_item": "esperando_stock"
         },
         {
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "alternativa_ofrecida"
+          "estado_item": "rechazado_usuario"
         }
       ],
-      "estado": "a_la_espera",
+      "estado": "confirmado",
       "operador_id": null,
       "receta_url": null,
       "notas": [],
@@ -39,7 +39,8 @@
           "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
           "timestamp": "2026-05-14T19:58:32.386601",
           "leido_por": [
-            "farmacia"
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ],
           "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
         },
@@ -50,9 +51,227 @@
           "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *lipomin 105 mg x 30*. ¿Lo aceptás?",
           "timestamp": "2026-05-14T19:59:29.658598",
           "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "bc3aab73",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "consulta",
+          "mensaje": "cuando llega el remedio",
+          "timestamp": "2026-05-14T20:27:13.660343",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "2908d1f8",
+          "autor": "farmacia",
+          "tipo": "respuesta_consulta",
+          "mensaje": "mañana",
+          "timestamp": "2026-05-14T20:32:28.938747",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "7cdf5cf4",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "consulta",
+          "mensaje": "mañana desde que hora?",
+          "timestamp": "2026-05-14T20:38:19.701580",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "6c6e3d01",
+          "autor": "farmacia",
+          "tipo": "respuesta_consulta",
+          "mensaje": "desde las 10 am sino fijate en nuestra seccion horarios.",
+          "timestamp": "2026-05-14T20:41:21.794445",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "36f5ddb2",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-14T20:57:21.236833",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "5d25b2e5",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "consulta",
+          "mensaje": "este cuando lo tendras?",
+          "timestamp": "2026-05-14T21:02:09.618437",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
           ],
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "820c7aec",
+          "autor": "farmacia",
+          "tipo": "respuesta_consulta",
+          "mensaje": "no es seguro que hace rato no hay stock.",
+          "timestamp": "2026-05-14T21:05:29.315790",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "9650e93b",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Rechazo el medicamento.",
+          "timestamp": "2026-05-14T21:08:32.662153",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "ec3ffaa0",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
+          "timestamp": "2026-05-14T21:08:33.105677",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "1869301d",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "rechace la lipomax xq tengo en stock, creo que llego con lo que tengo.",
+          "timestamp": "2026-05-14T21:31:40.491879",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "087c3649",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "testing",
+          "timestamp": "2026-05-14T22:54:06.966691",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "525f3006",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "testing",
+          "timestamp": "2026-05-14T22:57:26.168507",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "a8733d8d",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "testing",
+          "timestamp": "2026-05-14T23:00:23.113866",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "07fce345",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "testing",
+          "timestamp": "2026-05-14T23:00:24.748869",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "3eb005c7",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "testing",
+          "timestamp": "2026-05-14T23:13:49.439489",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "84ab6ea5",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "testing",
+          "timestamp": "2026-05-14T23:13:52.905729",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "83b40e97",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "testing",
+          "timestamp": "2026-05-14T23:28:12.227166",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "7de17b20",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "testing",
+          "timestamp": "2026-05-14T23:30:24.864626",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
+        },
+        {
+          "id": "510d920d",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "5555555555",
+          "timestamp": "2026-05-14T23:33:59.344150",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
         }
       ],
       "historial_estados": [
@@ -70,6 +289,41 @@
           "estado": "a_la_espera",
           "timestamp": "2026-05-14T19:59:30.060185",
           "motivo": "Items procesados — esperando respuesta del cliente"
+        },
+        {
+          "estado": "en_consulta",
+          "timestamp": "2026-05-14T20:27:13.661344",
+          "motivo": "Cliente consulta sobre medicamento"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-14T20:32:29.370899",
+          "motivo": "Farmacia respondió todas las consultas"
+        },
+        {
+          "estado": "en_consulta",
+          "timestamp": "2026-05-14T20:38:19.702569",
+          "motivo": "Cliente consulta sobre medicamento"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-14T20:41:22.184445",
+          "motivo": "Farmacia respondió todas las consultas"
+        },
+        {
+          "estado": "en_consulta",
+          "timestamp": "2026-05-14T21:02:09.682434",
+          "motivo": "Cliente consulta sobre medicamento"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-14T21:05:29.316784",
+          "motivo": "Farmacia respondió todas las consultas"
+        },
+        {
+          "estado": "confirmado",
+          "timestamp": "2026-05-14T21:08:33.101677",
+          "motivo": "Cliente respondió todas las novedades"
         }
       ]
     },

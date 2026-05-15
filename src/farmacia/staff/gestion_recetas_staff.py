@@ -241,16 +241,13 @@ class GestionRecetasStaff:
                 if i > ultimo_farmacia_idx.get(med_id, -1):
                     ultimo_cliente_por_med[med_id] = msg
 
-        # Consultas genéricas sin respuesta (sin medicamento_id — van al pie, no bajo el ítem)
-        consultas_sin_respuesta = []
-        for idx, msg in enumerate(chat):
-            if msg.get("tipo") == "consulta" and not msg.get("medicamento_id"):
-                tiene_respuesta = any(
-                    r.get("tipo") == "respuesta_consulta" and not r.get("medicamento_id")
-                    for r in chat[idx + 1:]
-                )
-                if not tiene_respuesta:
-                    consultas_sin_respuesta.append(msg)
+        # Mensajes del cliente sin medicamento_id no leídos por farmacia
+        msgs_generales_no_leidos = [
+            msg for msg in chat
+            if msg["autor"] != "farmacia"
+            and not msg.get("medicamento_id")
+            and "farmacia" not in msg.get("leido_por", [])
+        ]
 
         lineas.append("*Medicamentos:*")
         items = receta.get("items", [])
@@ -284,14 +281,12 @@ class GestionRecetasStaff:
                             lineas.append(f"      └ 🏥 {respuesta['mensaje']}")
             items_visibles_idx.append(i)
 
-        if consultas_sin_respuesta:
+        if msgs_generales_no_leidos:
             lineas.append(f"\n{self._msg('consulta_pendiente_header')}")
-            for msg in consultas_sin_respuesta:
-                med_id = msg.get("medicamento_id")
-                med_label = self.med_manager.get_label(med_id) if med_id else "Receta"
-                lineas.append(f"   💬 *{med_label}:* {msg['mensaje']}")
+            for msg in msgs_generales_no_leidos:
+                lineas.append(f"   💬 {msg['mensaje']}")
 
-        self.receta_manager.marcar_chat_leido(receta_id, "farmacia")
+        no_leidos_chat = self.receta_manager.contar_no_leidos_chat(receta_id, "farmacia")
 
         # Token enviado: mostrar el valor recibido del cliente
         if estado_id == "token_enviado":
@@ -337,6 +332,8 @@ class GestionRecetasStaff:
             method_name = self.OPCIONES_HANDLERS.get(opcion_key)
             if method_name is not None:
                 label_opcion = opciones_labels.get(opcion_key, opcion_key)
+                if opcion_key == "ver_chat" and no_leidos_chat:
+                    label_opcion += f" ({no_leidos_chat})"
                 lineas.append(f"{num}. {label_opcion}")
                 opciones_activas.append(opcion_key)
                 num += 1
@@ -1019,17 +1016,15 @@ class GestionRecetasStaff:
             tipo="respuesta_consulta", medicamento_id=med_id
         )
 
-        # Notificar al cliente por esta respuesta (usa config del estado actual)
+        # Transición M→H solo si no quedan más consultas sin respuesta
         resultado_actual = self.receta_manager.get_receta(receta_id)
         estado_consulta = resultado_actual[1]["estado"] if resultado_actual else "en_consulta"
-        self._acciones_al_entrar(receta_id, estado_consulta)
-
-        # Transición M→H solo si no quedan más consultas sin respuesta
         chat = self.receta_manager.get_chat(receta_id)
         meds_en_consulta = self.receta_manager._get_meds_en_consulta(chat)
         if not meds_en_consulta:
             cf = self._get_estado_receta_config(estado_consulta).get("camino_feliz")
             self.receta_manager.cambiar_estado(receta_id, cf, "Farmacia respondió todas las consultas")
+            self._acciones_al_entrar(receta_id, cf)
 
         self.sw.enviar(self._msg("respuesta_consulta_enviada"))
         self._mostrar_detalle(sesiones)

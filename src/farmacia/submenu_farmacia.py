@@ -716,6 +716,17 @@ class SubMenuFarmacia:
             self._mostrar_menu_farmacia(sesiones)
             return
         self.gestion_recetas_cliente.iniciar_acciones(sesiones, beneficiario_id)
+        if getattr(sesiones[self.numero], "cliente_receta_estado", None) is None:
+            submenu_data = self.config.get_submenu("farmacia")
+            for item in submenu_data.get("opciones", []):
+                subgrupo = item.get("subgrupo")
+                if subgrupo and any(
+                    op.get("handler") == "acciones_receta"
+                    for op in subgrupo.get("opciones", [])
+                ):
+                    sesiones[self.numero].farmacia_subgrupo_activo = subgrupo
+                    self._mostrar_subgrupo(sesiones, subgrupo)
+                    break
 
     def ver_mis_recetas(self, sesiones):
         beneficiario_id = getattr(sesiones[self.numero], "farmacia_beneficiario_id", None)

@@ -6,6 +6,31 @@ BACKLOG — módulo farmacia
 FIXES
 ──────────────────────────────────────────────────────
 
+[B23] UX: mejorar visualización en selector de recetas del cliente
+  Problema:
+    - El listado "1. ✔️ Vence: 11/06/2026" es ambiguo cuando hay múltiples recetas con
+      igual fecha de vencimiento — el cliente no puede distinguir cuál es cuál.
+  Propuesta:
+    - Agregar al menos uno de: primer medicamento de la receta, cantidad de ítems,
+      o identificador corto de la receta (últimos 4 chars del ID).
+    - Ej: "1. ✔️ Vence: 11/06/2026 — HIDROTISONA, LIPOMAX"
+  ⚠️  PENDIENTE
+
+[B22] Handler dinámico de transición automática
+  Problema:
+    - El flag transicion: "automatico" en farmacia_config solo se usa hoy para ocultar
+      estados del menú manual del staff. No existe código que lo interprete y dispare
+      la transición al camino_feliz automáticamente al entrar al estado.
+  Propuesta:
+    - Implementar un handler que, después de cambiar_estado, detecte si el estado destino
+      tiene transicion: "automatico" y ejecute la transición al camino_feliz sin intervención.
+    - Aplica a estados que sean verdaderamente de paso (sin recordatorios ni acciones propias).
+  ⚠️  PENDIENTE DE DISEÑO
+
+[B21] UX: agregar ícono ✅ al texto_accion del cliente cuando el ítem ya fue resuelto
+  Ej: "└ 👤✅ Voy a esperar." en lugar de "└ 👤 Voy a esperar."
+  ⚠️  PENDIENTE
+
 [B20] ✅ Hardcodeo: estado_vinculado y origen hardcodeados en gestion_recetas_cliente.py — RESUELTO
 
 [B19] Hardcodeo: post_accion interpretado con if/elif en Python en lugar de config
@@ -166,8 +191,74 @@ FIXES
   ⚠️  Depende de: R4 Agenda (enlatado de agenda debe estar implementado primero).
 
 ──────────────────────────────────────────────────────
+INCIDENCIAS — regresiones detectadas en simulación
+──────────────────────────────────────────────────────
+
+[I4] Chat staff — falta contador de consultas no leídas en opción "💬 Chat"
+  Síntoma:
+    - El menú de receta del staff muestra "2. 💬 Chat" sin indicar si hay mensajes
+      nuevos del cliente. El cliente sí ve "⚡ Acciones (1)" con el conteo.
+  Causa:
+    - No hay lógica que cuente mensajes de tipo "consulta" no leídos por staff
+      y lo inyecte en el label de la opción Chat.
+  Propuesta:
+    - Agregar en el detalle de receta staff: "2. 💬 Chat (n)" donde n = cantidad
+      de mensajes tipo consulta sin leer por el operador.
+    - Usar el mismo patrón que contar_notificaciones del cliente.
+  ⚠️  PENDIENTE
+
+[I3] Push por nuevo mensaje de chat (tipo consulta) — configuración faltante
+  Síntoma:
+    - Cuando el cliente envía un mensaje libre (consulta) en una receta, no hay
+      push al staff. No está claro dónde ni cómo se configura ese comportamiento.
+  Causa:
+    - No existe en farmacia_config.json (ni en ningún JSON) un bloque que defina
+      si se envía push al staff cuando el cliente escribe en el chat de la receta.
+  Propuesta:
+    - Definir en farmacia_config.json (por estado o a nivel recetas) un flag
+      "push_nueva_consulta_staff": true/false que controle el comportamiento.
+    - Implementar la lógica en el handler de envío de chat.
+  ⚠️  PENDIENTE DE DISEÑO
+
+[I2] Chat de receta — mensajes tipo "consulta" aparecen fuera de lugar en la vista cliente
+  Síntoma:
+    - Los mensajes libres del cliente ("rechace la lipomax xq tengo en stock...")
+      aparecen en una sección separada "Consultas o chat:" al final, después de las
+      opciones. Deberían aparecer entre los medicamentos y las opciones de menú.
+  Causa:
+    - La vista del chat agrupa los mensajes por tipo y renderiza "consultas" al final
+      en lugar de intercalarlos cronológicamente o en el bloque de medicamentos.
+  Propuesta:
+    - Revisar el orden de renderizado del chat para que los mensajes de tipo consulta
+      aparezcan entre el bloque de medicamentos y las opciones de acción.
+  ⚠️  PENDIENTE
+
+[I1] Vista de receta staff — ítem con estado "rechazado_usuario" no muestra la acción del cliente
+  Síntoma:
+    - LIPOMAX aparece como "🚫 LIPOMAX 105 — Cant: 1 (Rechazado por usuario)" sin el
+      "└ 👤 Rechazar el medicamento." que debería mostrar la acción que tomó el cliente.
+    - HIDROTISONA sí muestra "└ 👤 Voy a esperar." correctamente.
+  Causa probable:
+    - La acción "rechazar" tiene un tratamiento distinto al de "esperar" y "aceptar propuesta"
+      en el código de renderizado — posiblemente hardcodeado para ciertos estados_item.
+  Propuesta:
+    - Revisar el renderizado de texto_accion: debe ser genérico para cualquier estado_item
+      que tenga texto_accion registrado, sin discriminar por tipo de acción.
+  ⚠️  PENDIENTE — no modificar sin análisis y confirmación previa.
+
+──────────────────────────────────────────────────────
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
+
+[M15] Modelo de recordatorio en farmacia_config.json para ABM
+  Contexto:
+    - Si el operador borra todos los recordatorios de un estado, no queda estructura de referencia.
+    - Un sistema de ABM (vía WPP o app web) necesita un modelo base para crear nuevos recordatorios.
+  Propuesta:
+    - Agregar bloque "modelos_recordatorio" en farmacia_config.json con la estructura completa
+      de un recordatorio (todos los atributos: flag, descripcion, generacion, activo, condicion_item, persiste_transicion).
+    - El ABM toma de ahí el template para crear/editar recordatorios por estado.
+  ⚠️  PENDIENTE DE DISEÑO
 
 [M14] Staff — Agendar recordatorio desde receta en estado "en_gestion"
   Contexto:

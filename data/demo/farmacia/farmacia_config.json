@@ -352,7 +352,7 @@
         "camino_feliz": "en_gestion",
         "requiere_motivo": false,
         "es_final": false,
-        "transicion": "automatico",
+        "transicion": "manual",
         "notificacion_push": null,
         "responsable": ["staff"],
         "recordatorio": [
@@ -555,11 +555,13 @@
       },
       "alternativa_aceptada": {
         "label": "Alternativa aceptada",
-        "icono": "🔄✅"
+        "icono": "🔄✅",
+        "mostrar_acciones_cliente": true
       },
       "rechazado_usuario": {
         "label": "Rechazado por usuario",
-        "icono": "🚫"
+        "icono": "🚫",
+        "mostrar_acciones_cliente": true
       },
       "omitido_usuario": {
         "label": "Omitido",
@@ -801,6 +803,9 @@
       ]
     },
     "flujos_input_cliente": {
+      "chat_libre": {
+        "notificacion_push_staff": "🤖 *Asistente Virtual Informa:*\n\n💬 El cliente te envió un mensaje en el chat de su receta. Ingresá para responderle."
+      },
       "escribir_consulta": {
         "estado_receta_destino": "en_consulta",
         "notificacion_staff": "en_consulta",

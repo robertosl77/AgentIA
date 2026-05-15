@@ -587,6 +587,13 @@ class GestionRecetasCliente:
         self.receta_manager.agregar_mensaje_chat(
             receta_id, beneficiario_id, comando.strip(), tipo="mensaje"
         )
+        flujo = self.farm_config.get("recetas", {}).get("flujos_input_cliente", {}).get("chat_libre", {})
+        push_msg = flujo.get("notificacion_push_staff")
+        if push_msg:
+            operadores = self.farm_config.get("operadores_notificacion", [])
+            from src.send_wpp import SendWPP
+            for lid in operadores:
+                SendWPP(lid).enviar(push_msg)
         self.sw.enviar("✅ Mensaje enviado.")
         self._mostrar_hilo_chat(sesiones)
 
