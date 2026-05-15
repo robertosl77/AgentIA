@@ -272,6 +272,61 @@
             "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
           ]
+        },
+        {
+          "id": "33ecce86",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "no queres esperar mejor a ver si llega en una semana?",
+          "timestamp": "2026-05-14T23:37:40.923934",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "4d5fc121",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "te llego el mensaje?",
+          "timestamp": "2026-05-14T23:58:58.839101",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "20e31778",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "ddd",
+          "timestamp": "2026-05-15T00:00:02.708815",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "0d003eff",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "dddddddddd",
+          "timestamp": "2026-05-15T00:01:51.467238",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "cdc54304",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "mensaje",
+          "mensaje": "ok espero!",
+          "timestamp": "2026-05-15T00:02:25.590207",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
+          ]
         }
       ],
       "historial_estados": [

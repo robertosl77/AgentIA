@@ -802,6 +802,11 @@
         }
       ]
     },
+    "flujos_input_staff": {
+      "chat_libre": {
+        "notificacion_push_cliente": "🤖 *Asistente Virtual Informa:*\n\n💬 La farmacia te envió un mensaje en el chat de tu receta. Ingresá a *Mis recetas* para leerlo."
+      }
+    },
     "flujos_input_cliente": {
       "chat_libre": {
         "notificacion_push_staff": "🤖 *Asistente Virtual Informa:*\n\n💬 El cliente te envió un mensaje en el chat de su receta. Ingresá para responderle."

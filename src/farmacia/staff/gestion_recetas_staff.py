@@ -776,6 +776,17 @@ class GestionRecetasStaff:
 
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
         self.receta_manager.agregar_mensaje_chat(receta_id, "farmacia", comando.strip(), tipo="mensaje")
+        flujo = self.farm_config.get("recetas", {}).get("flujos_input_staff", {}).get("chat_libre", {})
+        push_msg = flujo.get("notificacion_push_cliente")
+        if push_msg:
+            resultado = self.receta_manager.get_receta(receta_id)
+            if resultado:
+                _, receta = resultado
+                persona_id = receta.get("persona_id")
+                lids = self._resolver_lids(persona_id) if persona_id else []
+                from src.send_wpp import SendWPP
+                for lid in lids:
+                    SendWPP(lid).enviar(push_msg)
         self._mostrar_chat_receta(sesiones)
 
     # ── CAMBIAR ESTADO DE RECETA (dinámico desde outflow) ─────────────────────
