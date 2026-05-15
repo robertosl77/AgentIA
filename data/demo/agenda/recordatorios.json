@@ -52,18 +52,18 @@
       "google_event_id": null,
       "timestamp_creacion": "2026-05-14T19:41:22.566679"
     },
-    "9bd2aa1a": {
-      "persona_id": "231400003358774@lid",
+    "82316162": {
+      "persona_id": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
       "enlatado": "farmacia",
       "entidad_id": "5f913dde-12b4-414c-bfe2-36f597fcfc37",
-      "fecha": "15/05/2026",
-      "hora": "21:08",
-      "descripcion": "⏳ Un medicamento está en espera de stock — Receta de b94588c2-2dda-4d4c-8d48-61b259cf991d, vence 11/06/2026.",
+      "fecha": "16/05/2026",
+      "hora": "18:57",
+      "descripcion": "📋 Tenés acciones pendientes en tu receta. Ingresá a *Mis recetas* para responder.",
       "estado": "pendiente",
-      "estado_vinculado": "confirmado",
+      "estado_vinculado": "a_la_espera",
       "origen": "automatico",
       "google_event_id": null,
-      "timestamp_creacion": "2026-05-14T21:08:33.104677"
+      "timestamp_creacion": "2026-05-15T18:57:59.267397"
     }
   }
 }

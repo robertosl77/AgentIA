@@ -194,6 +194,10 @@ FIXES
 INCIDENCIAS — regresiones detectadas en simulación
 ──────────────────────────────────────────────────────
 
+[I5] ✅ Hardcodeo: todos_resueltos en _mostrar_detalle usa lista fija en lugar de flags JSON — RESUELTO
+  Causa: lista ("disponible", "alternativa_aceptada", "rechazado_usuario") hardcodeada en Python.
+  Fix: reemplazada por flags es_pendiente y sin_resolver del JSON (igual que _evaluar_estado_post_cambio_item).
+
 [I4] Chat staff — falta contador de consultas no leídas en opción "💬 Chat"
   Síntoma:
     - El menú de receta del staff muestra "2. 💬 Chat" sin indicar si hay mensajes

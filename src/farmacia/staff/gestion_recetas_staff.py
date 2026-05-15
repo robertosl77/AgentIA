@@ -303,12 +303,11 @@ class GestionRecetasStaff:
         opciones_activas = []
         lineas.append("")
 
-        # Detectar si todos los items están resueltos
+        # Detectar si todos los items están resueltos (basado en flags JSON)
         items_activos = [it for it in items if it["estado_item"] != ESTADO_OMITIDO]
-        todos_resueltos = all(
-            it["estado_item"] in ("disponible", "alternativa_aceptada", "rechazado_usuario")
-            for it in items_activos
-        ) if items_activos else False
+        hay_pendientes = any(estados_item_config.get(it["estado_item"], {}).get("es_pendiente") for it in items_activos)
+        hay_sin_resolver = any(estados_item_config.get(it["estado_item"], {}).get("sin_resolver") for it in items_activos)
+        todos_resueltos = bool(items_activos) and not hay_pendientes and not hay_sin_resolver
 
         # Lógica de reemplazo dinámico de la opción 1
         if todos_resueltos and "confirmar_todos" in opciones_staff:

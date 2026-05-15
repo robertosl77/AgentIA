@@ -24,10 +24,10 @@
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "rechazado_usuario"
+          "estado_item": "alternativa_ofrecida"
         }
       ],
-      "estado": "confirmado",
+      "estado": "a_la_espera",
       "operador_id": null,
       "receta_url": null,
       "notas": [],
@@ -327,6 +327,27 @@
             "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
           ]
+        },
+        {
+          "id": "db80f88a",
+          "autor": "farmacia",
+          "tipo": "alternativa",
+          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *lipomin 105 x 30*. ¿Lo aceptás?",
+          "timestamp": "2026-05-15T18:57:58.539214",
+          "leido_por": [
+            "farmacia"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "3332de12",
+          "autor": "farmacia",
+          "tipo": "mensaje",
+          "mensaje": "no esta entrando lipomax, tu receta es valida para lipomin, la queres?",
+          "timestamp": "2026-05-15T18:59:04.242044",
+          "leido_por": [
+            "farmacia"
+          ]
         }
       ],
       "historial_estados": [
@@ -379,6 +400,16 @@
           "estado": "confirmado",
           "timestamp": "2026-05-14T21:08:33.101677",
           "motivo": "Cliente respondió todas las novedades"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-15T17:48:11.428631",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-15T18:57:59.005398",
+          "motivo": "Items procesados — esperando respuesta del cliente"
         }
       ]
     },
