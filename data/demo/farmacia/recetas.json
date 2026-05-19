@@ -485,6 +485,139 @@
           "leido_por": [
             "b94588c2-2dda-4d4c-8d48-61b259cf991d"
           ]
+        },
+        {
+          "id": "4a07e7bd",
+          "autor": "farmacia",
+          "tipo": "sin_stock",
+          "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
+          "timestamp": "2026-05-19T00:28:42.096825",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "73c4372c",
+          "autor": "farmacia",
+          "tipo": "alternativa",
+          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *lipomin*. ¿Lo aceptás?",
+          "timestamp": "2026-05-19T00:28:47.807522",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "958b0f3d",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-19T00:29:03.046326",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "7e44e80f",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Acepto el cambio.",
+          "timestamp": "2026-05-19T00:29:05.932815",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "1031f849",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
+          "timestamp": "2026-05-19T00:29:06.328862",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "43b101d8",
+          "autor": "farmacia",
+          "tipo": "sin_stock",
+          "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
+          "timestamp": "2026-05-19T00:30:27.624068",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "9c7ec8b2",
+          "autor": "farmacia",
+          "tipo": "alternativa",
+          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *lipomin*. ¿Lo aceptás?",
+          "timestamp": "2026-05-19T00:30:32.792920",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "b90113b5",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-19T00:30:44.064292",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "c9946cc3",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Acepto el cambio.",
+          "timestamp": "2026-05-19T00:30:46.102062",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "0ae68287",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
+          "timestamp": "2026-05-19T00:30:46.757061",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "a8965474",
+          "autor": "farmacia",
+          "tipo": "solicitud_token",
+          "mensaje": "🔐 La farmacia necesita un *token de autorización* de tu obra social para procesar la receta. Por favor enviá el token lo antes posible.",
+          "timestamp": "2026-05-19T00:31:09.054707",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "7f4f85cd",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "token_respuesta",
+          "mensaje": "Token de autorización: 888",
+          "timestamp": "2026-05-19T00:31:28.160432",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
         }
       ],
       "historial_estados": [
@@ -677,6 +810,86 @@
           "estado": "procesando",
           "timestamp": "2026-05-19T00:10:49.253578",
           "motivo": "No requiere token — avance directo"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:19:37.921899",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-05-19T00:19:46.121130",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:28:31.767549",
+          "motivo": "Farmacia procesando"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-19T00:28:48.214167",
+          "motivo": "Items procesados — esperando respuesta del cliente"
+        },
+        {
+          "estado": "confirmado",
+          "timestamp": "2026-05-19T00:29:06.325863",
+          "motivo": "Cliente respondió todas las novedades"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:29:30.821586",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-19T00:29:52.041379",
+          "motivo": "No requiere token — avance directo"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:29:59.028799",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-05-19T00:30:06.002703",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:30:20.139921",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-19T00:30:33.177865",
+          "motivo": "Items procesados — esperando respuesta del cliente"
+        },
+        {
+          "estado": "confirmado",
+          "timestamp": "2026-05-19T00:30:46.751062",
+          "motivo": "Cliente respondió todas las novedades"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:30:59.135783",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "requiere_autorizacion",
+          "timestamp": "2026-05-19T00:31:08.613032",
+          "motivo": "Farmacia solicita token"
+        },
+        {
+          "estado": "token_enviado",
+          "timestamp": "2026-05-19T00:31:28.156429",
+          "motivo": "Token enviado por paciente"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-19T00:31:45.007774",
+          "motivo": "Token validado"
         }
       ]
     },

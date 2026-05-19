@@ -407,6 +407,8 @@ class RecetaManager:
         for item in self.data["recetas"][receta_id]["items"]:
             if item["estado_item"] != ESTADO_OMITIDO:
                 item["estado_item"] = estado_item
+                item.pop("alternativa_nombre", None)
+                item.pop("alternativa_medicamento_id", None)
         self._guardar_archivo()
 
     # ── CHAT ──────────────────────────────────────────────────────────────────

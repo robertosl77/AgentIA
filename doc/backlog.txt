@@ -194,6 +194,17 @@ FIXES
 INCIDENCIAS — regresiones detectadas en simulación
 ──────────────────────────────────────────────────────
 
+[I7] reset_items no limpia campos de alternativa al volver a pendiente
+  Síntoma:
+    - Al resetear una receta a "pendiente", los ítems quedan con estado_item="pendiente"
+      pero conservan alternativa_nombre (y alternativa_medicamento_id), generando que
+      el renderizado muestre "⏳ lipomin (~LIPOMAX~) (Pendiente)" en lugar de "⏳ LIPOMAX (Pendiente)".
+  Causa:
+    - reset_items() solo pisa estado_item, no limpia los campos extra del ítem.
+  Fix:
+    - reset_items() debe eliminar alternativa_nombre y alternativa_medicamento_id al resetear.
+  ⚠️  PENDIENTE
+
 [I6] ✅ tipo="accion" contaminaba badges de chat y vista de detalle staff — RESUELTO
   Síntomas:
     - Badge "💬 Chat (2)" en staff detail inflado por mensajes tipo="accion" (eventos de sistema).

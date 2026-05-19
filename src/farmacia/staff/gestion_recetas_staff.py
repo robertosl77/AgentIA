@@ -266,11 +266,11 @@ class GestionRecetasStaff:
 
             cant_str = f"{cant_sol}" if cant_sol == cant_rec else f"{cant_sol} de {cant_rec}"
             alt_nombre = item.get("alternativa_nombre")
-            if alt_nombre:
-                if item_config.get("sin_resolver"):
-                    linea_item = f"• 🔄 {label} → {alt_nombre} — Cant: {cant_str} ({estado_label_item})"
-                else:
-                    linea_item = f"• {icono} {alt_nombre} (~{label}~) — Cant: {cant_str} ({estado_label_item})"
+            formato_alt = item_config.get("formato_alternativa")
+            if alt_nombre and formato_alt == "ofrecida":
+                linea_item = f"• 🔄 {label} → {alt_nombre} — Cant: {cant_str} ({estado_label_item})"
+            elif alt_nombre and formato_alt == "aceptada":
+                linea_item = f"• {icono} {alt_nombre} (~{label}~) — Cant: {cant_str} ({estado_label_item})"
             else:
                 linea_item = f"• {icono} {label} — Cant: {cant_str} ({estado_label_item})"
             lineas.append(linea_item)

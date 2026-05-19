@@ -555,7 +555,8 @@
         "sin_resolver": false,
         "requiere_respuesta_cliente": false,
         "confirmable_staff": false,
-        "mostrar_acciones_cliente": false
+        "mostrar_acciones_cliente": false,
+        "formato_alternativa": "aceptada"
       },
       "sin_stock": {
         "label": "Sin stock",
@@ -573,7 +574,8 @@
         "sin_resolver": true,
         "requiere_respuesta_cliente": true,
         "confirmable_staff": false,
-        "mostrar_acciones_cliente": true
+        "mostrar_acciones_cliente": true,
+        "formato_alternativa": "ofrecida"
       },
       "alternativa_aceptada": {
         "label": "Alternativa aceptada",
@@ -582,7 +584,8 @@
         "sin_resolver": false,
         "requiere_respuesta_cliente": false,
         "confirmable_staff": true,
-        "mostrar_acciones_cliente": true
+        "mostrar_acciones_cliente": true,
+        "formato_alternativa": "aceptada"
       },
       "rechazado_usuario": {
         "label": "Rechazado por usuario",
