@@ -194,6 +194,22 @@ FIXES
 INCIDENCIAS — regresiones detectadas en simulación
 ──────────────────────────────────────────────────────
 
+[I6] ✅ tipo="accion" contaminaba badges de chat y vista de detalle staff — RESUELTO
+  Síntomas:
+    - Badge "💬 Chat (2)" en staff detail inflado por mensajes tipo="accion" (eventos de sistema).
+    - "❓ Consulta del cliente" en staff detail mostraba "Respondí a todas las novedades..." (sistema).
+    - Chat hilo (staff y cliente) renderizaba tipo="accion" con prefijo 👤, como si fuera texto del usuario.
+    - Badge "💬 1 nuevos" en lista de chats del cliente persiste tras ver el hilo.
+  Causa raíz:
+    - tipo="accion" es un evento de sistema generado por el bot, no un mensaje de usuario.
+      No debe contarse como no leído ni mostrarse como texto del cliente.
+  Fix:
+    - contar_no_leidos_chat: agrega params opcionales tipos y excluir_tipos.
+    - Badge staff lista y detail: excluir_tipos={"accion"}.
+    - Badge cliente lista: tipos={"mensaje"} (solo chat libre).
+    - msgs_generales_no_leidos: excluye tipo="accion".
+    - Renderizado generales (staff y cliente): tipo="accion" → 🤖 _mensaje_ (evento de sistema).
+
 [I5] ✅ Hardcodeo: todos_resueltos en _mostrar_detalle usa lista fija en lugar de flags JSON — RESUELTO
   Causa: lista ("disponible", "alternativa_aceptada", "rechazado_usuario") hardcodeada en Python.
   Fix: reemplazada por flags es_pendiente y sin_resolver del JSON (igual que _evaluar_estado_post_cambio_item).
@@ -253,6 +269,17 @@ INCIDENCIAS — regresiones detectadas en simulación
 ──────────────────────────────────────────────────────
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
+
+[M16] UX: distinción visual de mensajes no leídos en el hilo de chat (cliente y staff)
+  Contexto:
+    - Al ver el chat, ni el cliente ni el staff pueden distinguir qué mensajes son nuevos
+      (no leídos) de los que ya leyeron en sesiones anteriores.
+  Propuesta:
+    - Marcar con negrita (*texto*) o prefijo (🆕) los mensajes no leídos por el lector
+      en el momento de renderizar el hilo de chat.
+    - Aplica a ambas vistas: cliente (_mostrar_hilo_chat) y staff (_mostrar_chat_receta).
+    - Al salir del chat, esos mensajes quedan marcados como leídos y pierden la distinción.
+  ⚠️  PENDIENTE DE DISEÑO
 
 [M15] Modelo de recordatorio en farmacia_config.json para ABM
   Contexto:

@@ -475,14 +475,19 @@ class RecetaManager:
         if changed:
             self._guardar_archivo()
 
-    def contar_no_leidos_chat(self, receta_id, lector):
-        """Cuenta mensajes del chat donde lector no está en leido_por."""
+    def contar_no_leidos_chat(self, receta_id, lector, tipos=None, excluir_tipos=None):
+        """Cuenta mensajes del chat donde lector no está en leido_por.
+        tipos: si se pasa un set, solo cuenta mensajes de esos tipos.
+        excluir_tipos: si se pasa un set, excluye esos tipos del conteo."""
         receta = self.data["recetas"].get(receta_id)
         if not receta:
             return 0
         return sum(
             1 for msg in receta.get("chat", [])
-            if msg["autor"] != lector and lector not in msg["leido_por"]
+            if msg["autor"] != lector
+            and lector not in msg["leido_por"]
+            and (tipos is None or msg.get("tipo") in tipos)
+            and (excluir_tipos is None or msg.get("tipo") not in excluir_tipos)
         )
 
     def _get_meds_en_consulta(self, chat):

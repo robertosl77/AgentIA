@@ -431,7 +431,7 @@ class GestionRecetasCliente:
             estado_cfg = estados_config.get(estado_id, {})
             icono = estado_cfg.get("icono", "")
             vencimiento = rec.get("fecha_vencimiento", "—")
-            no_leidos = self.receta_manager.contar_no_leidos_chat(rec["receta_id"], beneficiario_id)
+            no_leidos = self.receta_manager.contar_no_leidos_chat(rec["receta_id"], beneficiario_id, tipos={"mensaje"})
             linea = f"{i}. {icono} Vence: {vencimiento}"
             if no_leidos:
                 linea += f" 💬 {no_leidos} nuevos"
@@ -557,8 +557,11 @@ class GestionRecetasCliente:
 
             # Mensajes generales (sin medicamento_id) en orden cronológico
             for msg in generales:
-                prefix = "🏥" if msg["autor"] == "farmacia" else "👤"
-                lineas.append(f"{prefix} {msg['mensaje']}")
+                if msg.get("tipo") == "accion":
+                    lineas.append(f"🤖 _{msg['mensaje']}_")
+                else:
+                    prefix = "🏥" if msg["autor"] == "farmacia" else "👤"
+                    lineas.append(f"{prefix} {msg['mensaje']}")
 
         lineas.append("")
         lineas.append("Escribí tu consulta o *cancelar* para volver:")

@@ -125,7 +125,7 @@ class GestionRecetasStaff:
             estado = rec.get("estado", "pendiente")
             estado_config = self._get_estado_receta_config(estado)
 
-            no_leidos = self.receta_manager.contar_no_leidos_chat(rec["receta_id"], "farmacia")
+            no_leidos = self.receta_manager.contar_no_leidos_chat(rec["receta_id"], "farmacia", excluir_tipos={"accion"})
             linea = f"{i}. {nombre} — {cant_items} medicamento(s) — Vence: {vencimiento}"
             if estado != "pendiente":
                 linea += f" {estado_config.get('icono', '')}"
@@ -241,12 +241,13 @@ class GestionRecetasStaff:
                 if i > ultimo_farmacia_idx.get(med_id, -1):
                     ultimo_cliente_por_med[med_id] = msg
 
-        # Mensajes del cliente sin medicamento_id no leídos por farmacia
+        # Mensajes del cliente sin medicamento_id no leídos por farmacia (excluye eventos de sistema)
         msgs_generales_no_leidos = [
             msg for msg in chat
             if msg["autor"] != "farmacia"
             and not msg.get("medicamento_id")
             and "farmacia" not in msg.get("leido_por", [])
+            and msg.get("tipo") != "accion"
         ]
 
         lineas.append("*Medicamentos:*")
@@ -286,7 +287,7 @@ class GestionRecetasStaff:
             for msg in msgs_generales_no_leidos:
                 lineas.append(f"   💬 {msg['mensaje']}")
 
-        no_leidos_chat = self.receta_manager.contar_no_leidos_chat(receta_id, "farmacia")
+        no_leidos_chat = self.receta_manager.contar_no_leidos_chat(receta_id, "farmacia", excluir_tipos={"accion"})
 
         # Token enviado: mostrar el valor recibido del cliente
         if estado_id == "token_enviado":
@@ -759,8 +760,11 @@ class GestionRecetasStaff:
                 lineas.append("")
 
             for msg in generales:
-                prefix = "🏥" if msg["autor"] == "farmacia" else "👤"
-                lineas.append(f"{prefix} {msg['mensaje']}")
+                if msg.get("tipo") == "accion":
+                    lineas.append(f"🤖 _{msg['mensaje']}_")
+                else:
+                    prefix = "🏥" if msg["autor"] == "farmacia" else "👤"
+                    lineas.append(f"{prefix} {msg['mensaje']}")
 
         self.receta_manager.marcar_chat_leido(receta_id, "farmacia")
 
