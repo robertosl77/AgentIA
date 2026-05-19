@@ -281,6 +281,36 @@ INCIDENCIAS — regresiones detectadas en simulación
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 
+[M19] Restablecer receta rechazada al volver a adjuntarla
+  Contexto:
+    - Si el cliente adjunta una receta que ya fue rechazada (misma firma:
+      persona + fecha_validez + diagnóstico), el sistema la bloquea como duplicada.
+    - El comportamiento correcto es ofrecer restablecerla en lugar de bloquearla.
+  Diseño (aprobado):
+    - _es_receta_duplicada retorna (receta_id, receta) o None en lugar de bool.
+    - Si el duplicado está en "rechazada" → nuevo estado "confirmar_restablecer":
+      pregunta al cliente si quiere restablecerla.
+    - Si acepta → reset_items(pendiente) + cambiar_estado(pendiente,
+      "Receta restablecida por el cliente") + salir.
+    - Si el duplicado está en cualquier otro estado → bloqueo (comportamiento actual).
+    - Nuevos mensajes: receta_restablecer_pregunta, receta_restablecida.
+  ⚠️  PENDIENTE
+
+[M18] Historial de recetas finalizadas — vista cliente y staff
+  Contexto:
+    - Las recetas en estado final (cerrada, rechazada) desaparecen de ambas vistas:
+      buscar_recetas_activas (cliente) y buscar_pendientes (staff) solo retornan
+      recetas en estados no finales.
+    - El cliente no puede consultar recetas entregadas o rechazadas.
+    - El staff no tiene visibilidad de recetas canceladas o entregadas.
+  Propuesta:
+    - Cliente: nueva opción "Mis recetas anteriores" o sección separada en "Mis recetas"
+      que liste recetas en estados es_final=true, ordenadas por fecha descendente.
+    - Staff: nueva sección "Historial" en el menú de recetas pendientes que permita
+      buscar/listar recetas finalizadas (por cliente, por fecha, o todas).
+    - Ambas vistas: solo lectura — sin opciones de acción sobre recetas finalizadas.
+  ⚠️  PENDIENTE DE DISEÑO
+
 [M17] Filtrado de opciones "Cambiar estado" por rol del operador
   Contexto:
     - El menú "Cambiar estado de la receta" combina outflow + inflow del estado actual

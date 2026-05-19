@@ -442,6 +442,19 @@ class RecetaManager:
             return []
         return receta.get("chat", [])
 
+    def marcar_todos_leidos(self, receta_id, lector):
+        """Marca como leídos todos los mensajes no leídos por lector."""
+        receta = self.data["recetas"].get(receta_id)
+        if not receta:
+            return
+        modificado = False
+        for msg in receta.get("chat", []):
+            if lector not in msg["leido_por"]:
+                msg["leido_por"].append(lector)
+                modificado = True
+        if modificado:
+            self._guardar_archivo()
+
     def marcar_mensaje_leido(self, receta_id, msg_id, lector):
         """Marca un mensaje específico del chat como leído por lector."""
         receta = self.data["recetas"].get(receta_id)

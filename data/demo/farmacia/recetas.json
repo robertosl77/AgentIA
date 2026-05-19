@@ -28,7 +28,7 @@
           "alternativa_nombre": "lipomin"
         }
       ],
-      "estado": "procesando",
+      "estado": "cerrada",
       "operador_id": null,
       "receta_url": null,
       "notas": [],
@@ -416,7 +416,8 @@
           "mensaje": "Acepto el cambio.",
           "timestamp": "2026-05-18T23:58:01.021642",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
         },
@@ -427,7 +428,8 @@
           "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
           "timestamp": "2026-05-18T23:58:01.421872",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ]
         },
         {
@@ -461,7 +463,8 @@
           "mensaje": "Voy a esperar.",
           "timestamp": "2026-05-19T00:10:16.134869",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
         },
@@ -472,7 +475,8 @@
           "mensaje": "Acepto el cambio.",
           "timestamp": "2026-05-19T00:10:20.552001",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
         },
@@ -483,7 +487,8 @@
           "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
           "timestamp": "2026-05-19T00:10:20.966805",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ]
         },
         {
@@ -517,7 +522,8 @@
           "mensaje": "Voy a esperar.",
           "timestamp": "2026-05-19T00:29:03.046326",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
         },
@@ -528,7 +534,8 @@
           "mensaje": "Acepto el cambio.",
           "timestamp": "2026-05-19T00:29:05.932815",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
         },
@@ -539,7 +546,8 @@
           "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
           "timestamp": "2026-05-19T00:29:06.328862",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ]
         },
         {
@@ -573,7 +581,8 @@
           "mensaje": "Voy a esperar.",
           "timestamp": "2026-05-19T00:30:44.064292",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
         },
@@ -584,7 +593,8 @@
           "mensaje": "Acepto el cambio.",
           "timestamp": "2026-05-19T00:30:46.102062",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ],
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
         },
@@ -595,7 +605,8 @@
           "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
           "timestamp": "2026-05-19T00:30:46.757061",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ]
         },
         {
@@ -616,7 +627,8 @@
           "mensaje": "Token de autorización: 888",
           "timestamp": "2026-05-19T00:31:28.160432",
           "leido_por": [
-            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+            "farmacia"
           ]
         }
       ],
@@ -890,6 +902,36 @@
           "estado": "procesando",
           "timestamp": "2026-05-19T00:31:45.007774",
           "motivo": "Token validado"
+        },
+        {
+          "estado": "token_enviado",
+          "timestamp": "2026-05-19T00:39:54.083042",
+          "motivo": "Token enviado"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-19T00:40:05.700442",
+          "motivo": "Token validado"
+        },
+        {
+          "estado": "pendiente_retiro",
+          "timestamp": "2026-05-19T00:40:16.731798",
+          "motivo": "Avance → Pendiente de retiro"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-19T00:41:07.251865",
+          "motivo": "Procesando"
+        },
+        {
+          "estado": "pendiente_retiro",
+          "timestamp": "2026-05-19T00:42:37.996172",
+          "motivo": "Avance → Pendiente de retiro"
+        },
+        {
+          "estado": "cerrada",
+          "timestamp": "2026-05-19T00:42:47.652084",
+          "motivo": "Avance → Cerrada / Entregada"
         }
       ]
     },
@@ -911,19 +953,78 @@
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "pendiente"
+          "estado_item": "disponible"
         }
       ],
-      "estado": "pendiente",
+      "estado": "rechazada",
       "operador_id": null,
       "receta_url": null,
       "notas": [],
-      "chat": [],
+      "chat": [
+        {
+          "id": "e9ac825e",
+          "autor": "farmacia",
+          "tipo": "sin_stock",
+          "mensaje": "El medicamento *LIPOMAX 105 105 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
+          "timestamp": "2026-05-19T00:43:14.053830",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "3d9930b5",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-19T00:43:36.871242",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "ae387906",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
+          "timestamp": "2026-05-19T00:43:37.270328",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        }
+      ],
       "historial_estados": [
         {
           "estado": "pendiente",
           "timestamp": "2026-05-14T19:41:21.349009",
           "motivo": "Receta cargada por usuario"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:42:48.360849",
+          "motivo": "Farmacia procesando"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-19T00:43:14.493544",
+          "motivo": "Items procesados — esperando respuesta del cliente"
+        },
+        {
+          "estado": "confirmado",
+          "timestamp": "2026-05-19T00:43:37.265321",
+          "motivo": "Cliente respondió todas las novedades"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:43:45.668939",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "rechazada",
+          "timestamp": "2026-05-19T00:44:39.949926",
+          "motivo": "se vencio el plazo"
         }
       ]
     }

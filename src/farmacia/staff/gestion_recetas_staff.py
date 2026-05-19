@@ -189,6 +189,10 @@ class GestionRecetasStaff:
         estado_config = self._get_estado_receta_config(estado_id)
         estado_label = estado_config.get("label", estado_id)
         estado_icono = estado_config.get("icono", "")
+
+        if "ver_chat" not in estado_config.get("opciones_staff", []):
+            self.receta_manager.marcar_todos_leidos(receta_id, "farmacia")
+
         diagnostico = receta.get("diagnostico", "") or "—"
         credencial = receta.get("credencial_validada", True)
         os_id = receta.get("obra_social_id", "")
