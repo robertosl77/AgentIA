@@ -18,16 +18,17 @@
           "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "esperando_stock"
+          "estado_item": "disponible"
         },
         {
           "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09",
           "cantidad_receta": 1,
           "cantidad_solicitada": 1,
-          "estado_item": "alternativa_aceptada"
+          "estado_item": "disponible",
+          "alternativa_nombre": "lipomin"
         }
       ],
-      "estado": "confirmado",
+      "estado": "procesando",
       "operador_id": null,
       "receta_url": null,
       "notas": [],
@@ -395,6 +396,95 @@
             "b94588c2-2dda-4d4c-8d48-61b259cf991d",
             "farmacia"
           ]
+        },
+        {
+          "id": "7a3568d9",
+          "autor": "farmacia",
+          "tipo": "alternativa",
+          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *lipomin*. ¿Lo aceptás?",
+          "timestamp": "2026-05-18T23:57:33.078779",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "d51b752d",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Acepto el cambio.",
+          "timestamp": "2026-05-18T23:58:01.021642",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "2a03b022",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
+          "timestamp": "2026-05-18T23:58:01.421872",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
+        },
+        {
+          "id": "340b069c",
+          "autor": "farmacia",
+          "tipo": "sin_stock",
+          "mensaje": "El medicamento *HIDROTISONA 10 mg comp.x 30* no está disponible (sin stock). ¿Querés esperar a que llegue o preferís cancelarlo?",
+          "timestamp": "2026-05-19T00:09:34.084744",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "ceb6a545",
+          "autor": "farmacia",
+          "tipo": "alternativa",
+          "mensaje": "No tenemos *LIPOMAX 105 105 mg comp.x 30* disponible. Ofrecemos como alternativa: *lipomin*. ¿Lo aceptás?",
+          "timestamp": "2026-05-19T00:09:42.941058",
+          "leido_por": [
+            "farmacia",
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "e69f761e",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Voy a esperar.",
+          "timestamp": "2026-05-19T00:10:16.134869",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "de259cba-1588-4edb-b12a-48e50c6081bc"
+        },
+        {
+          "id": "a64876ac",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Acepto el cambio.",
+          "timestamp": "2026-05-19T00:10:20.552001",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ],
+          "medicamento_id": "c6ea5329-c25e-4f56-ad16-53d7aafd1f09"
+        },
+        {
+          "id": "f080c8a5",
+          "autor": "b94588c2-2dda-4d4c-8d48-61b259cf991d",
+          "tipo": "accion",
+          "mensaje": "Respondí a todas las novedades. La receta está lista para continuar.",
+          "timestamp": "2026-05-19T00:10:20.966805",
+          "leido_por": [
+            "b94588c2-2dda-4d4c-8d48-61b259cf991d"
+          ]
         }
       ],
       "historial_estados": [
@@ -482,6 +572,111 @@
           "estado": "confirmado",
           "timestamp": "2026-05-18T20:51:09.448863",
           "motivo": "Confirmado"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-18T21:22:56.869273",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "confirmado",
+          "timestamp": "2026-05-18T21:26:16.681660",
+          "motivo": "Confirmado"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-18T21:26:41.985121",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "confirmado",
+          "timestamp": "2026-05-18T21:53:54.115365",
+          "motivo": "Confirmado"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-18T21:54:05.641315",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-18T21:57:51.472334",
+          "motivo": "No requiere token — avance directo"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-18T23:37:29.903615",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-18T23:56:27.859729",
+          "motivo": "No requiere token — avance directo"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-18T23:56:43.098954",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-05-18T23:56:58.151152",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-18T23:57:18.782319",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-18T23:57:33.570777",
+          "motivo": "Items procesados — esperando respuesta del cliente"
+        },
+        {
+          "estado": "confirmado",
+          "timestamp": "2026-05-18T23:58:01.418868",
+          "motivo": "Cliente respondió todas las novedades"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-19T00:08:29.835239",
+          "motivo": "A la espera del cliente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:08:39.693807",
+          "motivo": "En gestión"
+        },
+        {
+          "estado": "pendiente",
+          "timestamp": "2026-05-19T00:09:13.832366",
+          "motivo": "Pendiente"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:09:17.441521",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "a_la_espera",
+          "timestamp": "2026-05-19T00:09:43.354341",
+          "motivo": "Items procesados — esperando respuesta del cliente"
+        },
+        {
+          "estado": "confirmado",
+          "timestamp": "2026-05-19T00:10:20.963804",
+          "motivo": "Cliente respondió todas las novedades"
+        },
+        {
+          "estado": "en_gestion",
+          "timestamp": "2026-05-19T00:10:38.945145",
+          "motivo": "Avance → En gestión"
+        },
+        {
+          "estado": "procesando",
+          "timestamp": "2026-05-19T00:10:49.253578",
+          "motivo": "No requiere token — avance directo"
         }
       ]
     },

@@ -404,7 +404,14 @@ class GestionRecetasCliente:
                 item_cfg = estados_item_config.get(item["estado_item"], {})
                 item_icono = item_cfg.get("icono", "❓")
                 item_label = item_cfg.get("label", item["estado_item"])
-                lineas.append(f"   {item_icono} {label} ({item_label})")
+                alt_nombre = item.get("alternativa_nombre")
+                if alt_nombre:
+                    if item_cfg.get("sin_resolver"):
+                        lineas.append(f"   🔄 {label} → {alt_nombre} ({item_label})")
+                    else:
+                        lineas.append(f"   {item_icono} {alt_nombre} (~{label}~) ({item_label})")
+                else:
+                    lineas.append(f"   {item_icono} {label} ({item_label})")
 
         lineas.append("Escribí *cancelar* para volver:")
         sesiones[self.numero].cliente_receta_estado = "ver_recetas"

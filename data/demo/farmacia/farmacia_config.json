@@ -270,6 +270,7 @@
         "auto_avanzar_al_abrir": true,
         "reset_items_al_entrar": true,
         "notificacion_push": null,
+        "ocultar_acciones_cliente": false,
         "responsable": ["staff"],
         "recordatorio": [],
         "opciones_staff": ["avanzar", "cambiar_estado_receta"]
@@ -288,6 +289,7 @@
         "es_final": false,
         "transicion": "automatico",
         "notificacion_push": null,
+        "ocultar_acciones_cliente": false,
         "responsable": ["staff"],
         "recordatorio": [],
         "opciones_staff": [
@@ -320,6 +322,7 @@
         "es_final": false,
         "transicion": "automatico",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n📋 Hay novedades en tu receta que requieren tu atención.\nIngresá al menú *Mis recetas* para revisar.",
+        "ocultar_acciones_cliente": false,
         "opciones_staff": [
           "confirmar_todos",
           "cambiar_estado_item",
@@ -340,6 +343,7 @@
         "reset_items_al_entrar": false,
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n💬 La farmacia respondió tu consulta.\nIngresá a *Mis recetas* para revisar y tomar una decisión.",
         "notificacion_push_staff": "🤖 *Asistente Virtual Informa:*\n\n❓ El cliente realizó una consulta sobre su receta. Ingresá para responder.",
+        "ocultar_acciones_cliente": false,
         "responsable": ["staff"],
         "recordatorio": [],
         "opciones_staff": ["responder_consulta", "cambiar_estado_receta"]
@@ -348,12 +352,13 @@
         "label": "Confirmado",
         "icono": "✔️",
         "inflow": ["a_la_espera"],
-        "outflow": [" "],
+        "outflow": [],
         "camino_feliz": "en_gestion",
         "requiere_motivo": false,
         "es_final": false,
         "transicion": "manual",
         "notificacion_push": null,
+        "ocultar_acciones_cliente": false,
         "responsable": ["staff"],
         "recordatorio": [
           {
@@ -385,6 +390,7 @@
         "inflow": ["en_gestion"],
         "outflow": ["token_enviado", "rechazada"],
         "camino_feliz": null,
+        "ocultar_acciones_cliente": true,
         "responsable": ["cliente"],
         "recordatorio": [
           {
@@ -413,6 +419,7 @@
         "outflow": ["procesando", "error_token"],
         "camino_feliz": "procesando",
         "destino_token_invalido": "error_token",
+        "ocultar_acciones_cliente": true,
         "responsable": ["staff"],
         "recordatorio": [
           {
@@ -443,6 +450,7 @@
         "es_final": false,
         "transicion": "automatico",
         "notificacion_push": null,
+        "ocultar_acciones_cliente": true,
         "responsable": ["staff"],
         "recordatorio": [],
         "opciones_staff": [
@@ -461,6 +469,7 @@
         "es_final": false,
         "transicion": "manual",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n⚠️ Tu token de autorización presentó un problema. La farmacia te solicitará uno nuevo a la brevedad.",
+        "ocultar_acciones_cliente": true,
         "responsable": ["staff"],
         "recordatorio": [],
         "opciones_staff": [
@@ -475,6 +484,7 @@
         "inflow": ["procesando"],
         "outflow": ["cerrada"],
         "camino_feliz": "cerrada",
+        "ocultar_acciones_cliente": true,
         "responsable": ["cliente"],
         "recordatorio": [
           {
@@ -505,6 +515,7 @@
         "es_final": true,
         "transicion": "manual",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n📋 Tu receta fue entregada. ¡Gracias por confiar en nosotros!",
+        "ocultar_acciones_cliente": true,
         "responsable": ["staff"],
         "recordatorio": [],
         "opciones_staff": []
@@ -519,6 +530,7 @@
         "es_final": true,
         "transicion": "manual",
         "notificacion_push": "🤖 *Asistente Virtual Informa:*\n\n❌ Tu receta fue rechazada por la farmacia.\nIngresá al menú *Mis recetas* para más información.",
+        "ocultar_acciones_cliente": true,
         "responsable": ["cliente", "staff"],
         "recordatorio": [],
         "opciones_staff": [
@@ -531,48 +543,73 @@
         "label": "Pendiente",
         "icono": "⏳",
         "es_pendiente": true,
-        "confirmable_staff": true
+        "sin_resolver": false,
+        "requiere_respuesta_cliente": false,
+        "confirmable_staff": true,
+        "mostrar_acciones_cliente": false
       },
       "disponible": {
         "label": "Disponible",
-        "icono": "✅"
+        "icono": "✅",
+        "es_pendiente": false,
+        "sin_resolver": false,
+        "requiere_respuesta_cliente": false,
+        "confirmable_staff": false,
+        "mostrar_acciones_cliente": false
       },
       "sin_stock": {
         "label": "Sin stock",
         "icono": "❌",
-        "mostrar_acciones_cliente": true,
+        "es_pendiente": false,
         "sin_resolver": true,
         "requiere_respuesta_cliente": true,
-        "confirmable_staff": true
+        "confirmable_staff": false,
+        "mostrar_acciones_cliente": true
       },
       "alternativa_ofrecida": {
         "label": "Alternativa ofrecida",
         "icono": "🔄",
-        "mostrar_acciones_cliente": true,
+        "es_pendiente": false,
         "sin_resolver": true,
         "requiere_respuesta_cliente": true,
-        "confirmable_staff": true
+        "confirmable_staff": false,
+        "mostrar_acciones_cliente": true
       },
       "alternativa_aceptada": {
         "label": "Alternativa aceptada",
         "icono": "🔄✅",
+        "es_pendiente": false,
+        "sin_resolver": false,
+        "requiere_respuesta_cliente": false,
+        "confirmable_staff": true,
         "mostrar_acciones_cliente": true
       },
       "rechazado_usuario": {
         "label": "Rechazado por usuario",
         "icono": "🚫",
+        "es_pendiente": false,
+        "sin_resolver": false,
+        "requiere_respuesta_cliente": false,
+        "confirmable_staff": false,
         "mostrar_acciones_cliente": true
       },
       "omitido_usuario": {
         "label": "Omitido",
-        "icono": "⏭️"
+        "icono": "⏭️",
+        "es_pendiente": false,
+        "sin_resolver": false,
+        "requiere_respuesta_cliente": false,
+        "confirmable_staff": false,
+        "mostrar_acciones_cliente": false
       },
       "esperando_stock": {
         "label": "Esperando stock",
         "icono": "⏳",
-        "mostrar_acciones_cliente": true,
+        "es_pendiente": false,
         "sin_resolver": false,
-        "confirmable_staff": true
+        "requiere_respuesta_cliente": false,
+        "confirmable_staff": true,
+        "mostrar_acciones_cliente": true
       }
     },
     "opciones_cambiar_estado_item": [
@@ -657,6 +694,7 @@
       "sin_avance": "ℹ️ No hay avance disponible desde este estado.",
       "avance_exitoso": "✅ Receta avanzada a: *{label}*",
       "todos_resueltos": "🔔 Todos los medicamentos están resueltos.\nPodés usar *Confirmar todos* o *Cambiar estado de la receta* para avanzar.",
+      "stock_pendiente_confirmar": "🔔 Hay medicamentos pendientes de confirmar. Usá *Confirmar todos* cuando estén listos para poder avanzar.",
       "agendar_recordatorio": "🚧 Agendar recordatorio — próximamente...",
       "validar_token": "🔑 *Validación de token:*\n\n1. ✅ Token correcto — avanzar\n2. 🔄 Solicitar nuevo token\n\nEscribí *cancelar* para volver:",
       "escribi_cancelar": "Escribí *cancelar* para volver:",

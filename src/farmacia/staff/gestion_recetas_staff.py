@@ -265,8 +265,16 @@ class GestionRecetasStaff:
             estado_label_item = item_config.get("label", item["estado_item"])
 
             cant_str = f"{cant_sol}" if cant_sol == cant_rec else f"{cant_sol} de {cant_rec}"
-            lineas.append(f"• {icono} {label} — Cant: {cant_str} ({estado_label_item})")
-            if item_config.get("mostrar_acciones_cliente"):
+            alt_nombre = item.get("alternativa_nombre")
+            if alt_nombre:
+                if item_config.get("sin_resolver"):
+                    linea_item = f"• 🔄 {label} → {alt_nombre} — Cant: {cant_str} ({estado_label_item})"
+                else:
+                    linea_item = f"• {icono} {alt_nombre} (~{label}~) — Cant: {cant_str} ({estado_label_item})"
+            else:
+                linea_item = f"• {icono} {label} — Cant: {cant_str} ({estado_label_item})"
+            lineas.append(linea_item)
+            if item_config.get("mostrar_acciones_cliente") and not estado_config.get("ocultar_acciones_cliente"):
                 ultimo = ultimo_cliente_por_med.get(item["medicamento_id"])
                 if ultimo:
                     lineas.append(f"   └ 👤 {ultimo['mensaje']}")
@@ -308,11 +316,12 @@ class GestionRecetasStaff:
         items_activos = [it for it in items if it["estado_item"] != ESTADO_OMITIDO]
         hay_pendientes = any(estados_item_config.get(it["estado_item"], {}).get("es_pendiente") for it in items_activos)
         hay_sin_resolver = any(estados_item_config.get(it["estado_item"], {}).get("sin_resolver") for it in items_activos)
+        hay_confirmable_staff = any(estados_item_config.get(it["estado_item"], {}).get("confirmable_staff") for it in items_activos)
         todos_resueltos = bool(items_activos) and not hay_pendientes and not hay_sin_resolver
 
         # Lógica de reemplazo dinámico de la opción 1
-        if todos_resueltos and "confirmar_todos" in opciones_staff:
-            # Items resueltos → reemplazar confirmar_todos por avanzar
+        # Solo se muestra avanzar cuando todos_resueltos Y ningún ítem requiere confirmación de stock por staff
+        if todos_resueltos and not hay_confirmable_staff and "confirmar_todos" in opciones_staff:
             idx_ct = opciones_staff.index("confirmar_todos")
             opciones_staff[idx_ct] = "avanzar"
 
@@ -655,7 +664,7 @@ class GestionRecetasStaff:
         receta_id = getattr(sesiones[self.numero], "staff_receta_id", None)
         item_idx = getattr(sesiones[self.numero], "staff_receta_item_idx", 0)
 
-        self.receta_manager.cambiar_estado_item(receta_id, item_idx, "alternativa_ofrecida")
+        self.receta_manager.cambiar_estado_item(receta_id, item_idx, "alternativa_ofrecida", alternativa_nombre=comando.strip())
         self._desestimar_notas_item(receta_id, item_idx)
 
         resultado = self.receta_manager.get_receta(receta_id)
@@ -1229,6 +1238,7 @@ class GestionRecetasStaff:
 
         hay_pendientes = any(items_cfg.get(it["estado_item"], {}).get("es_pendiente") for it in items_activos)
         hay_sin_resolver = any(items_cfg.get(it["estado_item"], {}).get("sin_resolver") for it in items_activos)
+        hay_confirmable_staff = any(items_cfg.get(it["estado_item"], {}).get("confirmable_staff") for it in items_activos)
         todos_resueltos = bool(items_activos) and not hay_pendientes and not hay_sin_resolver
 
         destino_retorno = estado_config.get("destino_retorno_gestion")
@@ -1250,10 +1260,13 @@ class GestionRecetasStaff:
             return
 
         if todos_resueltos:
-            # Escenario 3: todos resueltos — si aplica, retornar a gestión
+            # Escenario 3: todos resueltos — distinguir si hay stock pendiente de confirmar
             if destino_retorno and estado_actual != destino_retorno:
                 self.receta_manager.cambiar_estado(receta_id, destino_retorno, "Todos los items resueltos — listo para avanzar")
-            self.sw.enviar(self._msg("todos_resueltos"))
+            if hay_confirmable_staff:
+                self.sw.enviar(self._msg("stock_pendiente_confirmar"))
+            else:
+                self.sw.enviar(self._msg("todos_resueltos"))
 
     def _desestimar_notas_items(self, receta_id):
         """Marca como leídos por el cliente los mensajes de sin_stock/alternativa del chat."""

@@ -270,6 +270,19 @@ INCIDENCIAS — regresiones detectadas en simulación
 MEJORAS / FEATURES
 ──────────────────────────────────────────────────────
 
+[M17] Filtrado de opciones "Cambiar estado" por rol del operador
+  Contexto:
+    - El menú "Cambiar estado de la receta" combina outflow + inflow del estado actual
+      de forma estática, sin considerar el rol del operador ni el camino real que se tomó.
+    - Ej: desde "procesando" (llegado sin token), aparecen "Token enviado" y "Error de token"
+      aunque en esa sesión no hubo flujo de token.
+  Propuesta:
+    - Agregar campo "roles_permitidos" (lista) a cada entrada de outflow/inflow en el JSON.
+    - Al construir el menú, filtrar las opciones que no correspondan al rol del operador activo.
+    - Permite ocultar estados técnicos (error_token) a operadores básicos y reservarlos
+      a roles admin o técnico.
+  ⚠️  PENDIENTE DE DISEÑO — requiere definir modelo de roles por tenant.
+
 [M16] UX: distinción visual de mensajes no leídos en el hilo de chat (cliente y staff)
   Contexto:
     - Al ver el chat, ni el cliente ni el staff pueden distinguir qué mensajes son nuevos

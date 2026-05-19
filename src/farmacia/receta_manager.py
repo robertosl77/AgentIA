@@ -192,7 +192,7 @@ class RecetaManager:
         self._guardar_archivo()
         return True
 
-    def cambiar_estado_item(self, receta_id, item_index, nuevo_estado, alternativa_id=None):
+    def cambiar_estado_item(self, receta_id, item_index, nuevo_estado, alternativa_id=None, alternativa_nombre=None):
         """Cambia el estado de un item específico de la receta."""
         if receta_id not in self.data["recetas"]:
             return False
@@ -208,6 +208,8 @@ class RecetaManager:
         receta["items"][item_index]["estado_item"] = nuevo_estado
         if alternativa_id:
             receta["items"][item_index]["alternativa_medicamento_id"] = alternativa_id
+        if alternativa_nombre:
+            receta["items"][item_index]["alternativa_nombre"] = alternativa_nombre
 
         self._guardar_archivo()
         return True
